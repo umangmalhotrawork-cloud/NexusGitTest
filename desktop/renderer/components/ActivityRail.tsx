@@ -13,9 +13,10 @@ import {
   ShieldAlert,
   Terminal,
   Settings,
+  Rocket,
 } from "lucide-react";
 
-export type ActivityRailItem = "explorer" | "search" | "git" | "tests" | "agent" | "sessions" | "verification" | "decisions" | "simulator" | "terminal";
+export type ActivityRailItem = "explorer" | "search" | "git" | "tests" | "agent" | "sessions" | "verification" | "decisions" | "simulator" | "deploy" | "terminal";
 
 
 interface ActivityRailProps {
@@ -190,6 +191,22 @@ export default function ActivityRail({
           <ShieldAlert className="w-4 h-4" />
           {activeItem === "simulator" && (
             <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-amber-400 rounded-r" />
+          )}
+        </button>
+
+        {/* Deployment Inspector */}
+        <button
+          onClick={() => onSelectItem("deploy")}
+          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer relative group ${
+            activeItem === "deploy"
+               ? "bg-[#0f1d2e] text-cyan-400 border border-cyan-500/40 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
+               : "text-zinc-500 hover:text-cyan-300 hover:bg-[#101016]"
+          }`}
+          title="Deployment Inspector (⌘9)"
+        >
+          <Rocket className="w-4 h-4" />
+          {activeItem === "deploy" && (
+            <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-cyan-400 rounded-r" />
           )}
         </button>
       </div>

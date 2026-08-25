@@ -75,6 +75,7 @@ import StatusBar from "./components/StatusBar";
 import BottomPanel, { BottomPanelTab } from "./components/BottomPanel";
 import DecisionReplayPanel from "./components/DecisionReplayPanel";
 import FutureBugSimulatorPanel from "./components/FutureBugSimulatorPanel";
+import DeploymentInspectorPanel from "./components/DeploymentInspectorPanel";
 import { useSecurityAudit } from "./hooks/useSecurityAudit";
 import SnapshotPanel from "./components/SnapshotPanel";
 import { useSnapshots } from "./hooks/useSnapshots";
@@ -1333,6 +1334,8 @@ export default function IDEApp() {
       } else if (item === "tests") {
         setExplorerWidth((w) => Math.max(w, 340));
         testsHook.discoverTests();
+      } else if (item === "deploy" || (item as string) === "decisions" || (item as string) === "simulator") {
+        setExplorerWidth((w) => Math.max(w, 440));
       }
     }
   };
@@ -1368,6 +1371,8 @@ export default function IDEApp() {
     } else if (item === "tests") {
       setExplorerWidth((w) => Math.max(w, 340));
       testsHook.discoverTests();
+    } else if (item === "deploy" || (item as string) === "decisions" || (item as string) === "simulator") {
+      setExplorerWidth((w) => Math.max(w, 440));
     }
   };
 
@@ -2785,6 +2790,9 @@ export default function IDEApp() {
           case "workbench.action.futureBugSimulator":
             handleOpenActivityItem("simulator");
             return;
+          case "workbench.action.deploymentInspector":
+            handleOpenActivityItem("deploy");
+            return;
           case "debug.start":
             handleRunUnifiedDebugger();
             return;
@@ -2864,6 +2872,9 @@ export default function IDEApp() {
       } else if (isCmd && (key === "8" || key === "*")) {
         e.preventDefault();
         handleOpenActivityItem("simulator");
+      } else if (isCmd && (key === "9" || key === "(")) {
+        e.preventDefault();
+        handleOpenActivityItem("deploy");
       } else if (isCmd && key === "k") {
         e.preventDefault();
         setCmdPaletteOpen(true);
@@ -6883,7 +6894,7 @@ return (
                   className="p-2.5 border-b flex items-center justify-between font-mono text-xs"
                 >
                   <div className="flex items-center gap-1.5 min-w-0">
-                    {(activeActivityItem === "tests" || activeActivityItem === "decisions" || activeActivityItem === "simulator") && (
+                    {(activeActivityItem === "tests" || activeActivityItem === "decisions" || activeActivityItem === "simulator" || activeActivityItem === "deploy") && (
                       <button
                         onClick={() => setActiveActivityItem("explorer")}
                         className="p-1 -ml-1 rounded hover:bg-[#1a1a24] text-zinc-400 hover:text-white transition-colors cursor-pointer"
@@ -6905,6 +6916,8 @@ return (
                         ? "Decision Replay"
                         : activeActivityItem === "simulator"
                         ? "Future Bug Simulator"
+                        : activeActivityItem === "deploy"
+                        ? "Deployment Inspector"
                         : "Explorer"}
                     </span>
                   </div>
@@ -7087,6 +7100,21 @@ return (
                         }
                       }}
                       onAskAgentToImplement={(prompt) => {
+                        setActiveTaskPrompt(prompt);
+                        setWorkspaceMode("workbench");
+                        setShowDockedAgentPanel(true);
+                      }}
+                    />
+                  ) : activeActivityItem === "deploy" ? (
+                    <DeploymentInspectorPanel
+                      workspacePath={folderPath || ""}
+                      onClose={() => setActiveActivityItem("explorer")}
+                      onOpenFile={(filePath, line) => {
+                        if (filePath) {
+                          handleOpenTestFile(filePath, line);
+                        }
+                      }}
+                      onAskAgentToFix={(prompt) => {
                         setActiveTaskPrompt(prompt);
                         setWorkspaceMode("workbench");
                         setShowDockedAgentPanel(true);
@@ -8615,6 +8643,7 @@ return (
         onOpenTestExplorer={() => setMainView("test_explorer")}
         onOpenDecisionReplay={() => handleOpenActivityItem("decisions")}
         onOpenFutureBugSimulator={() => handleOpenActivityItem("simulator")}
+        onOpenDeploymentInspector={() => handleOpenActivityItem("deploy")}
         onRunAllTests={testsHook.runAllTests}
         onRunCurrentFileTests={() => {
           if (activeTab) testsHook.runFileTests(activeTab.path);

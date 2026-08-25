@@ -414,6 +414,25 @@ contextBridge.exposeInMainWorld('electronAPI', {
     detectDecisions: (payload) => ipcRenderer.invoke('intelligence:detect-decisions', payload),
     simulateBug: (payload) => ipcRenderer.invoke('intelligence:simulate-bug', payload),
     getScenarioPresets: () => ipcRenderer.invoke('intelligence:get-scenario-presets'),
+    inspectDeployment: (payload) => ipcRenderer.invoke('intelligence:inspect-deployment', payload),
+    generateDeploymentConfig: (payload) => ipcRenderer.invoke('intelligence:generate-deployment-config', payload),
+    applyDeploymentConfig: (payload) => ipcRenderer.invoke('intelligence:apply-deployment-config', payload),
+    // Deployment Credentials & Execution (Phase 3A)
+    getProviderAuthStatus: (providerId) => ipcRenderer.invoke('intelligence:get-provider-auth-status', { providerId }),
+    saveProviderCredential: (payload) => ipcRenderer.invoke('intelligence:save-provider-credential', payload),
+    removeProviderCredential: (providerId) => ipcRenderer.invoke('intelligence:remove-provider-credential', { providerId }),
+    startDeployment: (payload) => ipcRenderer.invoke('intelligence:start-deployment', payload),
+    cancelDeployment: (deploymentId) => ipcRenderer.invoke('intelligence:cancel-deployment', { deploymentId }),
+    onDeploymentLogChunk: (callback) => {
+      const listener = (_event, payload) => callback(payload);
+      ipcRenderer.on('deployment:log-chunk', listener);
+      return () => ipcRenderer.removeListener('deployment:log-chunk', listener);
+    },
+    onDeploymentState: (callback) => {
+      const listener = (_event, payload) => callback(payload);
+      ipcRenderer.on('deployment:state-change', listener);
+      return () => ipcRenderer.removeListener('deployment:state-change', listener);
+    },
   },
 
   runPythonFile: (filePath) => ipcRenderer.invoke('python:run-file', filePath),

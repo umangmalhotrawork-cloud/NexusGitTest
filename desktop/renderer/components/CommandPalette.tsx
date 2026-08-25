@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { 
   Command, Search, FolderOpen, Play, Sparkles, RotateCcw, 
   Sidebar, Terminal, FileText, X, Zap, ShieldAlert, Camera, History,
-  Network, Copy, Compass, GitBranch, Bug, Settings, Sliders, BookmarkCheck
+  Network, Copy, Compass, GitBranch, Bug, Settings, Sliders, BookmarkCheck, Rocket
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
@@ -31,6 +31,7 @@ interface CommandPaletteProps {
   onOpenTestExplorer?: () => void;
   onOpenDecisionReplay?: () => void;
   onOpenFutureBugSimulator?: () => void;
+  onOpenDeploymentInspector?: () => void;
   onRunAllTests?: () => void;
   onRunCurrentFileTests?: () => void;
   onOpenProfiler?: () => void;
@@ -90,6 +91,7 @@ export default function CommandPalette({
   onOpenTestExplorer,
   onOpenDecisionReplay,
   onOpenFutureBugSimulator,
+  onOpenDeploymentInspector,
   onRunAllTests,
   onRunCurrentFileTests,
   onOpenProfiler,
@@ -532,6 +534,21 @@ export default function CommandPalette({
       icon: ShieldAlert,
       shortcut: "⌘8",
       action: () => { if (onOpenFutureBugSimulator) onOpenFutureBugSimulator(); onClose(); },
+    },
+    {
+      id: "view-deployment-inspector",
+      title: "View: Open Deployment Inspector (Cloud Readiness)",
+      category: "View",
+      icon: Rocket,
+      shortcut: "⌘9",
+      action: () => { if (onOpenDeploymentInspector) onOpenDeploymentInspector(); onClose(); },
+    },
+    {
+      id: "inspect-deployment-readiness",
+      title: "Inspect Project Deployment Readiness",
+      category: "Deployment",
+      icon: Rocket,
+      action: () => { if (onOpenDeploymentInspector) onOpenDeploymentInspector(); onClose(); },
     },
     ...openTabs.map((t) => ({
       id: `tab-${t.path}`,

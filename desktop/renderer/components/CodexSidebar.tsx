@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   FolderTree, Search, GitBranch, Layers, ShieldCheck, Settings, 
   Plus, MessageSquare, Plug, ChevronDown, ChevronRight,
-  Folder, Pin, PinOff, MoreVertical, Edit2, Trash2, X, Check, Clock, Bot, Sparkles, BookmarkCheck, ShieldAlert
+  Folder, Pin, PinOff, MoreVertical, Edit2, Trash2, X, Check, Clock, Bot, Sparkles, BookmarkCheck, ShieldAlert,
+  Rocket
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
@@ -379,6 +380,21 @@ export default function CodexSidebar({
               <span className="truncate">Future Bug Simulator</span>
             </div>
             <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘8</span>
+          </button>
+
+          <button
+            onClick={() => onSelectItem("deploy")}
+            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              activeItem === "deploy"
+                ? "bg-[#0f1d2e] text-cyan-300 font-bold border border-cyan-500/40"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0 truncate">
+              <Rocket className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span className="truncate">Deployment Inspector</span>
+            </div>
+            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘9</span>
           </button>
         </div>
 

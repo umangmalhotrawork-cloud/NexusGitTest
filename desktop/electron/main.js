@@ -61,8 +61,17 @@ const { settingsManager } = require('./settingsManager');
 const { contextCapsuleManager } = require('./capsule/ContextCapsuleManager');
 const { evidenceGraph } = require('./evidence/EvidenceGraph');
 const behavioralDiffEngine = require('../engine/behavioral_diff_engine');
-const aiSystemReasoningEngine = require('../engine/ai_system_reasoning_engine');
-const { preflightEstimator, preflightCostEstimator, softwareEvidenceLayer, breakageCorrelator, decisionReplayEngine } = require('./intelligence');
+const {
+  preflightEstimator,
+  preflightCostEstimator,
+  softwareEvidenceLayer,
+  breakageCorrelator,
+  decisionReplayEngine,
+  deploymentInspector,
+  deploymentConfigEngine,
+  deploymentCredentialStore,
+  deploymentExecutor,
+} = require('./intelligence');
 
 
 process.on('uncaughtException', (err) => {
@@ -3912,9 +3921,121 @@ ipcMain.handle('intelligence:get-scenario-presets', async () => {
   }
 });
 
+// Deployment Intelligence IPC Handler (Phase 1)
+ipcMain.handle('intelligence:inspect-deployment', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return await deploymentInspector.inspectWorkspace(ws, payload.options || {});
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Inspect deployment error: ${err.message}`);
+    const { createDeploymentReport, DEPLOYMENT_STATUS } = require('./intelligence');
+    return createDeploymentReport({
+      workspacePath: payload.workspacePath || '',
+      overallStatus: DEPLOYMENT_STATUS.UNKNOWN,
+      summary: `Deployment inspection error: ${err.message}`,
+      findings: [],
+    });
+  }
+});
 
+// Deployment Config Preview IPC Handler (Phase 2C)
+ipcMain.handle('intelligence:generate-deployment-config', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    if (!payload.providerId) {
+      throw new Error('providerId is required to generate deployment configuration.');
+    }
+    return await deploymentConfigEngine.generateConfig(ws, payload.providerId, payload.options || {});
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Generate deployment config error: ${err.message}`);
+    throw err;
+  }
+});
 
+// Deployment Config Apply IPC Handler (Phase 2C)
+ipcMain.handle('intelligence:apply-deployment-config', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    if (!payload.providerId) {
+      throw new Error('providerId is required to apply deployment configuration.');
+    }
+    return await deploymentConfigEngine.applyConfig(ws, payload.providerId, payload.options || {});
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Apply deployment config error: ${err.message}`);
+    throw err;
+  }
+});
 
+// Deployment Credentials IPC Handlers (Phase 3A)
+ipcMain.handle('intelligence:get-provider-auth-status', async (_, payload = {}) => {
+  try {
+    const providerId = typeof payload === 'string' ? payload : payload.providerId;
+    return deploymentCredentialStore.getAuthStatus(providerId);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Get provider auth status error: ${err.message}`);
+    return { providerId: payload?.providerId || 'unknown', isConnected: false, error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:save-provider-credential', async (_, payload = {}) => {
+  try {
+    if (!payload.providerId || !payload.credential) {
+      throw new Error('providerId and credential are required.');
+    }
+    return deploymentCredentialStore.saveCredential(payload.providerId, payload.credential);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Save provider credential error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:remove-provider-credential', async (_, payload = {}) => {
+  try {
+    const providerId = typeof payload === 'string' ? payload : payload.providerId;
+    return deploymentCredentialStore.removeCredential(providerId);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Remove provider credential error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+// Deployment Execution IPC Handlers (Phase 3A)
+ipcMain.handle('intelligence:start-deployment', async (event, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    if (!payload.providerId) {
+      throw new Error('providerId is required to start deployment.');
+    }
+
+    const broadcast = (type, data) => {
+      try {
+        if (event.sender && !event.sender.isDestroyed()) {
+          event.sender.send(`deployment:${type}`, data);
+        }
+      } catch (_) {}
+    };
+
+    return await deploymentExecutor.startDeployment(
+      ws,
+      payload.providerId,
+      payload.options || {},
+      (eventType, eventData) => broadcast(eventType, eventData)
+    );
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Start deployment error: ${err.message}`);
+    return { status: 'FAILED', error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:cancel-deployment', async (_, payload = {}) => {
+  try {
+    const deploymentId = typeof payload === 'string' ? payload : payload.deploymentId;
+    return deploymentExecutor.cancelDeployment(deploymentId);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Cancel deployment error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
 
 app.on('will-quit', () => {
   logger.info('MAIN', 'Application shutting down cleanly');

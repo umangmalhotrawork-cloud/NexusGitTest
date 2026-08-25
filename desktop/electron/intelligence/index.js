@@ -33,6 +33,55 @@ const {
 } = require('./SimulationReport');
 const { FutureBugSimulator, futureBugSimulator } = require('./FutureBugSimulator');
 
+const {
+  DEPLOYMENT_STATUS,
+  FINDING_SEVERITY,
+  FINDING_CATEGORY,
+  generateFindingId,
+  createFinding,
+  createDeploymentReport,
+} = require('./deployment/DeploymentReport');
+const { ProjectDetector, projectDetector } = require('./deployment/ProjectDetector');
+const { RuleEngine, ruleEngine } = require('./deployment/RuleEngine');
+const { DeploymentInspector, deploymentInspector } = require('./deployment/DeploymentInspector');
+
+const {
+  SUITABILITY,
+  CONFIDENCE: RECOMMENDATION_CONFIDENCE,
+  PROVIDER_IDS,
+  PROVIDER_DISPLAY_NAMES,
+  COMPUTE_SERVICE_TYPE,
+  DATABASE_STRATEGY,
+  scoreToSuitability,
+  createPlatformRecommendation,
+} = require('./deployment/PlatformRecommendation');
+const {
+  PlatformCompatibilityEngine,
+  platformCompatibilityEngine,
+} = require('./deployment/PlatformCompatibilityEngine');
+
+const VercelConfigGenerator = require('./deployment/config/VercelConfigGenerator');
+const RenderConfigGenerator = require('./deployment/config/RenderConfigGenerator');
+const RailwayConfigGenerator = require('./deployment/config/RailwayConfigGenerator');
+const FlyIoConfigGenerator = require('./deployment/config/FlyIoConfigGenerator');
+const NetlifyConfigGenerator = require('./deployment/config/NetlifyConfigGenerator');
+const DockerConfigGenerator = require('./deployment/config/DockerConfigGenerator');
+const {
+  DeploymentConfigEngine,
+  deploymentConfigEngine,
+} = require('./deployment/config/DeploymentConfigEngine');
+
+const {
+  DeploymentCredentialStore,
+  deploymentCredentialStore,
+} = require('./deployment/credentials/DeploymentCredentialStore');
+const {
+  DEPLOYMENT_STATES,
+  DeploymentExecutor,
+  deploymentExecutor,
+} = require('./deployment/execution/DeploymentExecutor');
+const VercelDeployAdapter = require('./deployment/execution/providers/VercelDeployAdapter');
+
 module.exports = {
   // Types & Catalog
   ...types,
@@ -73,4 +122,48 @@ module.exports = {
   createSimulationReport,
   FutureBugSimulator,
   futureBugSimulator,
+
+  // Deployment Intelligence (Phase 1)
+  DEPLOYMENT_STATUS,
+  FINDING_SEVERITY,
+  FINDING_CATEGORY,
+  generateFindingId,
+  createFinding,
+  createDeploymentReport,
+  ProjectDetector,
+  projectDetector,
+  RuleEngine,
+  ruleEngine,
+  DeploymentInspector,
+  deploymentInspector,
+
+  // Platform Compatibility (Phase 2A)
+  SUITABILITY,
+  RECOMMENDATION_CONFIDENCE,
+  PROVIDER_IDS,
+  PROVIDER_DISPLAY_NAMES,
+  COMPUTE_SERVICE_TYPE,
+  DATABASE_STRATEGY,
+  scoreToSuitability,
+  createPlatformRecommendation,
+  PlatformCompatibilityEngine,
+  platformCompatibilityEngine,
+
+  // Deployment Configuration Preview & Generation (Phase 2C)
+  VercelConfigGenerator,
+  RenderConfigGenerator,
+  RailwayConfigGenerator,
+  FlyIoConfigGenerator,
+  NetlifyConfigGenerator,
+  DockerConfigGenerator,
+  DeploymentConfigEngine,
+  deploymentConfigEngine,
+
+  // Deployment Credentials & Execution (Phase 3A)
+  DeploymentCredentialStore,
+  deploymentCredentialStore,
+  DEPLOYMENT_STATES,
+  DeploymentExecutor,
+  deploymentExecutor,
+  VercelDeployAdapter,
 };
