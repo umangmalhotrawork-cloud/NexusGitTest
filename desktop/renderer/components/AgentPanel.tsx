@@ -37,6 +37,7 @@ import ChangeConflictResolver, { ConflictItem } from "./ChangeConflictResolver";
 import CapsuleDropZone from "./CapsuleDropZone";
 import CapsuleImportBanner from "./CapsuleImportBanner";
 import CapsuleImportModal from "./CapsuleImportModal";
+import PreflightModal, { PreflightEstimateData } from "./PreflightModal";
 import { generateContinuationPrompt } from "../utils/capsulePrompt";
 import { useSwarmActivity } from "../hooks/useSwarmActivity";
 import { TerminalDiagnostic } from "../utils/diagnosticParser";
@@ -229,6 +230,13 @@ export default function AgentPanel({
 
   const [continuumActive, setContinuumActive] = useState<boolean>(false);
   const [isActivatingContinuum, setIsActivatingContinuum] = useState<boolean>(false);
+  const [preflightModalOpen, setPreflightModalOpen] = useState<boolean>(false);
+  const [preflightData, setPreflightData] = useState<PreflightEstimateData | null>(null);
+  const [pendingPreflightTask, setPendingPreflightTask] = useState<{
+    prompt: string;
+    providerId?: string;
+    modelId?: string;
+  } | null>(null);
 
   const swarmActivity = useSwarmActivity({
     threadId: harnessThreadId || activeSessionId || null,
@@ -1010,13 +1018,65 @@ export default function AgentPanel({
     setExpandedSteps((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleRunAgent = async (taskToRun?: string, providerIdOverride?: string, modelIdOverride?: string) => {
+  const handlePreflightContinue = () => {
+    setPreflightModalOpen(false);
+    if (pendingPreflightTask) {
+      const { prompt, providerId, modelId } = pendingPreflightTask;
+      setPendingPreflightTask(null);
+      setPreflightData(null);
+      handleRunAgent(prompt, providerId, modelId, true);
+    }
+  };
+
+  const handlePreflightCancel = () => {
+    setPreflightModalOpen(false);
+    setPendingPreflightTask(null);
+    setPreflightData(null);
+  };
+
+  const handleRunAgent = async (
+    taskToRun?: string, 
+    providerIdOverride?: string, 
+    modelIdOverride?: string,
+    skipPreflight: boolean = false
+  ) => {
     if (loading) return; // Prevent concurrent duplicate task triggers
     const activeTask = taskToRun || taskInput;
     if (!activeTask || !activeTask.trim()) return;
 
     const effectiveProvider = providerIdOverride || activeProvider || aiConfig?.activeProvider || "nexus1";
     const effectiveModel = modelIdOverride || activeModel || aiConfig?.activeModel || "gemini-2.5-flash";
+
+    // Advisory Preflight Intelligence Check (Phase 4)
+    if (!skipPreflight) {
+      try {
+        const intelligence = (window as any).electronAPI?.intelligence;
+        if (intelligence?.preflightEstimate) {
+          const estimate = await intelligence.preflightEstimate({
+            userInput: activeTask.trim(),
+            workspacePath,
+            activeFilePath,
+            selectionText: selectionInfo?.text,
+            providerId: effectiveProvider,
+            modelId: effectiveModel,
+            importedCapsule: importedCapsule || null,
+          });
+
+          if (estimate && estimate.shouldShowPreflight) {
+            setPendingPreflightTask({
+              prompt: activeTask.trim(),
+              providerId: effectiveProvider,
+              modelId: effectiveModel,
+            });
+            setPreflightData(estimate);
+            setPreflightModalOpen(true);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("[AgentPanel] Preflight estimate error:", err);
+      }
+    }
 
     // Check if active provider API key is configured
     if (typeof window !== "undefined" && (window as any).electronAPI?.ai?.getConfig) {
@@ -1028,7 +1088,7 @@ export default function AgentPanel({
 
         if (!isConfigured) {
           if (onRequireApiKey) {
-            onRequireApiKey(() => handleRunAgent(activeTask, effectiveProvider, effectiveModel));
+            onRequireApiKey(() => handleRunAgent(activeTask, effectiveProvider, effectiveModel, true));
             return;
           }
         }
@@ -2446,6 +2506,15 @@ export default function AgentPanel({
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onImportSuccess={(cap) => handleCapsuleDropped(cap, cap.source_chat?.title || "Imported Capsule")}
+      />
+
+      {/* NEXUS Advisory Preflight Modal (Phase 4) */}
+      <PreflightModal
+        isOpen={preflightModalOpen}
+        taskPrompt={pendingPreflightTask?.prompt || ""}
+        estimate={preflightData}
+        onContinue={handlePreflightContinue}
+        onCancel={handlePreflightCancel}
       />
     </div>
   );

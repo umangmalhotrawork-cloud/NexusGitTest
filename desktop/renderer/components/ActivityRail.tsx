@@ -5,14 +5,18 @@ import {
   FolderTree,
   Search,
   GitBranch,
+  FlaskConical,
   Bot,
   Layers,
   ShieldCheck,
+  BookmarkCheck,
+  ShieldAlert,
   Terminal,
   Settings,
 } from "lucide-react";
 
-export type ActivityRailItem = "explorer" | "search" | "git" | "agent" | "sessions" | "verification" | "terminal";
+export type ActivityRailItem = "explorer" | "search" | "git" | "tests" | "agent" | "sessions" | "verification" | "decisions" | "simulator" | "terminal";
+
 
 interface ActivityRailProps {
   activeItem: ActivityRailItem | null;
@@ -92,6 +96,23 @@ export default function ActivityRail({
           )}
         </button>
 
+        {/* Tests / Test Explorer */}
+        <button
+          onClick={() => onSelectItem("tests")}
+          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer relative group ${
+            activeItem === "tests"
+              ? "bg-[#121624] text-emerald-400 border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]"
+              : "text-zinc-500 hover:text-emerald-300 hover:bg-[#101016]"
+          }`}
+          title="Test Explorer (⌘4 / ⌘⇧T)"
+        >
+          <FlaskConical className="w-4 h-4" />
+          {activeItem === "tests" && (
+            <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-emerald-400 rounded-r" />
+          )}
+        </button>
+
+
         {/* Agent Panel Toggle */}
         <button
           onClick={onToggleAgentPanel}
@@ -137,6 +158,38 @@ export default function ActivityRail({
           <ShieldCheck className="w-4 h-4" />
           {activeItem === "verification" && (
             <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-emerald-400 rounded-r" />
+          )}
+        </button>
+
+        {/* Decision Replay (Phase 5) */}
+        <button
+          onClick={() => onSelectItem("decisions")}
+          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer relative group ${
+            activeItem === "decisions"
+               ? "bg-[#121624] text-cyan-400 border border-cyan-500/30 shadow-[0_0_8px_rgba(6,182,212,0.2)]"
+               : "text-zinc-500 hover:text-cyan-300 hover:bg-[#101016]"
+          }`}
+          title="Decision Replay & Architectural Memory (⌘7)"
+        >
+          <BookmarkCheck className="w-4 h-4" />
+          {activeItem === "decisions" && (
+            <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-cyan-400 rounded-r" />
+          )}
+        </button>
+
+        {/* Future Bug Simulator (Phase 6) */}
+        <button
+          onClick={() => onSelectItem("simulator")}
+          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer relative group ${
+            activeItem === "simulator"
+               ? "bg-[#241a12] text-amber-400 border border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]"
+               : "text-zinc-500 hover:text-amber-300 hover:bg-[#101016]"
+          }`}
+          title="Future Bug Simulator (⌘8)"
+        >
+          <ShieldAlert className="w-4 h-4" />
+          {activeItem === "simulator" && (
+            <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-amber-400 rounded-r" />
           )}
         </button>
       </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   FolderTree, Search, GitBranch, Layers, ShieldCheck, Settings, 
   Plus, MessageSquare, Plug, ChevronDown, ChevronRight,
-  Folder, Pin, PinOff, MoreVertical, Edit2, Trash2, X, Check, Clock, Bot, Sparkles
+  Folder, Pin, PinOff, MoreVertical, Edit2, Trash2, X, Check, Clock, Bot, Sparkles, BookmarkCheck, ShieldAlert
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
@@ -349,6 +349,36 @@ export default function CodexSidebar({
           >
             <Plug className="w-4 h-4 text-purple-400 shrink-0" />
             <span className="truncate">MCP & Skills Center</span>
+          </button>
+
+          <button
+            onClick={() => onSelectItem("decisions")}
+            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              activeItem === "decisions"
+                ? "bg-[#121624] text-cyan-300 font-bold border border-cyan-500/30"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0 truncate">
+              <BookmarkCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span className="truncate">Decision Replay</span>
+            </div>
+            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘7</span>
+          </button>
+
+          <button
+            onClick={() => onSelectItem("simulator")}
+            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              activeItem === "simulator"
+                ? "bg-[#241a12] text-amber-300 font-bold border border-amber-500/30"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0 truncate">
+              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+              <span className="truncate">Future Bug Simulator</span>
+            </div>
+            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘8</span>
           </button>
         </div>
 

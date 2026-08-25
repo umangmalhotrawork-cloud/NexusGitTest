@@ -11,6 +11,7 @@ import CodexBottomComposer from "./CodexBottomComposer";
 import CapsuleDropZone from "./CapsuleDropZone";
 import CapsuleImportBanner from "./CapsuleImportBanner";
 import CapsuleImportModal from "./CapsuleImportModal";
+import PreflightModal, { PreflightEstimateData } from "./PreflightModal";
 import { generateContinuationPrompt } from "../utils/capsulePrompt";
 
 interface ContinuumSnapshot {
@@ -187,6 +188,9 @@ export default function TaskHome({
   const [chatLoading, setChatLoading] = useState(false);
   const [importedCapsule, setImportedCapsule] = useState<any | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const [preflightModalOpen, setPreflightModalOpen] = useState<boolean>(false);
+  const [preflightData, setPreflightData] = useState<PreflightEstimateData | null>(null);
+  const [pendingTaskPrompt, setPendingTaskPrompt] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -292,11 +296,56 @@ export default function TaskHome({
     };
   }, [workspacePath]);
 
+  const checkAndStartTask = async (promptText: string) => {
+    if (!promptText || !promptText.trim()) return;
+    const cleanPrompt = promptText.trim();
+
+    try {
+      const intelligence = (window as any).electronAPI?.intelligence;
+      if (intelligence?.preflightEstimate) {
+        const estimate = await intelligence.preflightEstimate({
+          userInput: cleanPrompt,
+          workspacePath,
+          providerId: activeProvider,
+          modelId: activeModel,
+          importedCapsule,
+        });
+
+        if (estimate && estimate.shouldShowPreflight) {
+          setPendingTaskPrompt(cleanPrompt);
+          setPreflightData(estimate);
+          setPreflightModalOpen(true);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("[TaskHome] Preflight estimate error:", err);
+    }
+
+    // Conversational statement, greeting, or fallback
+    onStartTask(cleanPrompt, activeProvider, activeModel, importedCapsule);
+  };
+
+  const handlePreflightContinue = () => {
+    setPreflightModalOpen(false);
+    if (pendingTaskPrompt) {
+      onStartTask(pendingTaskPrompt, activeProvider, activeModel, importedCapsule);
+      setPendingTaskPrompt("");
+      setPreflightData(null);
+    }
+  };
+
+  const handlePreflightCancel = () => {
+    setPreflightModalOpen(false);
+    setPendingTaskPrompt("");
+    setPreflightData(null);
+  };
+
   const handlePresetClick = (presetPrompt: string) => {
     if (onPromptChange) {
       onPromptChange(presetPrompt);
     }
-    onStartTask(presetPrompt, activeProvider, activeModel, importedCapsule);
+    checkAndStartTask(presetPrompt);
   };
 
   const handleSelectModel = (providerId: string, modelId?: string) => {
@@ -312,7 +361,7 @@ export default function TaskHome({
 
   const handleComposerSubmit = async (promptText: string) => {
     if (!promptText || !promptText.trim()) return;
-    onStartTask(promptText.trim(), activeProvider, activeModel, importedCapsule);
+    checkAndStartTask(promptText.trim());
   };
 
   const workspaceName = workspacePath ? workspacePath.split("/").pop() || "NEXUS" : "NEXUS";
@@ -484,6 +533,15 @@ export default function TaskHome({
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onImportSuccess={handleCapsuleDropped}
+      />
+
+      {/* NEXUS Advisory Preflight Modal (Phase 4) */}
+      <PreflightModal
+        isOpen={preflightModalOpen}
+        taskPrompt={pendingTaskPrompt}
+        estimate={preflightData}
+        onContinue={handlePreflightContinue}
+        onCancel={handlePreflightCancel}
       />
     </CapsuleDropZone>
   );

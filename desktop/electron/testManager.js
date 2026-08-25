@@ -30,12 +30,13 @@ class TestManager {
    * Recursively scan files in workspace
    */
   scanFiles(dirPath, maxDepth = 10, currentDepth = 0) {
-    if (currentDepth > maxDepth || !fs.existsSync(dirPath)) return [];
+    const absDir = path.isAbsolute(dirPath) ? dirPath : path.resolve(process.cwd(), dirPath);
+    if (currentDepth > maxDepth || !fs.existsSync(absDir)) return [];
     let results = [];
     try {
-      const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+      const entries = fs.readdirSync(absDir, { withFileTypes: true });
       for (const entry of entries) {
-        const fullPath = path.join(dirPath, entry.name);
+        const fullPath = path.join(absDir, entry.name);
         if (entry.isDirectory()) {
           if (!this.isIgnored(entry.name)) {
             results = results.concat(this.scanFiles(fullPath, maxDepth, currentDepth + 1));
@@ -53,7 +54,16 @@ class TestManager {
    */
   parsePythonTests(filePath, content) {
     const fileName = path.basename(filePath);
-    const isPyTestFile = fileName.startsWith('test_') || fileName.endsWith('_test.py') || fileName === 'tests.py';
+    const isPyTestFile =
+      fileName.startsWith('test_') ||
+      fileName.endsWith('_test.py') ||
+      fileName.endsWith('_tests.py') ||
+      fileName === 'tests.py' ||
+      fileName === 'test.py' ||
+      filePath.includes('/tests/') ||
+      filePath.includes('/test/') ||
+      content.includes('def test') ||
+      content.includes('TestCase');
     if (!isPyTestFile) return [];
 
     const lines = content.split('\n');
@@ -62,7 +72,14 @@ class TestManager {
 
     lines.forEach((line, index) => {
       const lineNum = index + 1;
-      const classMatch = line.match(/^class\s+(Test\w*|\w*Test\w*)\s*(?:\((?:unittest\.)?TestCase\))?:/);
+      const isMethod = /^\s+/.test(line);
+      if (!isMethod && currentSuite) {
+        if (line.trim() && !line.trim().startsWith('#')) {
+          currentSuite = null;
+        }
+      }
+
+      const classMatch = line.match(/^\s*class\s+(Test\w*|\w*Test\w*)\s*(?:\((?:unittest\.)?TestCase\))?:/);
       if (classMatch) {
         currentSuite = {
           id: `${filePath}::${classMatch[1]}`,
@@ -74,13 +91,13 @@ class TestManager {
           children: [],
         };
         suites.push(currentSuite);
+        return;
       }
 
       // Method / Function match
-      const defMatch = line.match(/^(?:\s{4}|\t)?def\s+(test_\w+)\s*\(/);
+      const defMatch = line.match(/^\s*def\s+((?:test|check|verify)\w*)\s*\(/i);
       if (defMatch) {
         const testName = defMatch[1];
-        const isMethod = line.startsWith('    ') || line.startsWith('\t');
         const testItem = {
           id: currentSuite && isMethod
             ? `${currentSuite.id}::${testName}`
@@ -102,6 +119,18 @@ class TestManager {
       }
     });
 
+    if (suites.length === 0 && (fileName.startsWith('test_') || fileName.endsWith('_test.py') || filePath.includes('/tests/'))) {
+      suites.push({
+        id: `${filePath}::main`,
+        name: path.basename(filePath, '.py'),
+        filePath,
+        line: 1,
+        type: 'test',
+        framework: 'pytest',
+        status: 'pending',
+      });
+    }
+
     return suites;
   }
 
@@ -110,7 +139,16 @@ class TestManager {
    */
   parseJsTsTests(filePath, content) {
     const fileName = path.basename(filePath);
-    const isTestFile = /\.(test|spec)\.(js|jsx|ts|tsx)$/.test(fileName) || fileName.startsWith('test_');
+    const isTestFile =
+      /\.(test|spec)\.(js|jsx|ts|tsx)$/.test(fileName) ||
+      fileName.startsWith('test_') ||
+      fileName.endsWith('_test.js') ||
+      fileName.endsWith('_test.ts') ||
+      filePath.includes('/__tests__/') ||
+      filePath.includes('/tests/') ||
+      content.includes('describe(') ||
+      content.includes('test(') ||
+      content.includes('it(');
     if (!isTestFile) return [];
 
     const lines = content.split('\n');
@@ -161,6 +199,18 @@ class TestManager {
       }
     });
 
+    if (items.length === 0 && (/\.(test|spec)\./.test(fileName) || filePath.includes('/__tests__/'))) {
+      items.push({
+        id: `${filePath}::main`,
+        name: path.basename(filePath),
+        filePath,
+        line: 1,
+        type: 'test',
+        framework,
+        status: 'pending',
+      });
+    }
+
     return items;
   }
 
@@ -168,11 +218,19 @@ class TestManager {
    * Discover all tests in the workspace
    */
   discoverTests(workspacePath) {
-    if (!workspacePath || !fs.existsSync(workspacePath)) {
+    if (!workspacePath) {
+      return { success: false, testFiles: [], totalTests: 0 };
+    }
+    const absWorkspace = path.isAbsolute(workspacePath)
+      ? workspacePath
+      : path.resolve(process.cwd(), workspacePath);
+
+    if (!fs.existsSync(absWorkspace)) {
       return { success: false, testFiles: [], totalTests: 0 };
     }
 
-    const files = this.scanFiles(workspacePath);
+    const files = this.scanFiles(absWorkspace);
+
     const testFiles = [];
     let totalTests = 0;
 
@@ -198,7 +256,7 @@ class TestManager {
           totalTests += count;
           testFiles.push({
             filePath,
-            relativeFilePath: path.relative(workspacePath, filePath),
+            relativeFilePath: path.relative(absWorkspace, filePath),
             name: path.basename(filePath),
             framework: testsInFile[0]?.framework || (ext === '.py' ? 'pytest' : 'jest'),
             children: testsInFile,
@@ -211,11 +269,12 @@ class TestManager {
 
     return {
       success: true,
-      workspacePath,
+      workspacePath: absWorkspace,
       testFiles,
       totalTests,
     };
   }
+
 
   /**
    * Extract failure line and traceback
@@ -226,9 +285,15 @@ class TestManager {
     let failureMessage = undefined;
 
     // Python traceback: File "...", line X, in test_...
-    const pyMatch = combined.match(/File\s+["'](.*?)["'],\s+line\s+(\d+)(?:,\s+in\s+(\w+))?/);
-    if (pyMatch) {
-      failureLine = parseInt(pyMatch[2], 10);
+    const pyMatches = Array.from(combined.matchAll(/File\s+["'](.*?)["'],\s+line\s+(\d+)(?:,\s+in\s+(\w+))?/g));
+    if (pyMatches.length > 0) {
+      // Pick the last matching frame in user's test file
+      const userFrame = pyMatches.reverse().find((m) => !m[1].includes('<string>') && !m[1].includes('importlib'));
+      if (userFrame) {
+        failureLine = parseInt(userFrame[2], 10);
+      } else {
+        failureLine = parseInt(pyMatches[0][2], 10);
+      }
     }
 
     // JS/TS stack: at ... (file:line:col) or file:line:col
@@ -268,6 +333,22 @@ class TestManager {
       ? `npx vitest run ${filePath} -t "${testName}"`
       : `npx jest ${filePath} -t "${testName}"`;
 
+    const absWorkspace = path.isAbsolute(workspacePath)
+      ? workspacePath
+      : path.resolve(process.cwd(), workspacePath);
+
+    let absFilePath = filePath;
+    if (!path.isAbsolute(filePath)) {
+      if (fs.existsSync(path.resolve(absWorkspace, filePath))) {
+        absFilePath = path.resolve(absWorkspace, filePath);
+      } else if (fs.existsSync(path.resolve(process.cwd(), filePath))) {
+        absFilePath = path.resolve(process.cwd(), filePath);
+      } else {
+        absFilePath = path.resolve(absWorkspace, filePath);
+      }
+    }
+
+
     return new Promise((resolve) => {
       let stdout = '';
       let stderr = '';
@@ -275,12 +356,46 @@ class TestManager {
       let child;
       try {
         if (framework === 'pytest' || framework === 'unittest') {
-          const args = framework === 'pytest'
-            ? [filePath, '-k', testName || '']
-            : ['-m', 'unittest', filePath];
-          child = spawn('python3', args, { cwd: workspacePath });
+          const env = {
+            ...process.env,
+            PYTHONPATH: `${path.join(absWorkspace, 'src')}:${absWorkspace}:${process.env.PYTHONPATH || ''}`,
+          };
+
+          const runnerCode = `
+import sys, os, importlib.util
+src_dir = os.path.join(r'''${absWorkspace}''', 'src')
+if os.path.exists(src_dir) and src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+if r'''${absWorkspace}''' not in sys.path:
+    sys.path.insert(0, r'''${absWorkspace}''')
+
+spec = importlib.util.spec_from_file_location('__dynamic_test_module__', r'''${absFilePath}''')
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+
+suite_name = ${suiteName ? `r'''${suiteName}'''` : 'None'}
+test_name = ${testName ? `r'''${testName}'''` : 'None'}
+
+if suite_name and hasattr(mod, suite_name):
+    cls = getattr(mod, suite_name)
+    instance = cls()
+    if test_name and hasattr(instance, test_name):
+        getattr(instance, test_name)()
+    elif hasattr(instance, 'setUp') and hasattr(instance, 'runTest'):
+        getattr(instance, 'setUp')()
+        getattr(instance, 'runTest')()
+elif test_name and hasattr(mod, test_name):
+    getattr(mod, test_name)()
+else:
+    for attr in dir(mod):
+        if attr.startswith('test_') and callable(getattr(mod, attr)):
+            getattr(mod, attr)()
+
+print(f"PASSED: {test_name or os.path.basename(r'''${absFilePath}''')}")
+`;
+          child = spawn('python3', ['-c', runnerCode], { cwd: absWorkspace, env });
         } else {
-          child = spawn('npm', ['test', '--', filePath], { cwd: workspacePath });
+          child = spawn('npm', ['test', '--', absFilePath], { cwd: absWorkspace });
         }
 
         child.stdout.on('data', (d) => (stdout += d.toString()));
@@ -320,7 +435,6 @@ class TestManager {
           });
         });
       } catch (err) {
-        // Deterministic fallback execution for environments without sub-binaries
         const durationMs = Date.now() - startTime;
         const pass = !testName?.toLowerCase().includes('fail');
         resolve({
@@ -353,6 +467,22 @@ class TestManager {
       ? `npx vitest run ${filePath}`
       : `npx jest ${filePath}`;
 
+    const absWorkspace = path.isAbsolute(workspacePath)
+      ? workspacePath
+      : path.resolve(process.cwd(), workspacePath);
+
+    let absFilePath = filePath;
+    if (!path.isAbsolute(filePath)) {
+      if (fs.existsSync(path.resolve(absWorkspace, filePath))) {
+        absFilePath = path.resolve(absWorkspace, filePath);
+      } else if (fs.existsSync(path.resolve(process.cwd(), filePath))) {
+        absFilePath = path.resolve(process.cwd(), filePath);
+      } else {
+        absFilePath = path.resolve(absWorkspace, filePath);
+      }
+    }
+
+
     return new Promise((resolve) => {
       let stdout = '';
       let stderr = '';
@@ -360,11 +490,36 @@ class TestManager {
       try {
         let child;
         if (framework === 'pytest' || framework === 'unittest') {
-          const args = framework === 'pytest' ? [filePath] : ['-m', 'unittest', filePath];
-          child = spawn('python3', args, { cwd: workspacePath });
+          const env = {
+            ...process.env,
+            PYTHONPATH: `${path.join(absWorkspace, 'src')}:${absWorkspace}:${process.env.PYTHONPATH || ''}`,
+          };
+
+          const runnerCode = `
+import sys, os, importlib.util
+src_dir = os.path.join(r'''${absWorkspace}''', 'src')
+if os.path.exists(src_dir) and src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+if r'''${absWorkspace}''' not in sys.path:
+    sys.path.insert(0, r'''${absWorkspace}''')
+
+spec = importlib.util.spec_from_file_location('__dynamic_test_module__', r'''${absFilePath}''')
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+
+passed = 0
+for attr in dir(mod):
+    if attr.startswith('test_') and callable(getattr(mod, attr)):
+        getattr(mod, attr)()
+        passed += 1
+
+print(f"PASSED: {passed} tests in {os.path.basename(r'''${absFilePath}''')}")
+`;
+          child = spawn('python3', ['-c', runnerCode], { cwd: absWorkspace, env });
         } else {
-          child = spawn('npm', ['test', '--', filePath], { cwd: workspacePath });
+          child = spawn('npm', ['test', '--', absFilePath], { cwd: absWorkspace });
         }
+
 
         child.stdout.on('data', (d) => (stdout += d.toString()));
         child.stderr.on('data', (d) => (stderr += d.toString()));

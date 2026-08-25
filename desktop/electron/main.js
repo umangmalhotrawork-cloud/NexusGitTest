@@ -62,6 +62,8 @@ const { contextCapsuleManager } = require('./capsule/ContextCapsuleManager');
 const { evidenceGraph } = require('./evidence/EvidenceGraph');
 const behavioralDiffEngine = require('../engine/behavioral_diff_engine');
 const aiSystemReasoningEngine = require('../engine/ai_system_reasoning_engine');
+const { preflightEstimator, preflightCostEstimator, softwareEvidenceLayer, breakageCorrelator, decisionReplayEngine } = require('./intelligence');
+
 
 process.on('uncaughtException', (err) => {
   logger.error('MAIN', `Uncaught exception: ${err.message}`, { stack: err.stack });
@@ -75,6 +77,17 @@ process.on('unhandledRejection', (reason) => {
 recoveryStore.startHeartbeat();
 
 let mainWindow = null;
+
+const IGNORED_EXPLORER_DIRS = new Set([
+  'node_modules',
+  '__pycache__',
+  '.next',
+  '.git',
+  'dist',
+  'build',
+  'coverage',
+  'exports',
+]);
 
 function buildFileTree(dirPath) {
   const name = path.basename(dirPath);
@@ -94,7 +107,13 @@ function buildFileTree(dirPath) {
   try {
     const items = fs.readdirSync(dirPath);
     for (const item of items) {
-      if (item.startsWith('.') || item === 'node_modules' || item === '__pycache__' || item === '.next') {
+      if (
+        item.startsWith('.') ||
+        IGNORED_EXPLORER_DIRS.has(item) ||
+        item.startsWith('EchoNullity-Report') ||
+        item.endsWith('.echo-nullity-backup') ||
+        item.endsWith('.bak')
+      ) {
         continue;
       }
       const fullPath = path.join(dirPath, item);
@@ -3708,6 +3727,192 @@ ipcMain.handle('capsule:evaluate-budget', async (_, threadId) => {
     };
   }
 });
+
+// NEXUS Intelligence Layer IPC Handlers (Phase 2 - Read-Only)
+ipcMain.handle('intelligence:preflight-estimate', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    const activeProv = payload.providerId || aiProviderRouter.activeProviderId || 'nexus1';
+    const activeMod = payload.modelId || aiProviderRouter.getSelectedModelId(activeProv) || '';
+
+    return preflightEstimator.estimate({
+      ...payload,
+      workspacePath: ws,
+      providerId: activeProv,
+      modelId: activeMod,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Preflight estimate error: ${err.message}`);
+    return {
+      error: err.message,
+      pricingAvailable: false,
+      estimatedCostUSD: null,
+      estimatedInputTokens: 0,
+      estimatedMaxOutputTokens: 0,
+      budgetStatus: { level: 'NORMAL', percentage: 0 },
+    };
+  }
+});
+
+ipcMain.handle('intelligence:get-evidence', async (_, payload = {}) => {
+  try {
+    const sessionId = payload.sessionId || 'default_session';
+    return softwareEvidenceLayer.getEvidence(sessionId);
+  } catch (err) {
+    return { success: false, data: [], error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:correlate-breakage', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return await breakageCorrelator.correlate({
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Breakage correlation error: ${err.message}`);
+    return {
+      schemaVersion: '1.0.0',
+      failure: { message: err.message },
+      primaryCause: {
+        type: 'ANALYSIS_ERROR',
+        explanation: err.message,
+        confidence: 'LOW',
+        evidence: [],
+      },
+      contributingCauses: [],
+      affectedFiles: [],
+      relatedCommits: [],
+      relatedAiChanges: [],
+      recommendedNextStep: 'Check raw failure output.',
+      generatedAt: Date.now(),
+    };
+  }
+});
+
+// Decision Replay IPC Handlers (Phase 5 - Read-Only Architectural Memory)
+ipcMain.handle('intelligence:get-decisions', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.getDecisions({ ...payload, workspacePath: ws });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Get decisions error: ${err.message}`);
+    return [];
+  }
+});
+
+ipcMain.handle('intelligence:record-decision', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return await decisionReplayEngine.recordDecision(payload.decision || payload, {
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Record decision error: ${err.message}`);
+    return { error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:confirm-decision', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.confirmDecision(payload.decisionId, ws);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Confirm decision error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle('intelligence:reject-decision', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.rejectDecision(payload.decisionId, ws);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Reject decision error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle('intelligence:replay-decision', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.replayDecision(payload.query || '', {
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Replay decision error: ${err.message}`);
+    return {
+      success: false,
+      error: err.message,
+      rationale: 'The available evidence does not establish why this decision was made.',
+    };
+  }
+});
+
+ipcMain.handle('intelligence:search-decisions', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.searchDecisions(payload.query || payload, {
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Search decisions error: ${err.message}`);
+    return [];
+  }
+});
+
+ipcMain.handle('intelligence:detect-decisions', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return decisionReplayEngine.detectCandidateDecisions(payload.text || '', {
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Detect decisions error: ${err.message}`);
+    return [];
+  }
+});
+
+// Future Bug Simulator IPC Handlers (Phase 6)
+ipcMain.handle('intelligence:simulate-bug', async (_, payload = {}) => {
+  try {
+    const { futureBugSimulator } = require('./intelligence');
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return await futureBugSimulator.simulate(payload.question || '', {
+      ...payload,
+      workspacePath: ws,
+    });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Simulate bug error: ${err.message}`);
+    const { createSimulationReport, SIMULATION_SEVERITY, SIMULATION_CONFIDENCE, SIMULATION_MODES, SIMULATION_STATUS } = require('./intelligence');
+    return createSimulationReport({
+      question: payload.question || '',
+      mode: SIMULATION_MODES.STATIC_FORECAST,
+      status: SIMULATION_STATUS.INCONCLUSIVE,
+      summary: `Simulation error: ${err.message}`,
+      severity: SIMULATION_SEVERITY.LOW,
+      confidence: SIMULATION_CONFIDENCE.LOW,
+      limitations: [err.message],
+    });
+  }
+});
+
+ipcMain.handle('intelligence:get-scenario-presets', async () => {
+  try {
+    const { futureBugSimulator } = require('./intelligence');
+    return futureBugSimulator.getScenarioPresets();
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Get scenario presets error: ${err.message}`);
+    return [];
+  }
+});
+
+
 
 
 

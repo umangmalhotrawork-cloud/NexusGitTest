@@ -4,7 +4,7 @@ console.log('[IDE-APP] module evaluated');
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
-  Folder, FolderOpen, FolderTree, FileText, ChevronRight, ChevronDown, Play, Sparkles,
+  Folder, FolderOpen, FolderTree, FileText, ChevronRight, ChevronDown, ChevronLeft, Play, Sparkles,
   Terminal as TerminalIcon, Zap, X, Check, Save, RotateCcw, ArrowRight,
   Command, Search, Cpu, Layers, Activity, BarChart3, CheckCircle2, AlertTriangle, ShieldCheck, ShieldAlert,
   LayoutDashboard, Clock, FileSearch, Network, Download, Flame, Sun, Moon, Copy, GitPullRequest, GitBranch, Compass, Globe, FileCode, Bug, Bot, FlaskConical,
@@ -12,6 +12,7 @@ import {
   Plus, FolderPlus, FilePlus, Edit2, Trash2, MoreVertical, RefreshCw, ExternalLink,
   Columns, Rows, ArrowRightLeft, Hash, Box, Code, Tag
 } from "lucide-react";
+
 
 import ConfirmDialog from "./components/ConfirmDialog";
 import CommandPalette from "./components/CommandPalette";
@@ -72,6 +73,8 @@ import CapabilityCenterPanel from "./components/CapabilityCenterPanel";
 import ActivityRail, { ActivityRailItem } from "./components/ActivityRail";
 import StatusBar from "./components/StatusBar";
 import BottomPanel, { BottomPanelTab } from "./components/BottomPanel";
+import DecisionReplayPanel from "./components/DecisionReplayPanel";
+import FutureBugSimulatorPanel from "./components/FutureBugSimulatorPanel";
 import { useSecurityAudit } from "./hooks/useSecurityAudit";
 import SnapshotPanel from "./components/SnapshotPanel";
 import { useSnapshots } from "./hooks/useSnapshots";
@@ -579,6 +582,33 @@ export default function IDEApp() {
     "demo-workspaces/ai_cart_project": true,
     "demo-workspaces/ai_cart_project/src": true,
   });
+
+  const autoExpandTree = (treeNode: FileNode | any) => {
+    if (!treeNode || typeof treeNode !== "object") return;
+    const updates: Record<string, boolean> = {};
+    const rootPath = treeNode.path || treeNode.name;
+    if (rootPath) updates[rootPath] = true;
+    if (Array.isArray(treeNode.children)) {
+      for (const child of treeNode.children) {
+        if (child && child.isDirectory) {
+          const childName = (child.name || "").toLowerCase();
+          if (childName === "src" || childName === "tests" || childName === "test" || childName === "lib" || childName === "app") {
+            const childPath = child.path || child.name;
+            if (childPath) updates[childPath] = true;
+          }
+        }
+      }
+    }
+    setExpandedFolders((prev) => ({ ...prev, ...updates }));
+  };
+
+  const applyWorkspaceTree = (rawTree: any) => {
+    const tree = rawTree?.tree || rawTree;
+    if (tree && typeof tree === "object" && (tree.name || tree.children || tree.path)) {
+      setFileTree(tree);
+      autoExpandTree(tree);
+    }
+  };
 
   // Synchronize openTabs and activeTabPath with activeGroupId
   useEffect(() => {
@@ -1300,6 +1330,9 @@ export default function IDEApp() {
         if (folderPath) {
           git.refreshStatus(folderPath);
         }
+      } else if (item === "tests") {
+        setExplorerWidth((w) => Math.max(w, 340));
+        testsHook.discoverTests();
       }
     }
   };
@@ -1332,8 +1365,12 @@ export default function IDEApp() {
       if (folderPath) {
         git.refreshStatus(folderPath);
       }
+    } else if (item === "tests") {
+      setExplorerWidth((w) => Math.max(w, 340));
+      testsHook.discoverTests();
     }
   };
+
 
   const startBottomPanelResize = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -2410,13 +2447,14 @@ export default function IDEApp() {
       if (typeof window !== "undefined" && window.electronAPI && window.electronAPI.getDefaultDemoWorkspace) {
         console.log('[IDE-APP] invoking getDefaultDemoWorkspace');
         const demo = await window.electronAPI.getDefaultDemoWorkspace();
-        if (demo && demo.tree) {
-          setFolderPath(demo.folderPath);
-          setFileTree(demo.tree);
-          saveRecentWorkspace(demo.folderPath);
-          addLog(`[DEMO] Loaded workspace from disk: ${demo.folderPath}`);
+        const tree = demo?.tree || demo;
+        if (demo && tree) {
+          setFolderPath(demo.folderPath || "demo-workspaces/ai_cart_project");
+          applyWorkspaceTree(tree);
+          if (demo.folderPath) saveRecentWorkspace(demo.folderPath);
+          addLog(`[DEMO] Loaded workspace from disk: ${demo.folderPath || "demo-workspaces/ai_cart_project"}`);
 
-          const targetPath = `${demo.folderPath}/src/cart_calculator.py`;
+          const targetPath = `${demo.folderPath || "demo-workspaces/ai_cart_project"}/src/cart_calculator.py`;
           console.log('[IDE-APP] invoking readFile for', targetPath);
           const fileRes = await window.electronAPI.readFile(targetPath);
           if (fileRes.success && fileRes.content) {
@@ -2514,9 +2552,10 @@ export default function IDEApp() {
         let folderValid = true;
         if (typeof window !== "undefined" && window.electronAPI && window.electronAPI.readDir) {
           try {
-            const tree = await window.electronAPI.readDir(loadedState.folderPath);
-            if (tree) {
-              setFileTree(tree);
+            const dirRes = await window.electronAPI.readDir(loadedState.folderPath);
+            const tree = dirRes?.tree || dirRes;
+            if (tree && typeof tree === "object" && (tree.name || tree.children || tree.path)) {
+              applyWorkspaceTree(tree);
             } else {
               folderValid = false;
             }
@@ -2740,6 +2779,12 @@ export default function IDEApp() {
             setAiPanelMode("agent");
             setAiPanelOpen((prev) => !prev);
             return;
+          case "workbench.action.decisionReplay":
+            handleOpenActivityItem("decisions");
+            return;
+          case "workbench.action.futureBugSimulator":
+            handleOpenActivityItem("simulator");
+            return;
           case "debug.start":
             handleRunUnifiedDebugger();
             return;
@@ -2813,6 +2858,12 @@ export default function IDEApp() {
           }
           return prev;
         });
+      } else if (isCmd && (key === "7" || key === "&")) {
+        e.preventDefault();
+        handleOpenActivityItem("decisions");
+      } else if (isCmd && (key === "8" || key === "*")) {
+        e.preventDefault();
+        handleOpenActivityItem("simulator");
       } else if (isCmd && key === "k") {
         e.preventDefault();
         setCmdPaletteOpen(true);
@@ -3014,9 +3065,10 @@ export default function IDEApp() {
     try {
       addLog(`[IPC] Opening recent workspace: ${targetFolder}`);
       const dirRes = await window.electronAPI.readDir(targetFolder);
-      if (dirRes && dirRes.tree) {
+      const tree = dirRes?.tree || dirRes;
+      if (tree && typeof tree === "object" && (tree.name || tree.children || tree.path)) {
         setFolderPath(targetFolder);
-        setFileTree(dirRes.tree);
+        applyWorkspaceTree(tree);
         saveRecentWorkspace(targetFolder);
 
         // Auto trigger workspace scan
@@ -3050,9 +3102,10 @@ export default function IDEApp() {
     try {
       addLog(`[WORKSPACE] Switching active workspace to: ${targetFolder}`);
       const dirRes = await window.electronAPI.readDir(targetFolder);
-      if (dirRes && dirRes.tree) {
+      const tree = dirRes?.tree || dirRes;
+      if (tree && typeof tree === "object" && (tree.name || tree.children || tree.path)) {
         setFolderPath(targetFolder);
-        setFileTree(dirRes.tree);
+        applyWorkspaceTree(tree);
         saveRecentWorkspace(targetFolder);
 
         // Clear previous editor tabs
@@ -3096,9 +3149,10 @@ export default function IDEApp() {
     try {
       addLog("[IPC] Invoking dialog:open-folder...");
       const res = await window.electronAPI.openFolder();
-      if (res && res.tree) {
+      const tree = res?.tree || res;
+      if (res && res.folderPath && tree) {
         setFolderPath(res.folderPath);
-        setFileTree(res.tree);
+        applyWorkspaceTree(tree);
         saveRecentWorkspace(res.folderPath);
         addLog(`[IPC] Opened directory: ${res.folderPath}`);
 
@@ -3836,8 +3890,9 @@ export default function IDEApp() {
     if (!target || typeof window === "undefined" || !window.electronAPI?.readDir) return;
     try {
       const dirRes = await window.electronAPI.readDir(target);
-      if (dirRes && dirRes.tree) {
-        setFileTree(dirRes.tree);
+      const tree = dirRes?.tree || dirRes;
+      if (tree && typeof tree === "object" && (tree.name || tree.children || tree.path)) {
+        applyWorkspaceTree(tree);
       }
     } catch (e) {
       console.error("[IDE-APP] Error refreshing tree:", e);
@@ -6827,17 +6882,64 @@ return (
                   }}
                   className="p-2.5 border-b flex items-center justify-between font-mono text-xs"
                 >
-                  <span className="text-zinc-300 font-bold uppercase tracking-wider text-[10px]">
-                    {activeActivityItem === "search"
-                      ? "Search Workspace"
-                      : activeActivityItem === "sessions"
-                      ? "Continuum Sessions"
-                      : activeActivityItem === "verification"
-                      ? "Patch Safety Firewall"
-                      : "Explorer"}
-                  </span>
-                  {activeActivityItem !== "search" && activeActivityItem !== "sessions" && activeActivityItem !== "verification" ? (
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    {(activeActivityItem === "tests" || activeActivityItem === "decisions" || activeActivityItem === "simulator") && (
+                      <button
+                        onClick={() => setActiveActivityItem("explorer")}
+                        className="p-1 -ml-1 rounded hover:bg-[#1a1a24] text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                        title="Back to Explorer"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <span className="text-zinc-300 font-bold uppercase tracking-wider text-[10px] truncate">
+                      {activeActivityItem === "search"
+                        ? "Search Workspace"
+                        : activeActivityItem === "sessions"
+                        ? "Continuum Sessions"
+                        : activeActivityItem === "verification"
+                        ? "Patch Safety Firewall"
+                        : activeActivityItem === "tests"
+                        ? "Test Explorer"
+                        : activeActivityItem === "decisions"
+                        ? "Decision Replay"
+                        : activeActivityItem === "simulator"
+                        ? "Future Bug Simulator"
+                        : "Explorer"}
+                    </span>
+                  </div>
+                  {activeActivityItem === "tests" ? (
                     <div className="flex items-center gap-1 text-zinc-400">
+                      <button
+                        onClick={() => testsHook.discoverTests()}
+                        className="px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 transition-colors cursor-pointer flex items-center gap-1 text-[9.5px] font-bold"
+                        title="Scan Workspace for Tests"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${testsHook.discovering ? "animate-spin" : ""}`} />
+                        <span>Scan Tests</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveActivityItem("explorer")}
+                        className="p-1 rounded hover:bg-[#1a1a24] text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                        title="Back to Explorer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : activeActivityItem !== "search" && activeActivityItem !== "sessions" && activeActivityItem !== "verification" ? (
+
+                    <div className="flex items-center gap-1 text-zinc-400">
+                      <button
+                        onClick={() => {
+                          setActiveActivityItem("tests");
+                          setExplorerWidth((w) => Math.max(w, 340));
+                          testsHook.discoverTests();
+                        }}
+                        className="p-1 rounded hover:bg-[#1a1a24] hover:text-emerald-300 text-emerald-400 transition-colors cursor-pointer"
+                        title="Open Tests / Test Explorer"
+                      >
+                        <FlaskConical className="w-3.5 h-3.5" />
+                      </button>
                       <button
                         onClick={() => setExplorerNewItemModal({ isOpen: true, type: "file", targetDir: folderPath || "", value: "" })}
                         className="p-1 rounded hover:bg-[#1a1a24] hover:text-cyan-300 transition-colors cursor-pointer"
@@ -6866,7 +6968,7 @@ return (
                 </div>
 
                 {/* Sidebar Tool Body */}
-                <div className="flex-1 p-2 overflow-y-auto space-y-1">
+                <div className="flex-1 p-2 overflow-y-auto space-y-1 min-w-0 max-w-full">
                   {activeActivityItem === "search" ? (
                     <SearchPanel
                       query={search.query}
@@ -6940,14 +7042,61 @@ return (
                       onSelectAgentPanel={() => setShowDockedAgentPanel(true)}
                       onSelectFile={(filePath) => {
                         if (filePath) {
-                          const fileName = filePath.split("/").pop() || filePath;
+                           const fileName = filePath.split("/").pop() || filePath;
                           handleOpenFile({ name: fileName, path: filePath, isDirectory: false });
                         }
                       }}
                     />
+                  ) : activeActivityItem === "tests" ? (
+                    <TestExplorerPanel
+                      workspacePath={folderPath || ""}
+                      onOpenTestFile={(file, line) => handleOpenTestFile(file, line)}
+                      onRepairWithAI={handleRepairWithAI}
+                      onDebugTest={handleDebugTest}
+                      onClose={() => setActiveActivityItem("explorer")}
+                      onBack={() => setActiveActivityItem("explorer")}
+                      testsHook={testsHook}
+                    />
+                  ) : activeActivityItem === "decisions" ? (
+                    <DecisionReplayPanel
+                      workspacePath={folderPath || ""}
+                      onBack={() => setActiveActivityItem("explorer")}
+                      onClose={() => setActiveActivityItem("explorer")}
+                      onOpenFile={(filePath) => {
+                        if (filePath) {
+                          const fileName = filePath.split("/").pop() || filePath;
+                          handleOpenFile({ name: fileName, path: filePath, isDirectory: false });
+                        }
+                      }}
+                      onAskAgentToImplement={(prompt) => {
+                        setActiveTaskPrompt(prompt);
+                        setWorkspaceMode("workbench");
+                        setShowDockedAgentPanel(true);
+                      }}
+                    />
+                  ) : activeActivityItem === "simulator" ? (
+                    <FutureBugSimulatorPanel
+                      workspacePath={folderPath || ""}
+                      activeFilePath={activeTabPath || activeTab?.path || undefined}
+                      onBack={() => setActiveActivityItem("explorer")}
+                      onClose={() => setActiveActivityItem("explorer")}
+                      onOpenFile={(filePath) => {
+                        if (filePath) {
+                          const fileName = filePath.split("/").pop() || filePath;
+                          handleOpenFile({ name: fileName, path: filePath, isDirectory: false });
+                        }
+                      }}
+                      onAskAgentToImplement={(prompt) => {
+                        setActiveTaskPrompt(prompt);
+                        setWorkspaceMode("workbench");
+                        setShowDockedAgentPanel(true);
+                      }}
+                    />
+
                   ) : (
                     <>
                       {fileTree && renderTree(fileTree)}
+
 
                       {/* Milestone 32 Document Outline Accordion */}
                       <div className="mt-4 border-t border-[#1f1f1f] pt-2">
@@ -7359,8 +7508,11 @@ return (
                   workspacePath={folderPath || ""}
                   onOpenTestFile={handleOpenTestFile}
                   onRepairWithAI={handleRepairWithAI}
+                  onClose={() => setMainView("editor")}
+                  onBack={() => setMainView("editor")}
                   testsHook={testsHook}
                 />
+
               </div>
               <div className="flex-1 h-full flex flex-col bg-[#050507]">
                 {/* Multi-Tab Bar */}
@@ -8461,6 +8613,8 @@ return (
         onRestoreRecoverySession={handleRestoreSession}
         onDiscardRecoverySession={handleDiscardRecovery}
         onOpenTestExplorer={() => setMainView("test_explorer")}
+        onOpenDecisionReplay={() => handleOpenActivityItem("decisions")}
+        onOpenFutureBugSimulator={() => handleOpenActivityItem("simulator")}
         onRunAllTests={testsHook.runAllTests}
         onRunCurrentFileTests={() => {
           if (activeTab) testsHook.runFileTests(activeTab.path);

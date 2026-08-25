@@ -77,13 +77,22 @@ export function useTests(workspacePath: string) {
   const [coverageLoading, setCoverageLoading] = useState<boolean>(false);
   const [activeOutput, setActiveOutput] = useState<TestOutputLog | null>(null);
 
+  const getWorkspace = useCallback(() => {
+    return (
+      workspacePath ||
+      (typeof window !== "undefined" && (window as any).electronAPI?.workspacePath) ||
+      ""
+    );
+  }, [workspacePath]);
+
   // 1. Discover Tests
   const discoverTests = useCallback(async () => {
-    if (!workspacePath) return;
+    const ws = getWorkspace();
+    if (!ws) return;
     setDiscovering(true);
     try {
       if (typeof window !== "undefined" && (window as any).electronAPI?.tests?.discover) {
-        const res = await (window as any).electronAPI.tests.discover(workspacePath);
+        const res = await (window as any).electronAPI.tests.discover(ws);
         if (res && res.testFiles) {
           setTestFiles(res.testFiles);
           setTotalTests(res.totalTests || 0);
@@ -94,11 +103,12 @@ export function useTests(workspacePath: string) {
     } finally {
       setDiscovering(false);
     }
-  }, [workspacePath]);
+  }, [getWorkspace]);
 
   // 2. Run Single Test
   const runSingleTest = useCallback(
     async (test: TestCase) => {
+      const ws = getWorkspace();
       setRunning(true);
       setActiveOutput({
         command: `Running ${test.name}...`,
@@ -136,7 +146,7 @@ export function useTests(workspacePath: string) {
         let res: any;
         if (typeof window !== "undefined" && (window as any).electronAPI?.tests?.run) {
           res = await (window as any).electronAPI.tests.run({
-            workspacePath,
+            workspacePath: ws,
             testId: test.id,
             filePath: test.filePath,
             suiteName: test.suiteName,
@@ -144,6 +154,7 @@ export function useTests(workspacePath: string) {
             framework: test.framework,
           });
         } else {
+
           res = {
             testId: test.id,
             status: 'passed',
@@ -212,12 +223,13 @@ export function useTests(workspacePath: string) {
         setRunning(false);
       }
     },
-    [workspacePath]
+    [getWorkspace]
   );
 
   // 3. Run File Tests
   const runFileTests = useCallback(
     async (filePath: string, framework: string = 'pytest') => {
+      const ws = getWorkspace();
       setRunning(true);
       setActiveOutput({
         command: `Running file: ${filePath}...`,
@@ -231,7 +243,7 @@ export function useTests(workspacePath: string) {
         let res: any;
         if (typeof window !== "undefined" && (window as any).electronAPI?.tests?.runFile) {
           res = await (window as any).electronAPI.tests.runFile({
-            workspacePath,
+            workspacePath: ws,
             filePath,
             framework,
           });
@@ -283,12 +295,13 @@ export function useTests(workspacePath: string) {
         setRunning(false);
       }
     },
-    [workspacePath]
+    [getWorkspace]
   );
 
   // 4. Run All Workspace Tests
   const runAllTests = useCallback(async () => {
-    if (!workspacePath) return;
+    const ws = getWorkspace();
+    if (!ws) return;
     setRunning(true);
     setActiveOutput({
       command: `Running all workspace tests...`,
@@ -300,7 +313,7 @@ export function useTests(workspacePath: string) {
 
     try {
       if (typeof window !== "undefined" && (window as any).electronAPI?.tests?.runAll) {
-        const res = await (window as any).electronAPI.tests.runAll({ workspacePath });
+        const res = await (window as any).electronAPI.tests.runAll({ workspacePath: ws });
         if (res && res.results) {
           const resMap = new Map<string, any>(res.results.map((r: any) => [r.filePath, r]));
           setTestFiles((prev) =>
@@ -338,15 +351,17 @@ export function useTests(workspacePath: string) {
     } finally {
       setRunning(false);
     }
-  }, [workspacePath]);
+  }, [getWorkspace]);
 
   // 5. Fetch Coverage Report
   const fetchCoverage = useCallback(async () => {
-    if (!workspacePath) return;
+    const ws = getWorkspace();
+    if (!ws) return;
     setCoverageLoading(true);
     try {
       if (typeof window !== "undefined" && (window as any).electronAPI?.tests?.coverage) {
-        const res = await (window as any).electronAPI.tests.coverage({ workspacePath });
+        const res = await (window as any).electronAPI.tests.coverage({ workspacePath: ws });
+
         if (res && res.success) {
           setCoverageData(res);
         }

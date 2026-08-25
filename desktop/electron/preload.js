@@ -401,6 +401,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
     importCapsuleFile: (filePath) => ipcRenderer.invoke('capsule:import-file', filePath),
     evaluateBudget: (threadId) => ipcRenderer.invoke('capsule:evaluate-budget', threadId),
   },
+  intelligence: {
+    preflightEstimate: (payload) => ipcRenderer.invoke('intelligence:preflight-estimate', payload),
+    getEvidence: (sessionId) => ipcRenderer.invoke('intelligence:get-evidence', { sessionId }),
+    correlateBreakage: (payload) => ipcRenderer.invoke('intelligence:correlate-breakage', payload),
+    getDecisions: (payload) => ipcRenderer.invoke('intelligence:get-decisions', payload),
+    recordDecision: (payload) => ipcRenderer.invoke('intelligence:record-decision', payload),
+    confirmDecision: (payload) => ipcRenderer.invoke('intelligence:confirm-decision', payload),
+    rejectDecision: (payload) => ipcRenderer.invoke('intelligence:reject-decision', payload),
+    replayDecision: (payload) => ipcRenderer.invoke('intelligence:replay-decision', payload),
+    searchDecisions: (payload) => ipcRenderer.invoke('intelligence:search-decisions', payload),
+    detectDecisions: (payload) => ipcRenderer.invoke('intelligence:detect-decisions', payload),
+    simulateBug: (payload) => ipcRenderer.invoke('intelligence:simulate-bug', payload),
+    getScenarioPresets: () => ipcRenderer.invoke('intelligence:get-scenario-presets'),
+  },
+
   runPythonFile: (filePath) => ipcRenderer.invoke('python:run-file', filePath),
   onPythonOutput: (callback) => {
     const listener = (_event, payload) => callback(payload);
@@ -408,4 +423,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return () => ipcRenderer.removeListener('python:output', listener);
   },
 });
+
 

@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { 
   FolderOpen, GitBranch, Layers, Plus, ShieldCheck, Cpu, 
-  Send, ArrowRight, Zap, ChevronDown, Check, Key, Upload, Box
+  Send, ArrowRight, Zap, ChevronDown, Check, Key, Upload, Box,
+  Coins, Info
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
@@ -42,6 +43,8 @@ export default function CodexBottomComposer({
   const [approvalMode, setApprovalMode] = useState<"auto" | "strict">("auto");
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showApprovalDropdown, setShowApprovalDropdown] = useState(false);
+  const [preflight, setPreflight] = useState<any>(null);
+  const [showPreflightPopover, setShowPreflightPopover] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
@@ -63,6 +66,34 @@ export default function CodexBottomComposer({
     }
   }, [attachedCapsule]);
 
+  // Debounced Preflight Cost & Context Estimation (Non-Blocking)
+  useEffect(() => {
+    const currentPrompt = promptValue !== undefined ? promptValue : prompt;
+    if (!currentPrompt || !currentPrompt.trim()) {
+      setPreflight(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const intelligence = (window as any).electronAPI?.intelligence;
+        if (intelligence?.preflightEstimate) {
+          const res = await intelligence.preflightEstimate({
+            userInput: currentPrompt.trim(),
+            providerId: activeProvider,
+            modelId: activeModel,
+            importedCapsule: attachedCapsule,
+          });
+          if (res && !res.error) {
+            setPreflight(res);
+          }
+        }
+      } catch (_) {}
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [prompt, promptValue, activeProvider, activeModel, attachedCapsule]);
+
   const approvalTriggerRef = useRef<HTMLButtonElement | null>(null);
   const approvalDropdownRef = useOutsideClick<HTMLDivElement>({
     isOpen: showApprovalDropdown,
@@ -76,6 +107,14 @@ export default function CodexBottomComposer({
     onClose: () => setShowModelDropdown(false),
     triggerRef: modelTriggerRef,
   });
+
+  const preflightTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const preflightPopoverRef = useOutsideClick<HTMLDivElement>({
+    isOpen: showPreflightPopover,
+    onClose: () => setShowPreflightPopover(false),
+    triggerRef: preflightTriggerRef,
+  });
+
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -350,7 +389,121 @@ export default function CodexBottomComposer({
                   </div>
                 )}
               </div>
+
+              {/* Preflight Cost & Context Indicator (Phase 2 - Non-blocking) */}
+              {preflight && preflight.estimatedInputTokens > 0 && (
+                <div className="relative">
+                  <button
+                    ref={preflightTriggerRef}
+                    type="button"
+                    onClick={() => setShowPreflightPopover((prev) => !prev)}
+                    style={{
+                      backgroundColor: "var(--theme-surface-raised, #141420)",
+                      borderColor:
+                        preflight.budgetStatus?.level === "CRITICAL"
+                          ? "rgba(239, 68, 68, 0.4)"
+                          : preflight.budgetStatus?.level === "APPROACHING"
+                          ? "rgba(245, 158, 11, 0.4)"
+                          : "var(--theme-border-card, #242436)",
+                      color:
+                        preflight.budgetStatus?.level === "CRITICAL"
+                          ? "#f87171"
+                          : preflight.budgetStatus?.level === "APPROACHING"
+                          ? "#fbbf24"
+                          : "var(--theme-text-muted, #a1a1aa)",
+                    }}
+                    className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:border-cyan-500/40 transition-all"
+                    title="Click for Preflight Token & Cost Details"
+                  >
+                    <Coins className="w-3 h-3 text-cyan-400 shrink-0" />
+                    <span>
+                      {preflight.estimatedInputTokens >= 1000
+                        ? `~${(preflight.estimatedInputTokens / 1000).toFixed(1)}k tokens`
+                        : `~${preflight.estimatedInputTokens} tokens`}
+                    </span>
+                    {preflight.pricingAvailable && preflight.estimatedCostUSD !== null && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-emerald-400 font-semibold">
+                          {`~$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`}
+                        </span>
+                      </>
+                    )}
+                  </button>
+
+                  {showPreflightPopover && (
+                    <div
+                      ref={preflightPopoverRef}
+                      style={{
+                        backgroundColor: "var(--theme-surface-card, #0c0c14)",
+                        borderColor: "var(--theme-border-card, #242436)",
+                      }}
+                      className="absolute left-0 bottom-9 w-60 border rounded-xl shadow-2xl z-50 p-2.5 space-y-2 text-xs font-mono animate-fadeIn"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/5 pb-1.5">
+                        <span className="text-[11px] font-bold text-zinc-200 flex items-center gap-1">
+                          <Coins className="w-3.5 h-3.5 text-cyan-400" />
+                          Preflight Estimate
+                        </span>
+                        <span
+                          className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold ${
+                            preflight.budgetStatus?.level === "CRITICAL"
+                              ? "bg-red-950/80 text-red-300 border border-red-500/30"
+                              : preflight.budgetStatus?.level === "APPROACHING"
+                              ? "bg-amber-950/80 text-amber-300 border border-amber-500/30"
+                              : "bg-emerald-950/80 text-emerald-300 border border-emerald-500/30"
+                          }`}
+                        >
+                          {preflight.budgetStatus?.level || "NORMAL"}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 text-[11px] text-zinc-300">
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Estimated input:</span>
+                          <span className="font-semibold text-zinc-200">
+                            {preflight.estimatedInputTokens.toLocaleString()} tokens
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Max output:</span>
+                          <span className="font-semibold text-zinc-200">
+                            {preflight.estimatedMaxOutputTokens.toLocaleString()} tokens
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Files:</span>
+                          <span className="font-semibold text-zinc-200">
+                            {preflight.estimatedFiles?.count || 1}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Tool calls:</span>
+                          <span className="font-semibold text-zinc-200">
+                            {preflight.estimatedToolCalls?.min === 0
+                              ? "0"
+                              : `${preflight.estimatedToolCalls?.min}–${preflight.estimatedToolCalls?.max}`}
+                          </span>
+                        </div>
+                        <div className="flex justify-between pt-1 border-t border-white/5">
+                          <span className="text-zinc-500">Estimated cost:</span>
+                          <span className="font-bold text-emerald-400">
+                            {preflight.pricingAvailable && preflight.estimatedCostUSD !== null
+                              ? `$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`
+                              : "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-[9px] text-zinc-600 pt-0.5 text-center">
+                        Deterministic preflight • Zero AI calls
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+
 
             {/* Send Button */}
             <button

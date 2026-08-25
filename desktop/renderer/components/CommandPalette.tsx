@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { 
   Command, Search, FolderOpen, Play, Sparkles, RotateCcw, 
   Sidebar, Terminal, FileText, X, Zap, ShieldAlert, Camera, History,
-  Network, Copy, Compass, GitBranch, Bug, Settings, Sliders
+  Network, Copy, Compass, GitBranch, Bug, Settings, Sliders, BookmarkCheck
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
@@ -29,6 +29,8 @@ interface CommandPaletteProps {
   onRestoreRecoverySession?: () => void;
   onDiscardRecoverySession?: () => void;
   onOpenTestExplorer?: () => void;
+  onOpenDecisionReplay?: () => void;
+  onOpenFutureBugSimulator?: () => void;
   onRunAllTests?: () => void;
   onRunCurrentFileTests?: () => void;
   onOpenProfiler?: () => void;
@@ -86,6 +88,8 @@ export default function CommandPalette({
   onRestoreRecoverySession,
   onDiscardRecoverySession,
   onOpenTestExplorer,
+  onOpenDecisionReplay,
+  onOpenFutureBugSimulator,
   onRunAllTests,
   onRunCurrentFileTests,
   onOpenProfiler,
@@ -512,6 +516,22 @@ export default function CommandPalette({
       category: "Preferences",
       icon: Sliders,
       action: () => { if (onOpenKeybindings) onOpenKeybindings(); onClose(); },
+    },
+    {
+      id: "view-decision-replay",
+      title: "View: Open Decision Replay (Architectural Memory)",
+      category: "View",
+      icon: BookmarkCheck,
+      shortcut: "⌘7",
+      action: () => { if (onOpenDecisionReplay) onOpenDecisionReplay(); onClose(); },
+    },
+    {
+      id: "view-future-bug-simulator",
+      title: "View: Open Future Bug Simulator (Pre-Production Fault Analysis)",
+      category: "View",
+      icon: ShieldAlert,
+      shortcut: "⌘8",
+      action: () => { if (onOpenFutureBugSimulator) onOpenFutureBugSimulator(); onClose(); },
     },
     ...openTabs.map((t) => ({
       id: `tab-${t.path}`,

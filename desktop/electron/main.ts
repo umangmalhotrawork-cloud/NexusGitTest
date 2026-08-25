@@ -6,6 +6,17 @@ import * as http from 'http';
 
 let mainWindow: BrowserWindow | null = null;
 
+const IGNORED_EXPLORER_DIRS = new Set([
+  'node_modules',
+  '__pycache__',
+  '.next',
+  '.git',
+  'dist',
+  'build',
+  'coverage',
+  'exports',
+]);
+
 function buildFileTree(dirPath: string): any {
   const name = path.basename(dirPath);
   let isDirectory = false;
@@ -24,7 +35,13 @@ function buildFileTree(dirPath: string): any {
   try {
     const items = fs.readdirSync(dirPath);
     for (const item of items) {
-      if (item.startsWith('.') || item === 'node_modules' || item === '__pycache__') {
+      if (
+        item.startsWith('.') ||
+        IGNORED_EXPLORER_DIRS.has(item) ||
+        item.startsWith('EchoNullity-Report') ||
+        item.endsWith('.echo-nullity-backup') ||
+        item.endsWith('.bak')
+      ) {
         continue;
       }
       const fullPath = path.join(dirPath, item);

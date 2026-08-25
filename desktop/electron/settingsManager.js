@@ -57,6 +57,8 @@ const DEFAULT_KEYBINDINGS = [
   { commandId: "workbench.action.profiler", title: "View: Toggle Profiler", defaultShortcut: "Cmd+Shift+P", category: "Profiling" },
   { commandId: "workbench.action.securityAudit", title: "View: Toggle Security Audit", defaultShortcut: "Cmd+Shift+S", category: "Security" },
   { commandId: "workbench.action.agentChat", title: "AI: Toggle Agent Panel", defaultShortcut: "Cmd+Shift+I", category: "AI" },
+  { commandId: "workbench.action.decisionReplay", title: "View: Decision Replay", defaultShortcut: "Cmd+7", category: "Intelligence" },
+  { commandId: "workbench.action.futureBugSimulator", title: "View: Future Bug Simulator", defaultShortcut: "Cmd+8", category: "Intelligence" },
   { commandId: "debug.start", title: "Debug: Start / Continue Debugging", defaultShortcut: "F5", category: "Debug" },
   { commandId: "debug.stepOver", title: "Debug: Step Over", defaultShortcut: "F10", category: "Debug" },
   { commandId: "debug.stepInto", title: "Debug: Step Into", defaultShortcut: "F11", category: "Debug" },

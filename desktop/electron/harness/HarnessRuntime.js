@@ -610,6 +610,13 @@ class HarnessRuntime {
         modelHandler: payload.modelHandler,
       });
 
+      // Capture candidate architectural decisions if mentioned in conversation
+      this._captureCandidateDecisions(userInput, {
+        workspacePath,
+        activeFilePath,
+        threadId,
+      });
+
       return {
         success: turnOutcome.success !== false,
         mode: ROUTER_MODES.CONVERSATION,
@@ -673,6 +680,13 @@ class HarnessRuntime {
       isFallback: Boolean(resolved?.isFallback),
     };
 
+    // Capture candidate architectural decisions if mentioned in user prompt
+    this._captureCandidateDecisions(userInput, {
+      workspacePath,
+      activeFilePath,
+      threadId,
+    });
+
     return {
       ...turnOutcome,
       mode: ROUTER_MODES.CODING_TASK,
@@ -685,6 +699,29 @@ class HarnessRuntime {
       response: summaryText,
       execution: turnOutcome.execution || executionMeta,
     };
+  }
+
+  /**
+   * Captures candidate architectural decisions from user text into workspace decision store.
+   * Deterministic, zero-AI, safe fire-and-forget.
+   * 
+   * @param {string} text
+   * @param {Object} context
+   */
+  _captureCandidateDecisions(text, context = {}) {
+    if (!text || typeof text !== 'string' || text.trim().length < 15) return;
+    try {
+      const { decisionReplayEngine } = require('../intelligence');
+      if (decisionReplayEngine && typeof decisionReplayEngine.detectCandidateDecisions === 'function') {
+        const candidates = decisionReplayEngine.detectCandidateDecisions(text, context);
+        if (Array.isArray(candidates) && candidates.length > 0) {
+          const ws = context.workspacePath || process.cwd();
+          for (const cand of candidates) {
+            decisionReplayEngine.recordDecision(cand, { workspacePath: ws }).catch(() => {});
+          }
+        }
+      }
+    } catch (_) {}
   }
 
   // ==========================================

@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Terminal as TerminalIcon, AlertTriangle, AlertCircle, Info, FileCode, FileText, ChevronRight, ShieldCheck, GitBranch, Bot, ChevronDown, X, Minus } from "lucide-react";
+import { Terminal as TerminalIcon, AlertTriangle, AlertCircle, Info, FileCode, FileText, ChevronRight, ShieldCheck, GitBranch, Bot, ChevronDown, X, Minus, HelpCircle } from "lucide-react";
 import TerminalPanel from "./TerminalPanel";
 import { ProblemItem } from "../utils/diagnosticParser";
+import WhyDidThisBreakModal, { BreakageReport } from "./WhyDidThisBreakModal";
 
 export type BottomPanelTab = "terminal" | "problems" | "output" | "verification" | "git" | "agent_logs";
+
 
 interface BottomPanelProps {
   isOpen: boolean;
@@ -63,7 +65,38 @@ export default function BottomPanel({
   const errorCount = useMemo(() => problems.filter((p) => p.severity === "error").length, [problems]);
   const warningCount = useMemo(() => problems.filter((p) => p.severity === "warning").length, [problems]);
 
+  const [breakageModalOpen, setBreakageModalOpen] = useState(false);
+  const [breakageReport, setBreakageReport] = useState<BreakageReport | null>(null);
+  const [breakageLoading, setBreakageLoading] = useState(false);
+  const [breakageError, setBreakageError] = useState<string | null>(null);
+
+  const handleWhyDidThisBreakProblem = async (e: React.MouseEvent, prob: any, fileName: string) => {
+    e.stopPropagation();
+    setBreakageModalOpen(true);
+    setBreakageLoading(true);
+    setBreakageError(null);
+    try {
+      const intelligence = (window as any).electronAPI?.intelligence;
+      if (intelligence?.correlateBreakage) {
+        const report = await intelligence.correlateBreakage({
+          workspacePath: (window as any).electronAPI?.workspacePath || "",
+          rawOutput: prob.message,
+          activeFilePath: fileName,
+          line: prob.line,
+        });
+        setBreakageReport(report);
+      } else {
+        setBreakageError("Intelligence API unavailable");
+      }
+    } catch (err: any) {
+      setBreakageError(err.message || "Failed to analyze problem");
+    } finally {
+      setBreakageLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
+
 
   return (
     <div
@@ -307,9 +340,21 @@ export default function BottomPanel({
                                   </div>
                                 </div>
                               </div>
-                              <span className="text-zinc-500 text-[10px] shrink-0 font-mono">
-                                {prob.line ? `line ${prob.line}${prob.column ? `:${prob.column}` : ""}` : ""}
-                              </span>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {isErr && (
+                                  <button
+                                    onClick={(e) => handleWhyDidThisBreakProblem(e, prob, fileName)}
+                                    className="px-1.5 py-0.5 rounded bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[9.5px] font-bold flex items-center gap-1 cursor-pointer transition-all shadow hover:brightness-110"
+                                    title="Explain why this problem occurred using read-only causal analysis"
+                                  >
+                                    <HelpCircle className="w-2.5 h-2.5 text-cyan-400" />
+                                    <span>Why Did This Break?</span>
+                                  </button>
+                                )}
+                                <span className="text-zinc-500 text-[10px] font-mono">
+                                  {prob.line ? `line ${prob.line}${prob.column ? `:${prob.column}` : ""}` : ""}
+                                </span>
+                              </div>
                             </div>
                           );
                         })}
@@ -336,17 +381,27 @@ export default function BottomPanel({
 
         {activeTab === "verification" && (
           <div className="p-3 overflow-y-auto h-full font-mono text-xs text-zinc-300 space-y-2">
-            <div className="p-2.5 rounded-lg bg-[#0e1410] border border-emerald-500/40 space-y-1">
-              <div className="text-emerald-400 font-bold flex items-center gap-1.5 text-[11px]">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>AI Patch Safety Firewall: ACTIVE</span>
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-[11px]">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Patch Safety & Intent Verification Active</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-[10px]">
+              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
+                <div className="text-zinc-500">Firewall</div>
+                <div className="text-emerald-400 font-bold mt-0.5">{verificationSummary?.firewallStatus || "ACTIVE (ENFORCED)"}</div>
               </div>
-              <p className="text-zinc-400 text-[10.5px]">
-                Deterministic behavioral verification engine actively auditing incoming AST patches and surgical mutations for intent drift.
-              </p>
+              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
+                <div className="text-zinc-500">Intent Drift</div>
+                <div className="text-cyan-400 font-bold mt-0.5">{verificationSummary?.driftStatus || "ZERO_DRIFT"}</div>
+              </div>
+              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
+                <div className="text-zinc-500">Risk Assessment</div>
+                <div className="text-emerald-400 font-bold mt-0.5">{verificationSummary?.riskLevel || "LOW_RISK"}</div>
+              </div>
             </div>
           </div>
         )}
+
 
         {activeTab === "git" && (
           <div className="p-3 overflow-y-auto h-full font-mono text-xs text-zinc-300 space-y-1.5">
@@ -371,6 +426,20 @@ export default function BottomPanel({
           </div>
         )}
       </div>
+
+      {/* Why Did This Break Modal for Problems */}
+      <WhyDidThisBreakModal
+        isOpen={breakageModalOpen}
+        onClose={() => setBreakageModalOpen(false)}
+        report={breakageReport}
+        loading={breakageLoading}
+        error={breakageError}
+        onOpenFile={(file, line) => {
+          if (terminalProps.onOpenLocation) {
+            terminalProps.onOpenLocation(file, line);
+          }
+        }}
+      />
     </div>
   );
 }

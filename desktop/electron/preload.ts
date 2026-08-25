@@ -24,4 +24,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     selectCloneDestination: (defaultName?: string) => ipcRenderer.invoke('github:selectCloneDestination', defaultName),
     cloneRepo: (payload: { repo: any; destinationDir: string }) => ipcRenderer.invoke('github:cloneRepo', payload),
   },
+  intelligence: {
+    preflightEstimate: (payload: any) => ipcRenderer.invoke('intelligence:preflight-estimate', payload),
+    getEvidence: (sessionId?: string) => ipcRenderer.invoke('intelligence:get-evidence', { sessionId }),
+    correlateBreakage: (payload: any) => ipcRenderer.invoke('intelligence:correlate-breakage', payload),
+    getDecisions: (payload?: any) => ipcRenderer.invoke('intelligence:get-decisions', payload),
+    recordDecision: (payload: any) => ipcRenderer.invoke('intelligence:record-decision', payload),
+    confirmDecision: (payload: { decisionId: string; workspacePath?: string }) => ipcRenderer.invoke('intelligence:confirm-decision', payload),
+    rejectDecision: (payload: { decisionId: string; workspacePath?: string }) => ipcRenderer.invoke('intelligence:reject-decision', payload),
+    replayDecision: (payload: { query: string; workspacePath?: string; filePath?: string; symbol?: string; commit?: string }) => ipcRenderer.invoke('intelligence:replay-decision', payload),
+    searchDecisions: (payload: { query?: string; workspacePath?: string }) => ipcRenderer.invoke('intelligence:search-decisions', payload),
+    detectDecisions: (payload: { text: string; workspacePath?: string; activeFilePath?: string; threadId?: string }) => ipcRenderer.invoke('intelligence:detect-decisions', payload),
+  },
 });
+
+

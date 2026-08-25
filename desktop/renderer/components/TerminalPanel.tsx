@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { 
   Terminal as TerminalIcon, Plus, X, RotateCcw, Square, 
   ChevronRight, ChevronDown, ChevronUp, FileText, Bug, Trash2, Copy, Check,
-  Sparkles, AlertTriangle, ExternalLink, Bot, Columns, Rows, Edit2, Maximize2
+  Sparkles, AlertTriangle, ExternalLink, Bot, Columns, Rows, Edit2, Maximize2, HelpCircle
 } from "lucide-react";
 import { TerminalTab, SplitLayout } from "../hooks/useTerminal";
 import { parseDiagnosticFromText, TerminalDiagnostic } from "../utils/diagnosticParser";
+import WhyDidThisBreakModal, { BreakageReport } from "./WhyDidThisBreakModal";
+
 
 interface TerminalPanelProps {
   tabs: TerminalTab[];
@@ -67,7 +69,39 @@ function SingleTerminalPane({
   const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
   const [dismissedDiagnosticSummary, setDismissedDiagnosticSummary] = useState<string | null>(null);
 
+  const [breakageModalOpen, setBreakageModalOpen] = useState(false);
+  const [breakageReport, setBreakageReport] = useState<BreakageReport | null>(null);
+  const [breakageLoading, setBreakageLoading] = useState(false);
+  const [breakageError, setBreakageError] = useState<string | null>(null);
+
+  const handleWhyDidThisBreak = async (diag: TerminalDiagnostic) => {
+    setBreakageModalOpen(true);
+    setBreakageLoading(true);
+    setBreakageError(null);
+    try {
+      const intelligence = (window as any).electronAPI?.intelligence;
+      if (intelligence?.correlateBreakage) {
+        const report = await intelligence.correlateBreakage({
+          workspacePath: tab?.cwd || (window as any).electronAPI?.workspacePath || "",
+          rawOutput: diag.stderr || diag.stdout || diag.stackTrace || diag.summary,
+          activeFilePath: diag.filePath || "",
+          line: diag.line || undefined,
+          command: diag.command,
+        });
+
+        setBreakageReport(report);
+      } else {
+        setBreakageError("Intelligence API unavailable");
+      }
+    } catch (err: any) {
+      setBreakageError(err.message || "Failed to analyze error");
+    } finally {
+      setBreakageLoading(false);
+    }
+  };
+
   const inputRef = useRef<HTMLInputElement>(null);
+
   const outputContainerRef = useRef<HTMLDivElement>(null);
   const userScrolledUpRef = useRef<boolean>(false);
 
@@ -261,6 +295,19 @@ function SingleTerminalPane({
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
+              {/* Flagship Intelligence Action (Phase 3 - Read-Only) */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleWhyDidThisBreak(activeDiagnostic);
+                }}
+                className="px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 text-[9.5px] font-bold flex items-center gap-1 cursor-pointer transition-all shadow hover:brightness-110"
+                title="Perform read-only causal analysis to explain why this error occurred"
+              >
+                <HelpCircle className="w-2.5 h-2.5 text-cyan-400" />
+                <span>Why Did This Break?</span>
+              </button>
+
               {onAskAiAboutDiagnostic && (
                 <button
                   onClick={(e) => {
@@ -273,6 +320,7 @@ function SingleTerminalPane({
                   <span>Ask AI</span>
                 </button>
               )}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -372,9 +420,24 @@ function SingleTerminalPane({
           className="flex-1 bg-transparent text-cyan-200 outline-none font-mono text-xs caret-cyan-400 placeholder:text-zinc-600 focus:outline-none rounded px-1"
         />
       </div>
+
+      {/* Why Did This Break Modal for Terminal Diagnostics */}
+      <WhyDidThisBreakModal
+        isOpen={breakageModalOpen}
+        onClose={() => setBreakageModalOpen(false)}
+        report={breakageReport}
+        loading={breakageLoading}
+        error={breakageError}
+        onOpenFile={(file, line) => {
+          if (onOpenLocation) {
+            onOpenLocation(file, line);
+          }
+        }}
+      />
     </div>
   );
 }
+
 
 export default function TerminalPanel({
   tabs,
