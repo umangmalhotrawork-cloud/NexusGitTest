@@ -1,0 +1,14 @@
+{
+  "name": "nexus-fullstack-deployment-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Controlled full-stack test fixture for NEXUS multi-stage deployment testing",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "build:frontend": "npm --prefix frontend run build"
+  }
+}
