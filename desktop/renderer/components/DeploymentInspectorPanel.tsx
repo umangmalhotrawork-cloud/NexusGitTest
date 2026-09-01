@@ -27,10 +27,31 @@ import {
   Cpu,
   HardDrive,
   Award,
+  Compass,
+  FolderGit2,
+  GitBranch,
 } from "lucide-react";
 import DeploymentConfigPreviewModal from "./DeploymentConfigPreviewModal";
 import DeploymentCredentialsModal from "./DeploymentCredentialsModal";
 import DeploymentConsoleModal from "./DeploymentConsoleModal";
+import DeploymentPlanModal from "./DeploymentPlanModal";
+import DeploymentAdvisorModal from "./DeploymentAdvisorModal";
+
+export interface DeploymentRepositoryContextUI {
+  workspacePath: string;
+  projectRoot: string;
+  gitRoot: string | null;
+  remoteUrl: string | null;
+  branch: string | null;
+  repositorySource: "WORKSPACE_GIT" | "PARENT_GIT" | "EXPLICIT_PROVIDER_REPOSITORY" | "NONE";
+  confidence: "HIGH" | "MEDIUM" | "LOW" | "NONE";
+  hasOwnGit: boolean;
+  isNestedInParentRepo: boolean;
+  parentGitRoot: string | null;
+  parentRepoName: string | null;
+  parentRemoteUrl: string | null;
+  parentBranch: string | null;
+}
 
 export interface DeploymentEvidenceUI {
   file: string;
@@ -105,6 +126,7 @@ export interface DeploymentReportUI {
     detected: boolean;
     framework: string | null;
     buildScript: string | null;
+    buildScriptDescription?: string | null;
     outputDirectory: string | null;
     isStaticExport: boolean;
     isSSR: boolean;
@@ -117,6 +139,8 @@ export interface DeploymentReportUI {
     framework: string | null;
     entryPoint: string | null;
     startCommand: string | null;
+    startCommandDescription?: string | null;
+    buildScriptDescription?: string | null;
     port: number | null;
     portIsDynamic: boolean;
     hostBinding: string | null;
@@ -146,6 +170,7 @@ export interface DeploymentReportUI {
   };
   recommendedProvider?: string | null;
   platformRecommendations?: PlatformRecommendationUI[];
+  deploymentRepositoryContext?: DeploymentRepositoryContextUI | null;
 }
 
 interface DeploymentInspectorPanelProps {
@@ -167,7 +192,10 @@ export default function DeploymentInspectorPanel({
   const [filterSeverity, setFilterSeverity] = useState<"ALL" | "BLOCKER" | "WARNING" | "INFO">("ALL");
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; providerId: string; displayName: string } | null>(null);
   const [credentialsModal, setCredentialsModal] = useState<{ isOpen: boolean; providerId: string; displayName: string } | null>(null);
-  const [deployConsoleModal, setDeployConsoleModal] = useState<{ isOpen: boolean; providerId: string; displayName: string; rootDir?: string | null } | null>(null);
+  const [deployConsoleModal, setDeployConsoleModal] = useState<{ isOpen: boolean; plan?: any; providerId?: string; displayName?: string; rootDir?: string | null; requestId?: string } | null>(null);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showAdvisorModal, setShowAdvisorModal] = useState(false);
+  const [userSelections, setUserSelections] = useState<Record<string, string>>({});
   const [isVercelConnected, setIsVercelConnected] = useState(false);
 
   const checkVercelAuth = useCallback(async () => {
@@ -200,10 +228,25 @@ export default function DeploymentInspectorPanel({
     }
   }, [workspacePath, checkVercelAuth]);
 
+  const loadPersistedSelections = useCallback(async () => {
+    if (!workspacePath) return;
+    try {
+      const electronAPI = (window as any).electronAPI;
+      if (electronAPI?.intelligence?.getDeploymentSelections) {
+        const saved = await electronAPI.intelligence.getDeploymentSelections({ workspacePath });
+        if (saved && typeof saved === "object" && Object.keys(saved).length > 0) {
+          console.log("[DeploymentSelection] [DeploymentInspectorPanel] Loaded persisted selections:", saved);
+          setUserSelections(saved);
+        }
+      }
+    } catch (_) {}
+  }, [workspacePath]);
+
   useEffect(() => {
     runInspection();
     checkVercelAuth();
-  }, [runInspection, checkVercelAuth]);
+    loadPersistedSelections();
+  }, [runInspection, checkVercelAuth, loadPersistedSelections]);
 
   const filteredFindings = (report?.findings || []).filter((f) => {
     if (filterSeverity === "ALL") return true;
@@ -325,14 +368,14 @@ export default function DeploymentInspectorPanel({
     <div className="w-full h-full flex flex-col bg-[#0b0c10] text-zinc-200 font-mono select-none overflow-hidden min-w-0">
       {/* Top Header */}
       <header className="px-4 py-3 sm:px-5 border-b border-zinc-800/80 bg-[#0e1017] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
             <Rocket className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-sm font-bold text-zinc-100 tracking-tight">Deployment Inspector</h1>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/30">
+              <h1 className="text-sm font-bold text-zinc-100 tracking-tight shrink-0">Deployment Inspector</h1>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 shrink-0">
                 Local Intelligence
               </span>
             </div>
@@ -342,7 +385,7 @@ export default function DeploymentInspectorPanel({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
           {report && getStatusBadge(report.overallStatus)}
           <button
             onClick={runInspection}
@@ -350,7 +393,7 @@ export default function DeploymentInspectorPanel({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            <span>{loading ? "Inspecting…" : "Inspect Project"}</span>
+            <span className="shrink-0">{loading ? "Inspecting…" : "Inspect Project"}</span>
           </button>
         </div>
       </header>
@@ -405,6 +448,93 @@ export default function DeploymentInspectorPanel({
               </div>
               <p className="text-xs text-zinc-300 mt-1 leading-relaxed break-words">{report.summary}</p>
             </div>
+          </div>
+        )}
+
+        {/* Project Repository Boundary Card */}
+        {report?.deploymentRepositoryContext && !loading && (
+          <div className="p-3.5 rounded-xl bg-[#101422] border border-cyan-500/30 text-xs space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 font-bold text-zinc-100">
+                <FolderGit2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Project Repository Boundary</span>
+              </div>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  userSelections.executionSource === "LOCAL_WORKSPACE"
+                    ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
+                    : report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT" || report.deploymentRepositoryContext.repositorySource === "EXPLICIT_PROVIDER_REPOSITORY" || userSelections.repository
+                    ? "bg-cyan-950/80 border border-cyan-500/40 text-cyan-300"
+                    : "bg-amber-950/80 border border-amber-500/40 text-amber-300"
+                }`}
+              >
+                {userSelections.executionSource === "LOCAL_WORKSPACE"
+                  ? "LOCAL WORKSPACE"
+                  : userSelections.repository
+                  ? "GIT REMOTE (CONFIGURED)"
+                  : report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT"
+                  ? "WORKSPACE GIT"
+                  : "CONFIGURATION REQUIRED"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono bg-black/40 p-2.5 rounded-lg border border-zinc-800/80 text-zinc-300">
+              <div>
+                <span className="text-zinc-500">Workspace:</span>{" "}
+                <span className="text-zinc-200 font-semibold">{report.deploymentRepositoryContext.workspacePath ? report.deploymentRepositoryContext.workspacePath.split("/").pop() : "Current"}</span>
+              </div>
+              <div>
+                <span className="text-zinc-500">Parent Git repo:</span>{" "}
+                <span className="text-zinc-300">{report.deploymentRepositoryContext.parentRepoName || "None"}</span>
+                {report.deploymentRepositoryContext.isNestedInParentRepo && (
+                  <span className="text-[10px] text-amber-400/90 ml-1.5">(Detected automatically: YES, Not used automatically)</span>
+                )}
+              </div>
+              <div>
+                <span className="text-zinc-500">Deployment repository:</span>{" "}
+                <span className={userSelections.repository || report.deploymentRepositoryContext.remoteUrl ? "text-cyan-300" : "text-amber-300"}>
+                  {userSelections.repository || report.deploymentRepositoryContext.remoteUrl || "Not selected"}
+                </span>
+              </div>
+              <div>
+                <span className="text-zinc-500">Execution source:</span>{" "}
+                <span className="text-zinc-200 font-semibold">
+                  {userSelections.executionSource || (report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT" ? "GIT_REMOTE" : "Not selected")}
+                </span>
+              </div>
+            </div>
+
+            {report.deploymentRepositoryContext.repositorySource === "PARENT_GIT" && !userSelections.repository && userSelections.executionSource !== "LOCAL_WORKSPACE" && (
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <p className="text-[11px] text-zinc-400">
+                  Parent repository will NOT be used automatically for deployment. Choose deployment source:
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const updated = { ...userSelections, executionSource: "LOCAL_WORKSPACE" };
+                      setUserSelections(updated);
+                      const electronAPI = (window as any).electronAPI;
+                      if (electronAPI?.intelligence?.saveDeploymentSelections && workspacePath) {
+                        await electronAPI.intelligence.saveDeploymentSelections({ workspacePath, selections: updated });
+                      }
+                      setShowPlanModal(true);
+                    }}
+                    className="px-2.5 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <span>Use Local Workspace</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPlanModal(true)}
+                    className="px-2.5 py-1 rounded bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <span>Select Git Repository</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -554,14 +684,14 @@ export default function DeploymentInspectorPanel({
         {/* Phase 2B: RECOMMENDED DEPLOYMENT PLATFORMS */}
         {report && !loading && (
           <div className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+              <div className="flex items-center gap-2">
                 <Cloud className="w-4 h-4 text-cyan-400 shrink-0" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200 truncate">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                   Recommended Deployment Platforms
                 </h3>
               </div>
-              <span className="text-[10px] text-zinc-500">
+              <span className="text-[10px] text-zinc-500 shrink-0">
                 Platform Compatibility
               </span>
             </div>
@@ -615,8 +745,22 @@ export default function DeploymentInspectorPanel({
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-zinc-400">
-                              Confidence: <strong className="text-zinc-300 font-semibold">{rec.confidence}</strong>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                              <span className="text-[11px] text-zinc-400">
+                                Confidence: <strong className="text-zinc-300 font-semibold">{rec.confidence}</strong>
+                              </span>
+                              <span className="text-zinc-600">•</span>
+                              <span
+                                className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                  rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify"
+                                    ? "bg-emerald-950/60 border border-emerald-500/40 text-emerald-300"
+                                    : "bg-zinc-800 border border-zinc-700 text-zinc-400"
+                                }`}
+                              >
+                                {rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify"
+                                  ? "Execution: AVAILABLE"
+                                  : "Execution: NOT YET SUPPORTED"}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -742,42 +886,36 @@ export default function DeploymentInspectorPanel({
                         </div>
                       )}
 
-                      {/* Phase 2C & 3A: Config Preview & Deployment Actions */}
+                      {/* Config Preview & Target Selection Actions */}
                       {rec.suitability !== "INCOMPATIBLE" && (
                         <div className="pt-3 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-2.5">
                           <div className="flex items-center gap-2 min-w-0">
-                            {rec.providerId === "vercel" && (
-                              isVercelConnected ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 shrink-0">
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                                    Vercel Connected
-                                  </span>
-                                  <button
-                                    onClick={() => setCredentialsModal({ isOpen: true, providerId: "vercel", displayName: "Vercel" })}
-                                    className="text-[10px] text-zinc-400 hover:text-zinc-200 underline cursor-pointer shrink-0"
-                                  >
-                                    Manage
-                                  </button>
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={() => setCredentialsModal({ isOpen: true, providerId: "vercel", displayName: "Vercel" })}
-                                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 transition-colors cursor-pointer shrink-0"
-                                >
-                                  <Key className="w-3.5 h-3.5 text-cyan-400" />
-                                  Connect Vercel
-                                </button>
-                              )
-                            )}
-                            {rec.providerId !== "vercel" && (
+                            {rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify" ? (
+                              <button
+                                onClick={() => setCredentialsModal({ isOpen: true, providerId: rec.providerId, displayName: rec.displayName })}
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+                              >
+                                <Key className="w-3.5 h-3.5 text-cyan-400" />
+                                Connect {rec.displayName}
+                              </button>
+                            ) : (
                               <span className="text-[10px] text-zinc-500 truncate">
-                                {rec.displayName} config preview
+                                Execution adapter in development
                               </span>
                             )}
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0 ml-auto">
+                            <button
+                              onClick={() => {
+                                setShowPlanModal(true);
+                              }}
+                              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+                            >
+                              <Rocket className="w-3.5 h-3.5" />
+                              Select Target in Plan
+                            </button>
+
                             <button
                               onClick={() => setPreviewModal({ isOpen: true, providerId: rec.providerId, displayName: rec.displayName })}
                               className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-cyan-500/40 transition-colors cursor-pointer shrink-0"
@@ -785,16 +923,6 @@ export default function DeploymentInspectorPanel({
                               <FileCode className="w-3.5 h-3.5 text-cyan-400" />
                               Preview Config
                             </button>
-
-                            {rec.providerId === "vercel" && isVercelConnected && report?.overallStatus !== "BLOCKED" && (
-                              <button
-                                onClick={() => setDeployConsoleModal({ isOpen: true, providerId: "vercel", displayName: "Vercel", rootDir: rec.computeTarget?.rootDir })}
-                                className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer shrink-0"
-                              >
-                                <Rocket className="w-3.5 h-3.5" />
-                                Deploy to Vercel
-                              </button>
-                            )}
                           </div>
                         </div>
                       )}
@@ -837,8 +965,8 @@ export default function DeploymentInspectorPanel({
         {report && !loading && (
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 truncate">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                   Inspection Findings ({report.findings?.length || 0})
                 </h3>
               </div>
@@ -932,12 +1060,32 @@ export default function DeploymentInspectorPanel({
 
       {/* Action Footer (Fixed/Shrink-0 at bottom) */}
       <footer className="px-4 py-3 sm:px-5 border-t border-zinc-800/80 bg-[#0e1017] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 min-w-0">
+        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 shrink-0">
           <Info className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-          <span className="truncate">Deterministic analysis • 0 AI tokens</span>
+          <span>Deterministic analysis • 0 AI tokens</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {workspacePath && (
+            <button
+              onClick={() => setShowAdvisorModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/50 transition-colors shadow-sm cursor-pointer shrink-0"
+            >
+              <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span>Deployment Advisor</span>
+            </button>
+          )}
+
+          {report && report.overallStatus !== "UNKNOWN" && (
+            <button
+              onClick={() => setShowPlanModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors cursor-pointer shrink-0"
+            >
+              <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+              <span>Review Deployment Plan</span>
+            </button>
+          )}
+
           {report && report.findings.some((f) => f.severity === "BLOCKER" || f.severity === "WARNING") && onAskAgentToFix && (
             <button
               onClick={() => {
@@ -978,6 +1126,44 @@ export default function DeploymentInspectorPanel({
         </div>
       </footer>
 
+      {/* Deployment Advisor Modal */}
+      {showAdvisorModal && workspacePath && (
+        <DeploymentAdvisorModal
+          workspacePath={workspacePath}
+          onClose={() => setShowAdvisorModal(false)}
+          onSelectArchitecture={(selections) => {
+            setUserSelections(selections);
+            setShowAdvisorModal(false);
+            setShowPlanModal(true);
+          }}
+          onOpenCustomPlan={() => {
+            setShowAdvisorModal(false);
+            setShowPlanModal(true);
+          }}
+        />
+      )}
+
+      {/* Deployment Plan Modal (Phase 4D) */}
+      {showPlanModal && workspacePath && (
+        <DeploymentPlanModal
+          workspacePath={workspacePath}
+          initialSelections={userSelections}
+          onSelectionsChange={setUserSelections}
+          onClose={() => setShowPlanModal(false)}
+          onOpenPreviewConfig={(providerId, displayName) => {
+            setShowPlanModal(false);
+            setPreviewModal({ isOpen: true, providerId, displayName });
+          }}
+          onOpenCredentials={(providerId, displayName) => {
+            setCredentialsModal({ isOpen: true, providerId, displayName });
+          }}
+          onStartDeployment={(plan, requestId) => {
+            setShowPlanModal(false);
+            setDeployConsoleModal({ isOpen: true, plan, requestId });
+          }}
+        />
+      )}
+
       {/* Deployment Configuration Preview & Generation Modal (Phase 2C) */}
       {previewModal && previewModal.isOpen && workspacePath && (
         <DeploymentConfigPreviewModal
@@ -996,23 +1182,26 @@ export default function DeploymentInspectorPanel({
         <DeploymentCredentialsModal
           providerId={credentialsModal.providerId}
           providerDisplayName={credentialsModal.displayName}
-          onClose={() => setCredentialsModal(null)}
+          onClose={() => {
+            setCredentialsModal(null);
+            runInspection();
+            checkVercelAuth();
+          }}
           onStatusChange={(connected) => {
             setIsVercelConnected(connected);
-            if (connected) {
-              setCredentialsModal(null);
-            }
           }}
         />
       )}
 
-      {/* Deployment Live Console Modal (Phase 3A) */}
+      {/* Deployment Live Console Modal (Phase 4D) */}
       {deployConsoleModal && deployConsoleModal.isOpen && workspacePath && (
         <DeploymentConsoleModal
           workspacePath={workspacePath}
+          plan={deployConsoleModal.plan}
           providerId={deployConsoleModal.providerId}
           providerDisplayName={deployConsoleModal.displayName}
           rootDir={deployConsoleModal.rootDir}
+          requestId={deployConsoleModal.requestId}
           onClose={() => setDeployConsoleModal(null)}
           onFinished={() => {
             runInspection();

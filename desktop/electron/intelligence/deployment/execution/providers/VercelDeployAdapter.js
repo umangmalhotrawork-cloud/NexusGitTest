@@ -13,13 +13,16 @@
 const fs = require('fs');
 const path = require('path');
 
+const { remoteRepositoryPreflight: defaultRemoteRepositoryPreflight } = require('../../preflight/RemoteRepositoryPreflight');
+
 const VERCEL_URL_REGEX = /https:\/\/[a-zA-Z0-9_\-.]+\.vercel\.app/g;
 const GENERIC_HTTPS_URL_REGEX = /https:\/\/[a-zA-Z0-9_\-.]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?/g;
 
 class VercelDeployAdapter {
-  constructor() {
+  constructor(options = {}) {
     this.providerId = 'vercel';
     this.displayName = 'Vercel';
+    this.remoteRepositoryPreflight = options.remoteRepositoryPreflight || defaultRemoteRepositoryPreflight;
   }
 
   /**
@@ -70,20 +73,57 @@ class VercelDeployAdapter {
   }
 
   /**
-   * Prepares sanitized environment variables with decrypted token
-   * @param {string} decryptedToken
+   * Prepares sanitized environment variables with decrypted token and dynamic inputs
+   * @param {string|Object} decryptedToken - token string or { token: string }
+   * @param {Object} [dynamicInputs] - e.g. { NEXT_PUBLIC_API_URL: '...' }
    * @returns {Object}
    */
-  prepareEnvironment(decryptedToken) {
-    if (!decryptedToken || typeof decryptedToken !== 'string') {
+  prepareEnvironment(decryptedToken, dynamicInputs = {}) {
+    let token = null;
+    if (typeof decryptedToken === 'string') {
+      token = decryptedToken;
+    } else if (decryptedToken && typeof decryptedToken === 'object') {
+      token = decryptedToken.token;
+    }
+
+    if (!token || typeof token !== 'string' || !token.trim()) {
       throw new Error('Vercel token is missing or invalid.');
     }
 
+    const cleanDynamicInputs = {};
+    if (dynamicInputs && typeof dynamicInputs === 'object') {
+      for (const [k, v] of Object.entries(dynamicInputs)) {
+        if (typeof v === 'string') {
+          cleanDynamicInputs[k] = v;
+        }
+      }
+    }
+
+    const existingPath = process.env.PATH || '';
+    const augmentedPath = process.platform === 'win32'
+      ? existingPath
+      : ['/opt/homebrew/bin', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', existingPath].filter(Boolean).join(':');
+
+    const os = require('os');
+    const vercelConfigDir = path.join(os.tmpdir(), 'nexus-vercel-config');
+    try {
+      if (!fs.existsSync(vercelConfigDir)) {
+        fs.mkdirSync(vercelConfigDir, { recursive: true });
+      }
+    } catch (_) {}
+
     return {
       ...process.env,
-      VERCEL_TOKEN: decryptedToken,
+      PATH: augmentedPath,
+      VERCEL_TOKEN: token.trim(),
+      VERCEL_GLOBAL_CONFIG_PATH: vercelConfigDir,
+      XDG_DATA_HOME: vercelConfigDir,
+      XDG_CONFIG_HOME: vercelConfigDir,
+      VERCEL_DISABLE_UPDATE_CHECK: '1',
+      ...cleanDynamicInputs,
       CI: '1',
       FORCE_COLOR: '0',
+      NO_COLOR: '1',
     };
   }
 
@@ -114,15 +154,18 @@ class VercelDeployAdapter {
   extractDeploymentUrl(outputText = '') {
     if (!outputText || typeof outputText !== 'string') return null;
 
+    // Strip ANSI color escape codes and formatting sequences
+    const sanitized = outputText.replace(/\u001b\[[0-9;]*[a-zA-Z]/g, '').trim();
+
     // 1. Search for vercel.app domains
-    const vercelMatches = outputText.match(VERCEL_URL_REGEX);
+    const vercelMatches = sanitized.match(VERCEL_URL_REGEX);
     if (vercelMatches && vercelMatches.length > 0) {
       // Return last matching URL as production alias is usually printed last
       return vercelMatches[vercelMatches.length - 1];
     }
 
     // 2. Search for generic https URLs if vercel.app is custom-aliased
-    const genericMatches = outputText.match(GENERIC_HTTPS_URL_REGEX);
+    const genericMatches = sanitized.match(GENERIC_HTTPS_URL_REGEX);
     if (genericMatches && genericMatches.length > 0) {
       const candidate = genericMatches[genericMatches.length - 1];
       if (candidate.startsWith('https://') && !candidate.includes('vercel.com/docs') && !candidate.includes('github.com')) {
@@ -131,6 +174,19 @@ class VercelDeployAdapter {
     }
 
     return null;
+  }
+
+  /**
+   * Common adapter contract output extractor
+   * @param {string} outputText
+   * @param {Object} [responseData]
+   * @returns {Object} { liveUrl: string|null }
+   */
+  extractOutputs(outputText = '', responseData = null) {
+    const liveUrl = this.extractDeploymentUrl(outputText);
+    return {
+      liveUrl,
+    };
   }
 }
 

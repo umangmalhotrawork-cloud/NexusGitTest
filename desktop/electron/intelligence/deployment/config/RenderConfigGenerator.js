@@ -11,6 +11,13 @@
 
 const secretFilter = require('../../../../security/secretFilter');
 
+function cleanNpmCommand(command, fallback) {
+  const value = typeof command === 'string' ? command.trim() : '';
+  if (!value) return fallback;
+  const match = value.match(/^(npm\s+(?:start|run\s+[A-Za-z0-9:_-]+))\s+\([^()\r\n]+\)$/i);
+  return match ? match[1] : value;
+}
+
 class RenderConfigGenerator {
   constructor() {
     this.providerId = 'render';
@@ -61,8 +68,7 @@ class RenderConfigGenerator {
       // Build Command
       let buildCmd = 'npm install';
       if (backend.buildScript) {
-        buildCmd = backend.buildScript.replace(/^npm run build \((.*)\)$/, '$1').trim();
-        if (!buildCmd.startsWith('npm')) buildCmd = `npm run build`;
+        buildCmd = cleanNpmCommand(backend.buildScript, 'npm run build');
         generatedFromEvidence.push(`backend.buildScript: ${buildCmd}`);
       } else if (isPython) {
         buildCmd = 'pip install -r requirements.txt';
@@ -71,7 +77,7 @@ class RenderConfigGenerator {
       lines.push(`    buildCommand: ${buildCmd}`);
 
       // Start Command
-      let startCmd = backend.startCommand ? backend.startCommand.replace(/^npm start \((.*)\)$/, '$1').trim() : (isNode ? 'npm start' : 'python main.py');
+      let startCmd = cleanNpmCommand(backend.startCommand, isNode ? 'npm start' : 'python main.py');
       lines.push(`    startCommand: ${startCmd}`);
       if (backend.startCommand) {
         generatedFromEvidence.push(`backend.startCommand: ${backend.startCommand}`);
@@ -111,7 +117,7 @@ class RenderConfigGenerator {
         generatedFromEvidence.push(`computeTarget.rootDir: ${rootDir}`);
       }
 
-      const buildCmd = frontend.buildScript ? frontend.buildScript.replace(/^npm run build \((.*)\)$/, '$1').trim() : 'npm run build';
+      const buildCmd = cleanNpmCommand(frontend.buildScript, 'npm run build');
       lines.push(`    buildCommand: ${buildCmd}`);
       generatedFromEvidence.push(`frontend.buildScript: ${buildCmd}`);
 

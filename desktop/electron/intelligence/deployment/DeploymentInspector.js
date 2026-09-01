@@ -18,6 +18,8 @@ const path = require('path');
 const { projectDetector: defaultProjectDetector } = require('./ProjectDetector');
 const { ruleEngine: defaultRuleEngine } = require('./RuleEngine');
 const { platformCompatibilityEngine: defaultPlatformCompatibilityEngine } = require('./PlatformCompatibilityEngine');
+const { remoteRepositoryPreflight: defaultRemoteRepositoryPreflight } = require('./preflight/RemoteRepositoryPreflight');
+const { deploymentSelectionStore: defaultSelectionStore } = require('./persistence/DeploymentSelectionStore');
 const {
   DEPLOYMENT_STATUS,
   createDeploymentReport,
@@ -28,6 +30,8 @@ class DeploymentInspector {
     this.projectDetector = options.projectDetector || defaultProjectDetector;
     this.ruleEngine = options.ruleEngine || defaultRuleEngine;
     this.platformCompatibilityEngine = options.platformCompatibilityEngine || defaultPlatformCompatibilityEngine;
+    this.remoteRepositoryPreflight = options.remoteRepositoryPreflight || defaultRemoteRepositoryPreflight;
+    this.selectionStore = options.selectionStore || defaultSelectionStore;
   }
 
   /**
@@ -73,7 +77,22 @@ class DeploymentInspector {
     // 2. Run deterministic rule engine
     const findings = this.ruleEngine.evaluate(detectionResult);
 
-    // 3. Assemble base deployment report
+    // Resolve user persisted selections to merge with options
+    const stored = this.selectionStore ? this.selectionStore.getWorkspaceSelections(normWorkspace) : null;
+    const userSelections = stored?.selections || {};
+    const mergedOptions = {
+      ...userSelections,
+      ...options,
+      repository: options.repository || userSelections.repository || userSelections.selectedRepo,
+      branch: options.branch || userSelections.branch || userSelections.selectedBranch,
+      rootDir: options.rootDir || userSelections.rootDir || userSelections.selectedRootDir,
+      executionSource: options.executionSource || userSelections.executionSource,
+    };
+
+    // 3. Resolve deployment repository boundary context
+    const repoContext = this.remoteRepositoryPreflight.resolveDeploymentRepositoryContext(normWorkspace, mergedOptions);
+
+    // 4. Assemble base deployment report
     const baseReport = createDeploymentReport({
       workspacePath: normWorkspace,
       inspectedAt: Date.now(),
@@ -83,9 +102,10 @@ class DeploymentInspector {
       database: detectionResult.database,
       findings,
       environmentVariables: detectionResult.environmentVariables,
+      deploymentRepositoryContext: repoContext,
     });
 
-    // 4. Run deterministic platform compatibility engine
+    // 5. Run deterministic platform compatibility engine
     const compatResult = this.platformCompatibilityEngine.evaluate(baseReport);
     baseReport.recommendedProvider = compatResult.recommendedProvider;
     baseReport.platformRecommendations = compatResult.recommendations;

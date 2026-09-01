@@ -78,6 +78,25 @@ const SECRET_PATTERNS = [
   },
 ];
 
+const dynamicSecrets = new Set();
+
+/**
+ * Registers a dynamic runtime secret to be redacted from text
+ * @param {string} secret
+ */
+function addSecret(secret) {
+  if (typeof secret === "string" && secret.trim().length >= 4) {
+    dynamicSecrets.add(secret.trim());
+  }
+}
+
+/**
+ * Clears all dynamically registered secrets
+ */
+function clearDynamicSecrets() {
+  dynamicSecrets.clear();
+}
+
 // RegEx matching .env file lines with sensitive keys
 const ENV_SECRET_LINE_REGEX = /^(?:[A-Z0-9_]*(?:SECRET|PASSWORD|PASS|TOKEN|KEY|CREDENTIAL|AUTH|PRIVATE)[A-Z0-9_]*)\s*=\s*.+$/gim;
 
@@ -88,6 +107,13 @@ const ENV_SECRET_LINE_REGEX = /^(?:[A-Z0-9_]*(?:SECRET|PASSWORD|PASS|TOKEN|KEY|C
 function sanitizeString(text) {
   if (typeof text !== "string" || !text) return text;
   let sanitized = text;
+
+  // 0. Redact registered dynamic secrets
+  for (const sec of dynamicSecrets) {
+    if (sanitized.includes(sec)) {
+      sanitized = sanitized.split(sec).join("[REDACTED_SECRET:DYNAMIC]");
+    }
+  }
 
   // 1. Check for multi-line .env content
   sanitized = sanitized.replace(ENV_SECRET_LINE_REGEX, (line) => {
@@ -162,4 +188,6 @@ module.exports = {
   sanitize,
   sanitizeString,
   sanitizeObject,
+  addSecret,
+  clearDynamicSecrets,
 };

@@ -1,15 +1,21 @@
 /**
- * NEXUS INTELLIGENCE LAYER — DEPLOYMENT CREDENTIAL STORE (Phase 3A)
+ * NEXUS INTELLIGENCE LAYER — DEPLOYMENT CREDENTIAL STORE (Phase 3A & 4B)
  * 
- * Secure credential storage for deployment providers (Vercel):
+ * Secure credential storage for deployment providers (Vercel, Render, Netlify, Railway, Fly.io):
  * - Uses Electron safeStorage (macOS Keychain, Linux Secret Service, Windows DPAPI).
  * - Fails closed if secure storage is unavailable. Never stores plaintext tokens.
  * - Stored in app.getPath('userData')/nexus_deployment_vault.json.
  * - Never returns raw or decrypted tokens across IPC boundaries.
+ * 
+ * STRICT INVARIANTS:
+ * - 0 LLM tokens, 100% deterministic local encryption/decryption.
+ * - Fails closed on unavailable encryption or invalid schemas.
+ * - Renderer IPC methods return only boolean connection metadata.
  */
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const secretFilter = require('../../../../security/secretFilter');
 
 let electronApp = null;
@@ -21,11 +27,20 @@ try {
   electronSafeStorage = electron.safeStorage;
 } catch (e) {}
 
+const ALLOWED_PROVIDERS = new Set([
+  'vercel',
+  'render',
+  'netlify',
+  'railway',
+  'flyio',
+]);
+
 class DeploymentCredentialStore {
   constructor(options = {}) {
     this.app = options.app || electronApp;
     this.safeStorage = options.safeStorage || electronSafeStorage;
     this.customVaultPath = options.vaultPath || null;
+    this._resolvedVaultPath = null;
   }
 
   /**
@@ -45,6 +60,26 @@ class DeploymentCredentialStore {
   }
 
   /**
+   * Tests if a directory exists and is writable
+   * @param {string} dir
+   * @returns {boolean}
+   */
+  isDirWritable(dir) {
+    if (!dir || typeof dir !== 'string') return false;
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const testFile = path.join(dir, `.nexus-write-test-${process.pid}-${Date.now()}`);
+      fs.writeFileSync(testFile, 'ok', 'utf8');
+      fs.unlinkSync(testFile);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /**
    * Resolves persistent vault JSON file path
    * @returns {string}
    */
@@ -52,15 +87,42 @@ class DeploymentCredentialStore {
     if (this.customVaultPath) {
       return this.customVaultPath;
     }
+    if (this._resolvedVaultPath) {
+      return this._resolvedVaultPath;
+    }
+
+    const candidateDirs = [];
+    if (process.env.NEXUS_USERDATA_DIR) {
+      candidateDirs.push(process.env.NEXUS_USERDATA_DIR);
+    }
+    if (process.env.ECHO_RECOVERY_DIR) {
+      candidateDirs.push(process.env.ECHO_RECOVERY_DIR);
+    }
+
     if (this.app && typeof this.app.getPath === 'function') {
       try {
         const userData = this.app.getPath('userData');
-        if (userData) {
-          return path.join(userData, 'nexus_deployment_vault.json');
-        }
+        if (userData) candidateDirs.push(userData);
       } catch (e) {}
     }
-    return path.join(process.cwd(), '.nexus-recovery', 'nexus_deployment_vault.json');
+
+    try {
+      const homeDir = os.homedir();
+      candidateDirs.push(path.join(homeDir, 'Library', 'Application Support', 'echo-nullity'));
+      candidateDirs.push(path.join(homeDir, 'Library', 'Application Support', 'NEXUS'));
+    } catch (_) {}
+
+    candidateDirs.push(path.join(process.cwd(), '.nexus-recovery'));
+
+    for (const dir of candidateDirs) {
+      if (this.isDirWritable(dir)) {
+        this._resolvedVaultPath = path.join(dir, 'nexus_deployment_vault.json');
+        return this._resolvedVaultPath;
+      }
+    }
+
+    this._resolvedVaultPath = path.join(process.cwd(), '.nexus-recovery', 'nexus_deployment_vault.json');
+    return this._resolvedVaultPath;
   }
 
   /**
@@ -98,25 +160,60 @@ class DeploymentCredentialStore {
   }
 
   /**
-   * Saves provider credential securely
-   * @param {string} providerId - Supported provider ('vercel')
-   * @param {Object} credential - { token: string }
-   * @returns {Object} { success: boolean, providerId: string, isConnected: boolean }
+   * Validates and extracts provider-specific token string
+   * @param {string} providerId
+   * @param {Object} credential
+   * @returns {string}
    */
-  saveCredential(providerId, credential) {
-    if (providerId !== 'vercel') {
+  validateCredentialPayload(providerId, credential) {
+    if (!ALLOWED_PROVIDERS.has(providerId)) {
       throw new Error(`Unsupported deployment provider: ${providerId}`);
     }
 
-    if (!credential || typeof credential !== 'object' || typeof credential.token !== 'string' || !credential.token.trim()) {
-      throw new Error('Invalid credential: a non-empty token string is required.');
+    if (!credential || typeof credential !== 'object') {
+      throw new Error('Invalid credential: a non-empty credential object is required.');
     }
+
+    let rawToken = null;
+
+    if (providerId === 'vercel') {
+      rawToken = credential.token;
+      if (!rawToken || typeof rawToken !== 'string' || !rawToken.trim()) {
+        throw new Error('Invalid credential: a non-empty token string is required.');
+      }
+    } else if (providerId === 'render') {
+      rawToken = credential.apiKey || credential.token;
+      if (!rawToken || typeof rawToken !== 'string' || !rawToken.trim()) {
+        throw new Error('Invalid credential: Render requires a non-empty apiKey string.');
+      }
+    } else if (providerId === 'netlify') {
+      rawToken = credential.authToken || credential.token;
+      if (!rawToken || typeof rawToken !== 'string' || !rawToken.trim()) {
+        throw new Error('Invalid credential: Netlify requires a non-empty authToken string.');
+      }
+    } else if (providerId === 'railway' || providerId === 'flyio') {
+      rawToken = credential.token || credential.apiKey;
+      if (!rawToken || typeof rawToken !== 'string' || !rawToken.trim()) {
+        throw new Error(`Invalid credential: ${providerId} requires a non-empty token string.`);
+      }
+    }
+
+    return rawToken.trim();
+  }
+
+  /**
+   * Saves provider credential securely
+   * @param {string} providerId - Supported provider ('vercel', 'render', 'netlify', 'railway', 'flyio')
+   * @param {Object} credential - { token | apiKey | authToken: string }
+   * @returns {Object} { success: boolean, providerId: string, isConnected: boolean }
+   */
+  saveCredential(providerId, credential) {
+    const token = this.validateCredentialPayload(providerId, credential);
 
     if (!this.isEncryptionAvailable()) {
       throw new Error('SECURE_STORAGE_UNAVAILABLE: Secure credential storage (Electron safeStorage) is unavailable on this system.');
     }
 
-    const token = credential.token.trim();
     const encryptedHex = this.safeStorage.encryptString(token).toString('hex');
 
     const vault = this.readVault();
@@ -138,10 +235,10 @@ class DeploymentCredentialStore {
    * Retrieves decrypted credential strictly for internal main-process execution
    * NEVER expose this method across IPC to the renderer!
    * @param {string} providerId
-   * @returns {Object|null} { token: string } or null
+   * @returns {Object|null}
    */
   getCredential(providerId) {
-    if (providerId !== 'vercel') {
+    if (!ALLOWED_PROVIDERS.has(providerId)) {
       return null;
     }
 
@@ -160,6 +257,13 @@ class DeploymentCredentialStore {
       if (!decryptedToken || typeof decryptedToken !== 'string') {
         return null;
       }
+
+      if (providerId === 'render') {
+        return { apiKey: decryptedToken, token: decryptedToken };
+      }
+      if (providerId === 'netlify') {
+        return { authToken: decryptedToken, token: decryptedToken };
+      }
       return { token: decryptedToken };
     } catch (err) {
       return null;
@@ -172,7 +276,7 @@ class DeploymentCredentialStore {
    * @returns {Object} { success: boolean, providerId: string, isConnected: false }
    */
   removeCredential(providerId) {
-    if (providerId !== 'vercel') {
+    if (!ALLOWED_PROVIDERS.has(providerId)) {
       throw new Error(`Unsupported deployment provider: ${providerId}`);
     }
 
@@ -195,7 +299,7 @@ class DeploymentCredentialStore {
    * @returns {Object} { providerId: string, isConnected: boolean }
    */
   getAuthStatus(providerId) {
-    if (providerId !== 'vercel') {
+    if (!ALLOWED_PROVIDERS.has(providerId)) {
       return { providerId, isConnected: false };
     }
 
@@ -216,6 +320,7 @@ class DeploymentCredentialStore {
 const deploymentCredentialStore = new DeploymentCredentialStore();
 
 module.exports = {
+  ALLOWED_PROVIDERS,
   DeploymentCredentialStore,
   deploymentCredentialStore,
 };

@@ -138,7 +138,9 @@ class RenderEvaluator {
       if (frontend.framework === 'nextjs' && !frontend.isStaticExport) {
         score = 80;
         serviceType = COMPUTE_SERVICE_TYPE.WEB_SERVICE;
-        startCommand = 'npm start (next start)';
+        // Keep Render's executable command clean; framework detail belongs in
+        // recommendation text, not in the shell command.
+        startCommand = 'npm start';
         reasons.push('Next.js SSR can run on Render as a continuous Node Web Service.');
       } else {
         score = 88;

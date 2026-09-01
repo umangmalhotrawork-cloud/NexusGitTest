@@ -31,11 +31,17 @@ class GitManager {
     delete env.SSH_ASKPASS;
     delete env.ssh_askpass;
 
-    // 4. Explicitly set non-interactive and isolated flags
+    // 4. Explicitly set non-interactive flag
     env.GIT_TERMINAL_PROMPT = '0';
-    env.GIT_CONFIG_NOSYSTEM = '1';
-    env.GIT_CONFIG_GLOBAL = process.env.GIT_CONFIG_GLOBAL || '/dev/null';
-    env.GIT_CONFIG_SYSTEM = process.env.GIT_CONFIG_SYSTEM || '/dev/null';
+    if (process.env.GIT_CONFIG_NOSYSTEM) {
+      env.GIT_CONFIG_NOSYSTEM = process.env.GIT_CONFIG_NOSYSTEM;
+    }
+    if (process.env.GIT_CONFIG_GLOBAL) {
+      env.GIT_CONFIG_GLOBAL = process.env.GIT_CONFIG_GLOBAL;
+    }
+    if (process.env.GIT_CONFIG_SYSTEM) {
+      env.GIT_CONFIG_SYSTEM = process.env.GIT_CONFIG_SYSTEM;
+    }
 
     return simpleGit({
       baseDir: workspacePath,

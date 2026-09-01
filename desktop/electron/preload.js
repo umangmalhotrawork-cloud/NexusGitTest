@@ -415,6 +415,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     simulateBug: (payload) => ipcRenderer.invoke('intelligence:simulate-bug', payload),
     getScenarioPresets: () => ipcRenderer.invoke('intelligence:get-scenario-presets'),
     inspectDeployment: (payload) => ipcRenderer.invoke('intelligence:inspect-deployment', payload),
+    getDeploymentAdvice: (payload) => ipcRenderer.invoke('intelligence:get-deployment-advice', payload),
+    validateSelectedArchitecture: (payload) => ipcRenderer.invoke('intelligence:validate-selected-architecture', payload),
+    generateDeploymentPlan: (payload) => ipcRenderer.invoke('intelligence:generate-deployment-plan', payload),
+    saveDeploymentSelections: (payload) => ipcRenderer.invoke('intelligence:save-deployment-selections', payload),
+    getDeploymentSelections: (payload) => ipcRenderer.invoke('intelligence:get-deployment-selections', payload),
+    clearDeploymentSelections: (payload) => ipcRenderer.invoke('intelligence:clear-deployment-selections', payload),
     generateDeploymentConfig: (payload) => ipcRenderer.invoke('intelligence:generate-deployment-config', payload),
     applyDeploymentConfig: (payload) => ipcRenderer.invoke('intelligence:apply-deployment-config', payload),
     // Deployment Credentials & Execution (Phase 3A)
@@ -433,6 +439,25 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.on('deployment:state-change', listener);
       return () => ipcRenderer.removeListener('deployment:state-change', listener);
     },
+    // Deployment Multi-Stage Orchestration (Phase 4C)
+    startOrchestration: (payload) => ipcRenderer.invoke('intelligence:start-orchestration', payload),
+    cancelOrchestration: (orchestrationId) => ipcRenderer.invoke('intelligence:cancel-orchestration', { orchestrationId }),
+    onOrchestrationState: (callback) => {
+      const listener = (_event, payload) => callback(payload);
+      ipcRenderer.on('orchestration:state-change', listener);
+      return () => ipcRenderer.removeListener('orchestration:state-change', listener);
+    },
+    onOrchestrationStageState: (callback) => {
+      const listener = (_event, payload) => callback(payload);
+      ipcRenderer.on('orchestration:stage-state', listener);
+      return () => ipcRenderer.removeListener('orchestration:stage-state', listener);
+    },
+    onOrchestrationLogChunk: (callback) => {
+      const listener = (_event, payload) => callback(payload);
+      ipcRenderer.on('orchestration:log-chunk', listener);
+      return () => ipcRenderer.removeListener('orchestration:log-chunk', listener);
+    },
+    diagnoseDeploymentFailure: (payload) => ipcRenderer.invoke('intelligence:diagnose-deployment-failure', payload),
   },
 
   runPythonFile: (filePath) => ipcRenderer.invoke('python:run-file', filePath),

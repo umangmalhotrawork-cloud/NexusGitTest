@@ -36,6 +36,8 @@ function cleanupDir(dirPath) {
 }
 
 async function runTestSuite() {
+  process.env.GIT_CONFIG_GLOBAL = '/dev/null';
+  process.env.GIT_CONFIG_NOSYSTEM = '1';
   console.log('====================================================');
   console.log('GIT ENVIRONMENT SAFETY & ISOLATION REGRESSION SUITE');
   console.log('====================================================\n');

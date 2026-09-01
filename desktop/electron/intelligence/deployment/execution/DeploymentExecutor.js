@@ -32,14 +32,23 @@ const DEPLOYMENT_STATES = Object.freeze({
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED',
   CANCELLED: 'CANCELLED',
+  TIMED_OUT: 'TIMED_OUT',
 });
+
+const TERMINAL_DEPLOYMENT_STATES = new Set([
+  DEPLOYMENT_STATES.SUCCESS,
+  DEPLOYMENT_STATES.FAILED,
+  DEPLOYMENT_STATES.CANCELLED,
+  DEPLOYMENT_STATES.TIMED_OUT,
+]);
 
 class DeploymentExecutor {
   constructor(options = {}) {
     this.credentialStore = options.credentialStore || defaultCredentialStore;
     this.spawnFn = options.spawn || spawn;
+    this.timeoutMs = options.timeoutMs || DEFAULT_DEPLOYMENT_TIMEOUT_MS;
     this.adapters = new Map();
-    this.activeDeployments = new Map(); // deploymentId -> { child, workspacePath, status, timer, cancel }
+    this.activeDeployments = new Map(); // deploymentId -> { child, workspacePath, status, timer, cancel, startedAt, lastActivityAt }
     this.registerDefaultAdapters();
   }
 
@@ -50,6 +59,71 @@ class DeploymentExecutor {
   registerAdapter(adapter) {
     if (adapter && typeof adapter.providerId === 'string') {
       this.adapters.set(adapter.providerId, adapter);
+    }
+  }
+
+  /**
+   * Checks if an OS process PID is alive
+   * @param {number} pid
+   * @returns {boolean}
+   */
+  isPidAlive(pid) {
+    if (!pid || typeof pid !== 'number') return false;
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /**
+   * Checks if a deployment record is active and non-stale
+   * @param {Object} dep
+   * @returns {boolean}
+   */
+  isDeploymentActive(dep) {
+    if (!dep || typeof dep !== 'object') return false;
+
+    if (TERMINAL_DEPLOYMENT_STATES.has(dep.status)) {
+      return false;
+    }
+
+    if (dep.child) {
+      if (dep.child.exitCode !== null || dep.child.killed) {
+        return false;
+      }
+      if (dep.child.pid && !this.isPidAlive(dep.child.pid)) {
+        return false;
+      }
+      return true;
+    }
+
+    const now = Date.now();
+    const startTime = dep.startedAt || 0;
+    const lastActivity = dep.lastActivityAt || startTime;
+    const timeout = this.timeoutMs || DEFAULT_DEPLOYMENT_TIMEOUT_MS;
+
+    if (startTime > 0 && now - lastActivity > timeout) {
+      return false;
+    }
+
+    return dep.status !== DEPLOYMENT_STATES.IDLE;
+  }
+
+  /**
+   * Auto-cleans terminal or stale deployment records
+   * @param {string} [workspacePath]
+   */
+  cleanupStaleDeployments(workspacePath) {
+    const resolved = workspacePath ? path.resolve(workspacePath) : null;
+    for (const [id, dep] of this.activeDeployments.entries()) {
+      if (!resolved || dep.workspacePath === resolved) {
+        if (!this.isDeploymentActive(dep)) {
+          if (dep.timer) clearTimeout(dep.timer);
+          this.activeDeployments.delete(id);
+        }
+      }
     }
   }
 
@@ -78,9 +152,11 @@ class DeploymentExecutor {
       return { valid: false, error: `Workspace directory does not exist: ${resolvedWorkspace}` };
     }
 
-    // 1. Check for running deployment
+    // 1. Check for running deployment (and clean stale ones)
+    this.cleanupStaleDeployments(resolvedWorkspace);
+
     for (const [id, dep] of this.activeDeployments.entries()) {
-      if (dep.workspacePath === resolvedWorkspace && dep.status !== DEPLOYMENT_STATES.SUCCESS && dep.status !== DEPLOYMENT_STATES.FAILED && dep.status !== DEPLOYMENT_STATES.CANCELLED) {
+      if (dep.workspacePath === resolvedWorkspace && this.isDeploymentActive(dep)) {
         return { valid: false, error: `A deployment is already active for this workspace (ID: ${id}).` };
       }
     }
@@ -180,9 +256,10 @@ class DeploymentExecutor {
 
         try {
           child.kill('SIGTERM');
-          setTimeout(() => {
+          const killTimer = setTimeout(() => {
             try { child.kill('SIGKILL'); } catch (_) {}
           }, 3000);
+          if (killTimer && typeof killTimer.unref === 'function') killTimer.unref();
         } catch (_) {}
       };
 
@@ -193,23 +270,30 @@ class DeploymentExecutor {
         emit('state-change', { state: DEPLOYMENT_STATES.FAILED, error: 'DEPLOYMENT_TIMEOUT: Deployment exceeded 15 minutes limit.' });
         try {
           child.kill('SIGTERM');
-          setTimeout(() => {
+          const killTimer = setTimeout(() => {
             try { child.kill('SIGKILL'); } catch (_) {}
           }, 3000);
+          if (killTimer && typeof killTimer.unref === 'function') killTimer.unref();
         } catch (_) {}
       }, options.timeoutMs || DEFAULT_DEPLOYMENT_TIMEOUT_MS);
 
-      // Track active deployment
-      this.activeDeployments.set(deploymentId, {
+      const now = Date.now();
+      const depRecord = {
         child,
         workspacePath: preflight.workspacePath,
         status: currentState,
         timer,
         cancel: cancelFn,
-      });
+        startedAt: now,
+        lastActivityAt: now,
+      };
+
+      // Track active deployment
+      this.activeDeployments.set(deploymentId, depRecord);
 
       // Process stdout
       child.stdout.on('data', (chunk) => {
+        depRecord.lastActivityAt = Date.now();
         const rawText = chunk.toString('utf8');
         accumulatedOutput += rawText;
         const sanitized = secretFilter.sanitizeString(rawText);
@@ -223,12 +307,14 @@ class DeploymentExecutor {
         const nextPhase = adapter.parseProgressState(sanitized);
         if (nextPhase && nextPhase !== currentState && !isCancelled && !isTimedOut) {
           currentState = nextPhase;
+          depRecord.status = currentState;
           emit('state-change', { state: currentState, message: `Status: ${currentState}` });
         }
       });
 
       // Process stderr
       child.stderr.on('data', (chunk) => {
+        depRecord.lastActivityAt = Date.now();
         const rawText = chunk.toString('utf8');
         accumulatedOutput += rawText;
         const sanitized = secretFilter.sanitizeString(rawText);

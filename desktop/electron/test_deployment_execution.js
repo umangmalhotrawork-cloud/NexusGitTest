@@ -505,6 +505,203 @@ async function runExecutionTests() {
     recordFail('Test 20: Active tracking cleanup', err);
   }
 
+  // -------------------------------------------------------------------------
+  // TEST 21: Render Workspace / Owner ID Dynamic Resolution
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const mockFetch = async (url, opts) => {
+      assert.ok(url.includes('/v1/owners'), 'Must query /v1/owners');
+      assert.strictEqual(opts.headers.Authorization, 'Bearer rnd_valid_test_key');
+      return {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify([
+          {
+            cursor: 'cur-1',
+            owner: {
+              id: 'tea-nexus-prod-team',
+              name: 'Nexus Cloud Team',
+              email: 'team@nexus.internal',
+              type: 'team',
+            },
+          },
+        ]),
+      };
+    };
+
+    const ownerInfo = await renderAdapter.resolveOwnerId('rnd_valid_test_key', mockFetch);
+    assert.strictEqual(ownerInfo.ownerId, 'tea-nexus-prod-team');
+    assert.strictEqual(ownerInfo.ownerName, 'Nexus Cloud Team');
+    assert.strictEqual(ownerInfo.ownerType, 'team');
+
+    recordPass('Test 21: RenderDeployAdapter dynamically resolves active workspace owner ID');
+  } catch (err) {
+    recordFail('Test 21: Render workspace resolution', err);
+  }
+
+  // -------------------------------------------------------------------------
+  // TEST 22: Render Workspace Resolution Error Handling & Redaction
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const secretApiKey = 'rnd_super_secret_key_99999999999999999999';
+    let caughtError = null;
+
+    const mockFailingFetch = async () => {
+      return {
+        ok: false,
+        status: 401,
+        text: async () => `Unauthorized: key ${secretApiKey} is invalid`,
+      };
+    };
+
+    try {
+      await renderAdapter.resolveOwnerId(secretApiKey, mockFailingFetch);
+    } catch (e) {
+      caughtError = e;
+    }
+
+    assert.ok(caughtError, 'Must throw on failed workspace resolution');
+    assert.ok(caughtError.message.includes('RENDER_WORKSPACE_RESOLUTION_FAILED'), 'Must contain deterministic error code');
+    assert.strictEqual(caughtError.message.includes(secretApiKey), false, 'Must never leak raw API key in error message');
+
+    recordPass('Test 22: Workspace resolution failure produces RENDER_WORKSPACE_RESOLUTION_FAILED without secret leakage');
+  } catch (err) {
+    recordFail('Test 22: Render resolution error & redaction', err);
+  }
+
+  // -------------------------------------------------------------------------
+  // TEST 23: Render Service Creation Payload Construction with ownerId
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const payload = renderAdapter.prepareServicePayload(
+      {
+        serviceId: 'svc_backend',
+        serviceName: 'nexus-backend-test',
+        rootDir: 'backend',
+        repo: 'https://github.com/test-org/test-nexus-backend.git',
+        branch: 'main',
+        buildCommand: 'npm run build',
+        startCommand: 'npm start',
+      },
+      'tea-workspace-456',
+      { DATABASE_URL: 'postgres://admin:pass@db:5432/nexus' }
+    );
+
+    assert.strictEqual(payload.type, 'web_service');
+    assert.strictEqual(payload.name, 'nexus-backend-test');
+    assert.strictEqual(payload.ownerId, 'tea-workspace-456');
+    assert.strictEqual(payload.repo, 'https://github.com/test-org/test-nexus-backend.git');
+    assert.strictEqual(payload.branch, 'main');
+    assert.strictEqual(payload.rootDir, 'backend');
+    assert.strictEqual(payload.serviceDetails.rootDir, 'backend');
+    assert.strictEqual(payload.serviceDetails.buildCommand, 'npm run build');
+    assert.strictEqual(payload.serviceDetails.startCommand, 'npm start');
+    assert.ok(Array.isArray(payload.serviceDetails.envVars), 'Must format envVars as array');
+    assert.strictEqual(payload.serviceDetails.envVars[0].key, 'DATABASE_URL');
+    assert.strictEqual(payload.serviceDetails.envVars[0].value, 'postgres://admin:pass@db:5432/nexus');
+
+    recordPass('Test 23: Render service creation payload contains ownerId, repo, branch, serviceDetails, and dynamic envVars');
+  } catch (err) {
+    recordFail('Test 23: Render service payload construction', err);
+  }
+
+  // -------------------------------------------------------------------------
+  // TEST 24: resolveGitMetadata extracts remote URL and branch from .git directory
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const mockGitDir = path.join(tempDir, 'mock-git-repo');
+    const dotGit = path.join(mockGitDir, '.git');
+    fs.mkdirSync(dotGit, { recursive: true });
+
+    fs.writeFileSync(path.join(dotGit, 'config'), `
+[core]
+	repositoryformatversion = 0
+[remote "origin"]
+	url = git@github.com:acme-corp/nexus-backend.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+`);
+    fs.writeFileSync(path.join(dotGit, 'HEAD'), 'ref: refs/heads/feature/deploy-v2\n');
+
+    const meta = renderAdapter.resolveGitMetadata(mockGitDir);
+    assert.ok(meta, 'Git metadata must be resolved');
+    assert.strictEqual(meta.repoUrl, 'https://github.com/acme-corp/nexus-backend.git', 'Must normalize SSH URL to HTTPS');
+    assert.strictEqual(meta.branch, 'feature/deploy-v2', 'Must extract active branch from HEAD');
+
+    recordPass('Test 24: RenderDeployAdapter resolveGitMetadata extracts remote URL and branch from local .git');
+  } catch (err) {
+    recordFail('Test 24: resolveGitMetadata extraction', err);
+  }
+
+  // -------------------------------------------------------------------------
+  // TEST 25: Missing remote Git repo throws RENDER_REPOSITORY_REQUIRED
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const nonGitDir = path.join(tempDir, 'non-git-dir');
+    fs.mkdirSync(nonGitDir, { recursive: true });
+
+    let thrown = null;
+    try {
+      renderAdapter.prepareServicePayload(
+        {
+          serviceId: 'svc_backend',
+          serviceName: 'nexus-backend-test',
+          rootDir: 'backend',
+          workspacePath: nonGitDir,
+        },
+        'usr-workspace-123'
+      );
+    } catch (e) {
+      thrown = e;
+    }
+
+    assert.ok(thrown, 'Must throw when repo is missing for Node runtime');
+    assert.ok(thrown.message.includes('RENDER_REPOSITORY_REQUIRED'), 'Must fail with RENDER_REPOSITORY_REQUIRED');
+
+    recordPass('Test 25: Missing remote Git repository throws RENDER_REPOSITORY_REQUIRED without fabricating URL');
+  } catch (err) {
+    recordFail('Test 25: Missing repo error rejection', err);
+  }
+
+  // -------------------------------------------------------------------------
+  // TEST 26: rootDir remains backend and is never overwritten
+  // -------------------------------------------------------------------------
+  try {
+    const { RenderDeployAdapter } = require('./intelligence');
+    const renderAdapter = new RenderDeployAdapter();
+
+    const payload = renderAdapter.prepareServicePayload(
+      {
+        serviceId: 'svc_backend',
+        rootDir: 'backend',
+        repo: 'https://github.com/org/nexus-app.git',
+        branch: 'main',
+      },
+      'usr-123'
+    );
+
+    assert.strictEqual(payload.rootDir, 'backend');
+    assert.strictEqual(payload.serviceDetails.rootDir, 'backend');
+
+    recordPass('Test 26: rootDir remains backend in top-level payload and serviceDetails');
+  } catch (err) {
+    recordFail('Test 26: rootDir preservation', err);
+  }
+
   // Cleanup
   fs.rmSync(tempDir, { recursive: true, force: true });
 

@@ -81,6 +81,48 @@ const {
   deploymentExecutor,
 } = require('./deployment/execution/DeploymentExecutor');
 const VercelDeployAdapter = require('./deployment/execution/providers/VercelDeployAdapter');
+const RenderDeployAdapter = require('./deployment/execution/providers/RenderDeployAdapter');
+const NetlifyDeployAdapter = require('./deployment/execution/providers/NetlifyDeployAdapter');
+
+const {
+  DeploymentSelectionStore,
+  deploymentSelectionStore,
+} = require('./deployment/persistence/DeploymentSelectionStore');
+const {
+  SERVICE_TYPE,
+  DATABASE_TECH,
+  ProjectTopologyDetector,
+  projectTopologyDetector,
+} = require('./deployment/topology/ProjectTopologyDetector');
+const {
+  PLAN_STATUS,
+  DeploymentPlanGenerator,
+  deploymentPlanGenerator,
+} = require('./deployment/planning/DeploymentPlanGenerator');
+
+const {
+  HealthCheckClient,
+  healthCheckClient,
+} = require('./deployment/orchestration/HealthCheckClient');
+const {
+  STAGE_STATUS,
+  ORCHESTRATION_STATUS,
+  DeploymentOrchestrator,
+  deploymentOrchestrator,
+} = require('./deployment/orchestration/DeploymentOrchestrator');
+const {
+  RISK_SEVERITY,
+  RISK_CODES,
+  BILLING_TIER,
+  PROVIDER_CAPABILITIES,
+  DeploymentAdvisor,
+  deploymentAdvisor,
+} = require('./deployment/advisory/DeploymentAdvisor');
+const {
+  FAILURE_CATEGORY,
+  DeploymentFailureDiagnoser,
+  deploymentFailureDiagnoser,
+} = require('./deployment/diagnostics/DeploymentFailureDiagnoser');
 
 module.exports = {
   // Types & Catalog
@@ -159,11 +201,45 @@ module.exports = {
   DeploymentConfigEngine,
   deploymentConfigEngine,
 
-  // Deployment Credentials & Execution (Phase 3A)
+  // Deployment Credentials & Execution (Phase 3A & 4B)
   DeploymentCredentialStore,
   deploymentCredentialStore,
   DEPLOYMENT_STATES,
   DeploymentExecutor,
   deploymentExecutor,
   VercelDeployAdapter,
+  RenderDeployAdapter,
+  NetlifyDeployAdapter,
+
+  // Deployment Selections & Multi-Service Topology (Phase 4A)
+  DeploymentSelectionStore,
+  deploymentSelectionStore,
+  SERVICE_TYPE,
+  DATABASE_TECH,
+  ProjectTopologyDetector,
+  projectTopologyDetector,
+  PLAN_STATUS,
+  DeploymentPlanGenerator,
+  deploymentPlanGenerator,
+
+  // Multi-Stage Orchestration & Health Checks (Phase 4C)
+  HealthCheckClient,
+  healthCheckClient,
+  STAGE_STATUS,
+  ORCHESTRATION_STATUS,
+  DeploymentOrchestrator,
+  deploymentOrchestrator,
+
+  // Deployment Advisor (Final Product Workflow)
+  RISK_SEVERITY,
+  RISK_CODES,
+  BILLING_TIER,
+  PROVIDER_CAPABILITIES,
+  DeploymentAdvisor,
+  deploymentAdvisor,
+
+  // Deployment Failure Diagnostics
+  FAILURE_CATEGORY,
+  DeploymentFailureDiagnoser,
+  deploymentFailureDiagnoser,
 };

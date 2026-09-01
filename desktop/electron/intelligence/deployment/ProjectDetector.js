@@ -147,9 +147,43 @@ class ProjectDetector {
       }
     }
 
-    // Scan common monorepo subdirectories (apps/*, packages/*, services/*)
+    // Scan common monorepo subdirectories (apps/*, packages/*, services/*, frontend, backend, client, server)
     const candidateDirs = ['apps', 'packages', 'services'];
     const discoveredApps = [];
+
+    // Also include direct directories from package.json workspaces (e.g. "frontend", "backend")
+    if (rootPkg && rootPkg.pkg.workspaces) {
+      const wsList = Array.isArray(rootPkg.pkg.workspaces)
+        ? rootPkg.pkg.workspaces
+        : (Array.isArray(rootPkg.pkg.workspaces.packages) ? rootPkg.pkg.workspaces.packages : []);
+      for (const w of wsList) {
+        if (typeof w === 'string' && !w.includes('*')) {
+          const directDir = path.join(workspacePath, w);
+          if (fs.existsSync(directDir) && (fs.existsSync(path.join(directDir, 'package.json')) || fs.existsSync(path.join(directDir, 'requirements.txt')))) {
+            if (!discoveredApps.includes(w)) {
+              discoveredApps.push(w);
+              isMonorepo = true;
+            }
+          }
+        }
+      }
+    }
+
+    // Check direct standalone frontend / backend folders
+    const directCandidates = ['frontend', 'backend', 'client', 'server', 'web', 'api'];
+    for (const dDir of directCandidates) {
+      const fullDirect = path.join(workspacePath, dDir);
+      if (fs.existsSync(fullDirect) && fs.statSync(fullDirect).isDirectory()) {
+        if (fs.existsSync(path.join(fullDirect, 'package.json')) ||
+            fs.existsSync(path.join(fullDirect, 'pyproject.toml')) ||
+            fs.existsSync(path.join(fullDirect, 'requirements.txt'))) {
+          if (!discoveredApps.includes(dDir)) {
+            discoveredApps.push(dDir);
+            isMonorepo = true;
+          }
+        }
+      }
+    }
 
     for (const cDir of candidateDirs) {
       const fullDir = path.join(workspacePath, cDir);
@@ -160,8 +194,10 @@ class ProjectDetector {
           if (fs.existsSync(path.join(workspacePath, appRel, 'package.json')) ||
               fs.existsSync(path.join(workspacePath, appRel, 'pyproject.toml')) ||
               fs.existsSync(path.join(workspacePath, appRel, 'requirements.txt'))) {
-            discoveredApps.push(appRel);
-            isMonorepo = true;
+            if (!discoveredApps.includes(appRel)) {
+              discoveredApps.push(appRel);
+              isMonorepo = true;
+            }
           }
         }
       }
@@ -197,6 +233,7 @@ class ProjectDetector {
 
     let framework = null;
     let buildScript = null;
+    let buildScriptDescription = null;
     let outputDirectory = null;
     let isStaticExport = false;
     let isSSR = false;
@@ -208,7 +245,8 @@ class ProjectDetector {
       const scripts = pkg.scripts || {};
 
       if (scripts.build) {
-        buildScript = `npm run build (${scripts.build})`;
+        buildScript = 'npm run build';
+        buildScriptDescription = scripts.build;
       }
 
       // Next.js detection
@@ -358,6 +396,7 @@ class ProjectDetector {
       runtime: 'browser',
       packageManager: rootPkgInfo?.pkg?.packageManager || null,
       buildScript,
+      buildScriptDescription,
       outputDirectory: outputDirectory || 'dist',
       isStaticExport,
       isSSR,
@@ -489,7 +528,9 @@ class ProjectDetector {
     let runtime = null;
     let entryPoint = null;
     let startCommand = null;
+    let startCommandDescription = null;
     let buildScript = null;
+    let buildScriptDescription = null;
     let hostBinding = 'UNKNOWN';
     let isHostBindingSafe = true;
     let port = null;
@@ -523,13 +564,19 @@ class ProjectDetector {
         }
 
         if (scripts.start) {
-          startCommand = `npm start (${scripts.start})`;
+          // Commands are consumed by deployment providers. Keep the package
+          // script body as display metadata; it must never be appended to the
+          // executable shell command (e.g. `npm start (node server.js)`).
+          startCommand = 'npm start';
+          startCommandDescription = scripts.start;
         } else if (scripts.serve) {
-          startCommand = `npm run serve (${scripts.serve})`;
+          startCommand = 'npm run serve';
+          startCommandDescription = scripts.serve;
         }
 
         if (scripts.build) {
-          buildScript = `npm run build (${scripts.build})`;
+          buildScript = 'npm run build';
+          buildScriptDescription = scripts.build;
         }
       }
     }
@@ -629,7 +676,9 @@ class ProjectDetector {
       runtime: runtime || 'node',
       entryPoint,
       startCommand,
+      startCommandDescription,
       buildScript,
+      buildScriptDescription,
       port,
       hostBinding,
       isHostBindingSafe,
@@ -830,12 +879,14 @@ class ProjectDetector {
       }
     }
 
-    // 2. Scan representative source code files for process.env.VAR and os.getenv('VAR')
+    // 2. Scan representative source code files for process.env.VAR, import.meta.env.VAR, and os.getenv('VAR')
     const candidateFiles = [
       'server.ts', 'server.js', 'src/server.ts', 'src/server.js',
-      'src/index.ts', 'src/index.js', 'index.ts', 'index.js',
-      'src/app.ts', 'src/app.js', 'app.ts', 'app.js',
+      'src/index.ts', 'src/index.js', 'src/index.tsx', 'src/index.jsx', 'index.ts', 'index.js',
+      'src/app.ts', 'src/app.js', 'src/App.tsx', 'src/App.jsx', 'app.ts', 'app.js', 'App.tsx', 'App.jsx',
+      'src/main.ts', 'src/main.js', 'src/main.tsx', 'src/main.jsx', 'main.ts', 'main.js',
       'next.config.js', 'next.config.mjs', 'next.config.ts',
+      'vite.config.ts', 'vite.config.js',
       'main.py', 'app.py', 'settings.py',
     ];
 

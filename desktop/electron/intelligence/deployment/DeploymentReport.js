@@ -117,6 +117,7 @@ function normalizeFrontendDescriptor(input = null) {
     runtime: input.runtime || 'browser',
     packageManager: input.packageManager || null,
     buildScript: input.buildScript || null,
+    buildScriptDescription: input.buildScriptDescription || null,
     outputDirectory: input.outputDirectory || null,
     isStaticExport: Boolean(input.isStaticExport),
     isSSR: Boolean(input.isSSR),
@@ -139,7 +140,9 @@ function normalizeBackendDescriptor(input = null) {
     runtime: input.runtime || 'node',
     entryPoint: input.entryPoint || null,
     startCommand: input.startCommand || null,
+    startCommandDescription: input.startCommandDescription || null,
     buildScript: input.buildScript || null,
+    buildScriptDescription: input.buildScriptDescription || null,
     port: input.port !== undefined && input.port !== null ? input.port : null,
     hostBinding: input.hostBinding || 'UNKNOWN',
     isHostBindingSafe: input.isHostBindingSafe !== undefined ? Boolean(input.isHostBindingSafe) : false,
@@ -257,6 +260,7 @@ function createDeploymentReport(input = {}) {
     ? input.platformRecommendations
     : [];
   const recommendedProvider = input.recommendedProvider || null;
+  const deploymentRepositoryContext = input.deploymentRepositoryContext || null;
 
   return {
     workspacePath: secretFilter.sanitizeString(workspacePath),
@@ -271,6 +275,7 @@ function createDeploymentReport(input = {}) {
     environmentVariables,
     recommendedProvider,
     platformRecommendations,
+    deploymentRepositoryContext,
   };
 }
 

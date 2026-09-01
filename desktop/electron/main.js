@@ -71,6 +71,10 @@ const {
   deploymentConfigEngine,
   deploymentCredentialStore,
   deploymentExecutor,
+  deploymentPlanGenerator,
+  deploymentOrchestrator,
+  deploymentAdvisor,
+  deploymentFailureDiagnoser,
 } = require('./intelligence');
 
 
@@ -86,6 +90,7 @@ process.on('unhandledRejection', (reason) => {
 recoveryStore.startHeartbeat();
 
 let mainWindow = null;
+let activeWorkspace = null;
 
 const IGNORED_EXPLORER_DIRS = new Set([
   'node_modules',
@@ -914,6 +919,7 @@ app.on('before-quit', () => {
 ipcMain.handle('engine:get-default-demo-workspace', async () => {
   const demoPath = path.join(app.getAppPath(), 'demo-workspaces', 'ai_cart_project');
   if (fs.existsSync(demoPath)) {
+    activeWorkspace = demoPath;
     const tree = buildFileTree(demoPath);
     return { folderPath: demoPath, tree };
   }
@@ -931,6 +937,7 @@ ipcMain.handle('dialog:open-folder', async () => {
   }
 
   const folderPath = result.filePaths[0];
+  activeWorkspace = folderPath;
   const tree = buildFileTree(folderPath);
   try {
     await harnessRuntime.loadProjectCapabilities(folderPath);
@@ -3938,6 +3945,116 @@ ipcMain.handle('intelligence:inspect-deployment', async (_, payload = {}) => {
   }
 });
 
+// Deployment Plan Generator IPC Handler (Phase 4A & 4D-A)
+ipcMain.handle('intelligence:generate-deployment-plan', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    console.log('[DeploymentSelection] IPC intelligence:generate-deployment-plan', {
+      workspacePath: ws,
+      userSelections: payload.userSelections || {},
+    });
+    return deploymentPlanGenerator.generatePlan(ws, { userSelections: payload.userSelections, ...(payload.options || {}) });
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Generate deployment plan error: ${err.message}`);
+    return {
+      planId: 'plan_err',
+      workspacePath: payload.workspacePath || '',
+      generatedAt: Date.now(),
+      overallStatus: 'UNKNOWN',
+      summary: `Failed to generate deployment plan: ${err.message}`,
+      topology: { isMonorepo: false, services: [], databases: [] },
+      dependencies: [],
+      wiring: [],
+      executionOrder: [],
+      estimatedTotalTimeSeconds: null,
+      blockers: [err.message],
+      warnings: [],
+    };
+  }
+});
+
+ipcMain.handle('intelligence:save-deployment-selections', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    console.log('[DeploymentSelection] IPC intelligence:save-deployment-selections', {
+      workspacePath: ws,
+      selections: payload.selections || {},
+    });
+    deploymentPlanGenerator.saveUserSelections(ws, payload.selections || {});
+    return { success: true };
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Save deployment selections error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:get-deployment-selections', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    const result = deploymentPlanGenerator.getUserSelections(ws);
+    console.log('[DeploymentSelection] IPC intelligence:get-deployment-selections', {
+      workspacePath: ws,
+      loadedSelections: result,
+    });
+    return result;
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Get deployment selections error: ${err.message}`);
+    return {};
+  }
+});
+
+ipcMain.handle('intelligence:clear-deployment-selections', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    console.log('[DeploymentSelection] IPC intelligence:clear-deployment-selections', {
+      workspacePath: ws,
+    });
+    deploymentPlanGenerator.clearUserSelections(ws);
+    return { success: true };
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Clear deployment selections error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+// Deployment Advisor IPC Handlers (Final Product Workflow)
+ipcMain.handle('intelligence:get-deployment-advice', async (_, payload = {}) => {
+  try {
+    const ws = payload.workspacePath || activeWorkspace || process.cwd();
+    return await deploymentAdvisor.generateAdvice(ws, payload.options || {});
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Generate deployment advice error: ${err.message}`);
+    return {
+      adviceId: 'adv_err',
+      workspacePath: payload.workspacePath || '',
+      generatedAt: Date.now(),
+      projectSummary: { summaryText: `Failed to analyze project: ${err.message}` },
+      detectedTopology: { services: [], databases: [] },
+      architectureRecommendations: [],
+      recommendedArchitecture: null,
+      alternatives: [],
+      projectRisks: [],
+      blockers: [err.message],
+      requirements: [],
+      status: 'UNKNOWN',
+    };
+  }
+});
+
+ipcMain.handle('intelligence:validate-selected-architecture', async (_, payload = {}) => {
+  try {
+    return deploymentAdvisor.validateSelectedArchitecture(payload.advice, payload.selection);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Validate selected architecture error: ${err.message}`);
+    return {
+      valid: false,
+      status: 'BLOCKED',
+      blockers: [err.message],
+      missingProviders: [],
+    };
+  }
+});
+
 // Deployment Config Preview IPC Handler (Phase 2C)
 ipcMain.handle('intelligence:generate-deployment-config', async (_, payload = {}) => {
   try {
@@ -4034,6 +4151,59 @@ ipcMain.handle('intelligence:cancel-deployment', async (_, payload = {}) => {
   } catch (err) {
     logger.error('INTELLIGENCE', `Cancel deployment error: ${err.message}`);
     return { success: false, error: err.message };
+  }
+});
+
+// Deployment Multi-Stage Orchestration IPC Handlers (Phase 4C)
+ipcMain.handle('intelligence:start-orchestration', async (event, payload = {}) => {
+  try {
+    const plan = payload.plan;
+    if (!plan) {
+      throw new Error('DeploymentPlan is required to start orchestration.');
+    }
+
+    const broadcast = (type, data) => {
+      try {
+        if (event.sender && !event.sender.isDestroyed()) {
+          event.sender.send(`orchestration:${type}`, data);
+        }
+      } catch (_) {}
+    };
+
+    return await deploymentOrchestrator.startOrchestration(
+      plan,
+      { ...(payload.options || {}), requestId: payload.requestId || payload.options?.requestId || null },
+      (eventType, eventData) => broadcast(eventType, eventData)
+    );
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Start orchestration error: ${err.message}`);
+    return { status: 'FAILED', error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:cancel-orchestration', async (_, payload = {}) => {
+  try {
+    const orchestrationId = typeof payload === 'string' ? payload : payload.orchestrationId;
+    return deploymentOrchestrator.cancelOrchestration(orchestrationId);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Cancel orchestration error: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('intelligence:diagnose-deployment-failure', async (_, payload = {}) => {
+  try {
+    return deploymentFailureDiagnoser.diagnoseFailure(payload);
+  } catch (err) {
+    logger.error('INTELLIGENCE', `Diagnose deployment failure error: ${err.message}`);
+    return {
+      failureCategory: 'PROVIDER_EXECUTION_ERROR',
+      likelyRootCause: err.message,
+      confidence: 'LOW',
+      evidence: [],
+      suggestedFix: 'Review logs and verify project deployment configurations.',
+      isRetrySafe: true,
+    };
   }
 });
 
