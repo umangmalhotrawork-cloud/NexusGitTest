@@ -212,7 +212,7 @@ function parseRateLimitError(error, providerId = 'groq', modelId = '') {
     }
   }
 
-  let detectedProvider = error?.providerId || error?.provider || providerId || 'groq';
+  let detectedProvider = error?.providerId || error?.provider || providerId || 'nexus1';
   const providerMatch = errMsg.match(/(?:on|provider)\s+[`"']?(groq|openai|anthropic|claude|gemini|deepseek|grok|xai)[`"']?/i);
   if (providerMatch && providerMatch[1]) {
     detectedProvider = providerMatch[1].toLowerCase();

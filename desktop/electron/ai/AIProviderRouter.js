@@ -640,7 +640,7 @@ class AIProviderRouter {
 
     if (provider && provider.isConfigured(apiKey)) {
       const targetModel = this.getValidModelId(pId, mId);
-      this.synchronizeSlotModel(pId, targetModel, true);
+      this.synchronizeSlotModel(pId, targetModel, false);
       return {
         provider,
         apiKey,
@@ -692,6 +692,60 @@ class AIProviderRouter {
     return result;
   }
 
+  /**
+   * Retrieves genuinely verified account usage, quota, or rate limits for a given provider.
+   * Securely uses stored credentials and never exposes plaintext keys.
+   * @param {string} [targetProviderId]
+   * @returns {Promise<{ providerId: string, isConfigured: boolean, isAvailable: boolean, display: string, raw: Object|null }>}
+   */
+  async getVerifiedUsage(targetProviderId = null) {
+    const providerId = targetProviderId || this.activeProviderId;
+    const provider = this.providers.get(providerId);
+    if (!provider) {
+      return {
+        providerId,
+        isConfigured: false,
+        isAvailable: false,
+        display: 'Not available',
+        raw: null,
+      };
+    }
+
+    const apiKey = this.apiKeys.get(providerId);
+    const isConfigured = provider.isConfigured(apiKey);
+    if (!isConfigured) {
+      return {
+        providerId,
+        isConfigured: false,
+        isAvailable: false,
+        display: 'Not available',
+        raw: null,
+      };
+    }
+
+    try {
+      if (typeof provider.getVerifiedUsage === 'function') {
+        const usage = await provider.getVerifiedUsage(apiKey);
+        return {
+          providerId,
+          isConfigured: true,
+          isAvailable: Boolean(usage?.isAvailable),
+          display: usage?.display || 'Not available',
+          raw: usage?.raw || null,
+        };
+      }
+    } catch (err) {
+      // Safe fallback
+    }
+
+    return {
+      providerId,
+      isConfigured: true,
+      isAvailable: false,
+      display: 'Not available',
+      raw: null,
+    };
+  }
 }
 
 const aiProviderRouter = new AIProviderRouter();

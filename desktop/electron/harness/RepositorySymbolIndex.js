@@ -20,6 +20,7 @@ const {
   generateSymbolId,
 } = require('./types');
 const { astDiffEngine } = require('./ASTDiffEngine');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const secretFilter = require('../../security/secretFilter');
 
 let ts = null;
@@ -57,7 +58,7 @@ const SUPPORTED_EXTENSIONS = new Set([
 
 class RepositorySymbolIndex {
   constructor(options = {}) {
-    this.workspacePath = options.workspacePath ? path.resolve(options.workspacePath) : null;
+    this.workspacePath = options.workspacePath ? workspacePathResolver.canonicalizeWorkspaceRoot(options.workspacePath) : null;
     this.eventBus = options.eventBus || null;
 
     this.version = 1;
@@ -102,7 +103,7 @@ class RepositorySymbolIndex {
    * @returns {Promise<Object>} Build result summary
    */
   async build(workspacePath = this.workspacePath, options = {}) {
-    const wsPath = workspacePath ? path.resolve(workspacePath) : this.workspacePath;
+    const wsPath = workspacePath ? workspacePathResolver.canonicalizeWorkspaceRoot(workspacePath) : this.workspacePath;
     if (!wsPath || !fs.existsSync(wsPath)) {
       return {
         success: false,
@@ -652,10 +653,7 @@ class RepositorySymbolIndex {
 
   _normalizeRelativePath(p) {
     if (!p) return '';
-    if (this.workspacePath && path.isAbsolute(p)) {
-      return path.relative(this.workspacePath, p).replace(/\\/g, '/');
-    }
-    return p.replace(/\\/g, '/');
+    return workspacePathResolver.toRelative(this.workspacePath || process.cwd(), p);
   }
 }
 

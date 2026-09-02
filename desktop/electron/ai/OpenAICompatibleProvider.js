@@ -16,6 +16,30 @@ class OpenAICompatibleProvider extends AIProvider {
     this.staticModels = staticModels;
     this.dynamicModels = null;
     this.options = options;
+    this.lastRateLimitHeaders = null;
+  }
+
+  extractRateLimitHeaders(headers = {}) {
+    if (!headers || typeof headers !== 'object') return null;
+    const remainingRequests = headers['x-ratelimit-remaining-requests'];
+    const remainingTokens = headers['x-ratelimit-remaining-tokens'];
+    const limitRequests = headers['x-ratelimit-limit-requests'];
+    const limitTokens = headers['x-ratelimit-limit-tokens'];
+    const resetRequests = headers['x-ratelimit-reset-requests'];
+    const resetTokens = headers['x-ratelimit-reset-tokens'];
+
+    if (remainingRequests !== undefined || remainingTokens !== undefined) {
+      return {
+        remainingRequests: remainingRequests !== undefined ? Number(remainingRequests) || remainingRequests : null,
+        remainingTokens: remainingTokens !== undefined ? Number(remainingTokens) || remainingTokens : null,
+        limitRequests: limitRequests !== undefined ? Number(limitRequests) || limitRequests : null,
+        limitTokens: limitTokens !== undefined ? Number(limitTokens) || limitTokens : null,
+        resetRequests: resetRequests || null,
+        resetTokens: resetTokens || null,
+        timestamp: Date.now(),
+      };
+    }
+    return null;
   }
 
   getModels() {
@@ -79,8 +103,13 @@ class OpenAICompatibleProvider extends AIProvider {
               json = null;
             }
 
+            const extractedLimits = this.extractRateLimitHeaders(res.headers);
+            if (extractedLimits) {
+              this.lastRateLimitHeaders = extractedLimits;
+            }
+
             if (res.statusCode >= 200 && res.statusCode < 300) {
-              resolve({ statusCode: res.statusCode, data: json || raw, raw });
+              resolve({ statusCode: res.statusCode, data: json || raw, raw, headers: res.headers });
             } else {
               const errMsg = json?.error?.message || json?.message || raw || `HTTP ${res.statusCode}`;
               const err = new Error(errMsg);
@@ -90,6 +119,7 @@ class OpenAICompatibleProvider extends AIProvider {
               err.providerId = this.id;
               err.modelId = (typeof body === 'object' ? body?.model : null) || options?.modelId || '';
               err.data = json;
+              err.headers = res.headers;
               reject(err);
             }
           });

@@ -4,9 +4,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { 
   FolderOpen, GitBranch, Layers, Plus, ShieldCheck, Cpu, 
   Send, ArrowRight, Zap, ChevronDown, Check, Key, Upload, Box,
-  Coins, Info
+  Coins, Info, X, Sparkles, GitMerge, Loader2, CheckCircle2, RefreshCw, AlertTriangle
 } from "lucide-react";
 import { useOutsideClick } from "../hooks/useOutsideClick";
+import RefactorPlanModal, { RefactorPlanData } from "./RefactorPlanModal";
 
 interface CodexBottomComposerProps {
   workspaceName?: string;
@@ -16,7 +17,7 @@ interface CodexBottomComposerProps {
   promptValue?: string;
   onPromptChange?: (prompt: string) => void;
   onSelectModel: (providerId: string, modelId?: string) => void;
-  onSubmitTask: (prompt: string, approvalMode: "auto" | "strict") => void;
+  onSubmitTask: (prompt: string, approvalMode: "auto" | "strict", providerId?: string, modelId?: string) => void;
   onOpenContinuum: () => void;
   onOpenFolder: () => void;
   onImportCapsule?: () => void;
@@ -45,7 +46,53 @@ export default function CodexBottomComposer({
   const [showApprovalDropdown, setShowApprovalDropdown] = useState(false);
   const [preflight, setPreflight] = useState<any>(null);
   const [showPreflightPopover, setShowPreflightPopover] = useState(false);
+  const [toastEstimate, setToastEstimate] = useState<any>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [verifiedUsage, setVerifiedUsage] = useState<{ isAvailable: boolean; display: string; raw?: any } | null>(null);
+  const [isKeyConfigured, setIsKeyConfigured] = useState<boolean>(false);
+  const [failoverNotice, setFailoverNotice] = useState<{
+    primaryProviderId: string;
+    fallbackDisplayName: string;
+    reason: string;
+  } | null>(null);
+  const [refactorPlan, setRefactorPlan] = useState<RefactorPlanData | null>(null);
+  const [showRefactorModal, setShowRefactorModal] = useState(false);
+  const [isRefactorExecuting, setIsRefactorExecuting] = useState(false);
+  const [testVerificationStatus, setTestVerificationStatus] = useState<{
+    status: string;
+    display?: string;
+    badge?: string;
+    cycle?: number;
+    maxCycles?: number;
+    targetedTests?: string[];
+  } | null>(null);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const failoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const testVerificationTimerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Subscribe to live refactor plan updates
+  useEffect(() => {
+    const electronAPI = (window as any).electronAPI;
+    let unsubscribePlan: (() => void) | null = null;
+    if (electronAPI?.harness?.onRefactorPlanUpdate) {
+      unsubscribePlan = electronAPI.harness.onRefactorPlanUpdate((update: any) => {
+        setRefactorPlan((prev) => {
+          if (!prev || prev.planId !== update.planId) return prev;
+          return {
+            ...prev,
+            status: update.status || prev.status,
+            rejectionReason: update.rejectionReason !== undefined ? update.rejectionReason : prev.rejectionReason,
+            tasks: update.tasks || prev.tasks,
+            verificationResult: update.verification || prev.verificationResult,
+          };
+        });
+      });
+    }
+    return () => {
+      if (typeof unsubscribePlan === "function") unsubscribePlan();
+    };
+  }, []);
 
   React.useEffect(() => {
     if (promptValue !== undefined && promptValue !== prompt) {
@@ -65,6 +112,113 @@ export default function CodexBottomComposer({
       }, 50);
     }
   }, [attachedCapsule]);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+      if (failoverTimerRef.current) {
+        clearTimeout(failoverTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Fetch verified usage and credential status for active provider
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchUsageAndConfig = async () => {
+      try {
+        const electronAPI = (window as any).electronAPI;
+        if (electronAPI?.ai) {
+          const [cfg, usage] = await Promise.all([
+            typeof electronAPI.ai.getConfig === 'function' ? electronAPI.ai.getConfig() : null,
+            typeof electronAPI.ai.getVerifiedUsage === 'function' ? electronAPI.ai.getVerifiedUsage(activeProvider) : null,
+          ]);
+
+          if (isMounted) {
+            if (cfg && Array.isArray(cfg.providers)) {
+              const currentProv = cfg.providers.find((p: any) => p.id === activeProvider);
+              setIsKeyConfigured(Boolean(currentProv?.isConfigured));
+            }
+            if (usage) {
+              setVerifiedUsage(usage);
+            } else {
+              setVerifiedUsage({ isAvailable: false, display: "Not available" });
+            }
+          }
+        }
+      } catch (_) {
+        if (isMounted) {
+          setVerifiedUsage({ isAvailable: false, display: "Not available" });
+        }
+      }
+    };
+
+    fetchUsageAndConfig();
+
+    const handleConfigChange = () => {
+      fetchUsageAndConfig();
+    };
+
+    window.addEventListener("nexus:ai-config-changed", handleConfigChange);
+    let unsubscribeIpc: (() => void) | null = null;
+    if ((window as any).electronAPI?.ai?.onConfigChange) {
+      unsubscribeIpc = (window as any).electronAPI.ai.onConfigChange(handleConfigChange);
+    }
+
+    let unsubscribeFailover: (() => void) | null = null;
+    if ((window as any).electronAPI?.ai?.onFailover) {
+      unsubscribeFailover = (window as any).electronAPI.ai.onFailover((data: any) => {
+        if (data && isMounted) {
+          setFailoverNotice({
+            primaryProviderId: data.primaryProviderId || activeProvider,
+            fallbackDisplayName: data.fallbackDisplayName || data.fallbackModelId || "Compatible Provider",
+            reason: data.reason || "429 Rate Limit",
+          });
+          if (failoverTimerRef.current) clearTimeout(failoverTimerRef.current);
+          failoverTimerRef.current = setTimeout(() => {
+            if (isMounted) setFailoverNotice(null);
+          }, 6000);
+        }
+      });
+    }
+
+    let unsubscribeTestVerification: (() => void) | null = null;
+    if ((window as any).electronAPI?.ai?.onTestVerificationStatus) {
+      unsubscribeTestVerification = (window as any).electronAPI.ai.onTestVerificationStatus((data: any) => {
+        if (data && isMounted) {
+          setTestVerificationStatus(data);
+          if (
+            data.status === "PASSED" ||
+            data.status === "REPAIR_EXHAUSTED" ||
+            data.status === "SKIPPED" ||
+            data.status === "NO_TESTS_FOUND" ||
+            data.status === "RUNNER_NOT_DETECTED" ||
+            data.status === "ENVIRONMENT_FAILURE" ||
+            data.status === "DEPENDENCY_FAILURE" ||
+            data.status === "TIMEOUT"
+          ) {
+            if (testVerificationTimerRef.current) clearTimeout(testVerificationTimerRef.current);
+            testVerificationTimerRef.current = setTimeout(() => {
+              if (isMounted) setTestVerificationStatus(null);
+            }, 10000);
+          }
+        }
+      });
+    }
+
+    return () => {
+      isMounted = false;
+      if (failoverTimerRef.current) clearTimeout(failoverTimerRef.current);
+      if (testVerificationTimerRef.current) clearTimeout(testVerificationTimerRef.current);
+      window.removeEventListener("nexus:ai-config-changed", handleConfigChange);
+      if (typeof unsubscribeIpc === "function") unsubscribeIpc();
+      if (typeof unsubscribeFailover === "function") unsubscribeFailover();
+      if (typeof unsubscribeTestVerification === "function") unsubscribeTestVerification();
+    };
+  }, [activeProvider]);
 
   // Debounced Preflight Cost & Context Estimation (Non-Blocking)
   useEffect(() => {
@@ -115,12 +269,113 @@ export default function CodexBottomComposer({
     triggerRef: preflightTriggerRef,
   });
 
+  const getProviderDisplayName = (id: string) => {
+    if (id === "nexus1") return "NEXUS 1 (Gemini)";
+    if (id === "nexus2") return "NEXUS 2 (Gemini)";
+    if (id === "nexus3") return "NEXUS 3 (Gemini)";
+    if (id === "nexus4") return "NEXUS 4 (Gemini)";
+    if (id === "nexus5") return "NEXUS 5 (Gemini)";
+    if (id === "nexus6") return "NEXUS 6 (Groq)";
+    if (id === "gemini") return "Google Gemini";
+    if (id === "groq") return "Groq";
+    if (id === "openai") return "OpenAI";
+    if (id === "claude") return "Claude";
+    if (id === "deepseek") return "DeepSeek";
+    if (id === "grok") return "xAI Grok";
+    return id;
+  };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleOpenRefactorPlan = async () => {
+    const currentPrompt = promptValue !== undefined ? promptValue : prompt;
+    if (!currentPrompt.trim()) return;
+    const electronAPI = (window as any).electronAPI;
+    if (electronAPI?.harness?.planRefactor) {
+      const res = await electronAPI.harness.planRefactor({
+        goal: currentPrompt.trim(),
+      });
+      if (res?.success && res?.plan) {
+        setRefactorPlan(res.plan);
+        setShowRefactorModal(true);
+      }
+    }
+  };
+
+  const handleApproveAndExecuteRefactor = async (stepByStep: boolean) => {
+    if (!refactorPlan) return;
+    const electronAPI = (window as any).electronAPI;
+    if (electronAPI?.harness) {
+      setIsRefactorExecuting(true);
+      await electronAPI.harness.approveRefactorPlan({
+        planId: refactorPlan.planId,
+        stepByStep,
+      });
+      const execRes = await electronAPI.harness.executeRefactorPlan({
+        planId: refactorPlan.planId,
+        stepByStep,
+      });
+      if (execRes?.plan) {
+        setRefactorPlan((prev) => (prev ? { ...prev, ...execRes.plan } : execRes.plan));
+      }
+      setIsRefactorExecuting(false);
+    }
+  };
+
+  const handleCancelRefactorPlan = async (reason?: string) => {
+    if (!refactorPlan) return;
+    const electronAPI = (window as any).electronAPI;
+    if (electronAPI?.harness?.rejectRefactorPlan) {
+      await electronAPI.harness.rejectRefactorPlan({
+        planId: refactorPlan.planId,
+        reason: reason || "Cancelled by user",
+      });
+      setRefactorPlan((prev) =>
+        prev ? { ...prev, status: "CANCELLED", rejectionReason: reason || "Cancelled by user" } : null
+      );
+    }
+  };
+
+  const isRefactorCandidate = Boolean(
+    (preflight?.riskLevel === "HIGH" ||
+      (preflight?.estimatedFilesCount && preflight.estimatedFilesCount > 2) ||
+      (promptValue || prompt).toLowerCase().includes("refactor")) &&
+      (promptValue || prompt).trim().length > 10
+  );
+
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const currentPrompt = promptValue !== undefined ? promptValue : prompt;
     if (!currentPrompt.trim() || disabled) return;
-    onSubmitTask(currentPrompt.trim(), approvalMode);
+    const trimmed = currentPrompt.trim();
+
+    // Determine prompt token & cost estimate using existing PreflightEstimator
+    let estimate = preflight;
+    if (!estimate) {
+      try {
+        const intelligence = (window as any).electronAPI?.intelligence;
+        if (intelligence?.preflightEstimate) {
+          estimate = await intelligence.preflightEstimate({
+            userInput: trimmed,
+            providerId: activeProvider,
+            modelId: activeModel,
+            importedCapsule: attachedCapsule,
+          });
+        }
+      } catch (_) {}
+    }
+
+    // Show non-blocking toast for coding prompts only (greetings bypass)
+    if (estimate && estimate.shouldShowPreflight) {
+      setToastEstimate(estimate);
+      setShowToast(true);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => {
+        setShowToast(false);
+      }, 4000);
+    } else {
+      setShowToast(false);
+    }
+
+    onSubmitTask(trimmed, approvalMode, activeProvider, activeModel);
     if (promptValue === undefined) {
       setPrompt("");
     }
@@ -128,6 +383,83 @@ export default function CodexBottomComposer({
 
   return (
     <div className="w-full max-w-3xl mx-auto flex flex-col items-center gap-2 select-none font-mono">
+      {/* Non-Blocking Preflight Prompt Analysis Toast */}
+      {showToast && toastEstimate && (
+        <div
+          className="w-full px-3.5 py-2.5 rounded-xl border border-cyan-500/40 shadow-2xl flex items-start justify-between gap-3 animate-fadeIn transition-all"
+          style={{
+            backgroundColor: "var(--theme-surface-raised, #0e0e18)",
+            color: "var(--theme-text, #f4f4f5)",
+          }}
+        >
+          <div className="flex items-start gap-2.5 min-w-0">
+            <div className="p-1 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 mt-0.5 shrink-0">
+              <Zap className="w-3.5 h-3.5" />
+            </div>
+            <div className="space-y-0.5 text-xs font-mono min-w-0">
+              <div className="text-[11px] font-bold text-cyan-300 flex items-center gap-1.5 font-sans">
+                <span>NEXUS analyzed your prompt</span>
+              </div>
+              <div className="text-[11px] text-zinc-300 flex items-center gap-2 flex-wrap">
+                <span>
+                  Estimated usage: ~{toastEstimate.estimatedTotalTokens || (toastEstimate.estimatedInputTokens + toastEstimate.estimatedMaxOutputTokens)} tokens
+                </span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400 text-[10px]">
+                  (Input: ~{toastEstimate.estimatedInputTokens} • Output: ~{toastEstimate.estimatedMaxOutputTokens})
+                </span>
+              </div>
+              <div className="text-[11px] text-zinc-300 flex items-center gap-1.5">
+                <span>Estimated cost:</span>
+                <span className="font-bold text-emerald-400">
+                  {toastEstimate.primaryCostFormatted || (toastEstimate.pricingAvailable && toastEstimate.estimatedCostUSD !== null ? `~$${toastEstimate.estimatedCostUSD.toFixed(4)}` : "Cost unavailable")}
+                </span>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowToast(false)}
+            className="p-1 rounded text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer shrink-0"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Non-Blocking Dynamic Auto-Failover Notification Banner */}
+      {failoverNotice && (
+        <div
+          className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/50 shadow-2xl flex items-center justify-between gap-3 animate-fadeIn transition-all"
+          style={{
+            backgroundColor: "rgba(35, 22, 10, 0.95)",
+            color: "#fef3c7",
+          }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-1 rounded-lg bg-amber-950/90 border border-amber-500/50 text-amber-400 shrink-0">
+              <Zap className="w-3.5 h-3.5 animate-pulse" />
+            </div>
+            <div className="text-xs font-mono min-w-0 flex items-center gap-1.5 flex-wrap">
+              <span className="text-amber-300 font-bold">⚡ Auto-Failover:</span>
+              <span className="text-zinc-300">{getProviderDisplayName(failoverNotice.primaryProviderId)} ({failoverNotice.reason})</span>
+              <span className="text-amber-400 font-bold">──►</span>
+              <span className="text-emerald-300 font-semibold">{failoverNotice.fallbackDisplayName}</span>
+              <span className="text-zinc-400 text-[10.5px]">(Zero data lost)</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFailoverNotice(null)}
+            className="p-1 rounded text-amber-400/60 hover:text-amber-200 transition-colors cursor-pointer shrink-0"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* 1. Context Row: Workspace -> Local -> Branch -> CONTINUUM -> IMPORT CAPSULE */}
       <div className="flex items-center gap-2 text-xs font-mono" style={{ color: "var(--theme-text-muted, #a1a1aa)" }}>
         {/* Workspace Pill */}
@@ -485,6 +817,24 @@ export default function CodexBottomComposer({
                               : `${preflight.estimatedToolCalls?.min}–${preflight.estimatedToolCalls?.max}`}
                           </span>
                         </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Context window:</span>
+                          <span
+                            className={`font-semibold ${
+                              preflight.isContextExceeded
+                                ? "text-amber-400 font-bold"
+                                : "text-zinc-300"
+                            }`}
+                          >
+                            {preflight.contextWindow
+                              ? `${(preflight.contextWindow / 1000).toFixed(0)}k ${
+                                  preflight.contextUsageRatio
+                                    ? `(${(preflight.contextUsageRatio * 100).toFixed(0)}%)`
+                                    : ""
+                                }`
+                              : "Unknown limit"}
+                          </span>
+                        </div>
                         <div className="flex justify-between pt-1 border-t border-white/5">
                           <span className="text-zinc-500">Estimated cost:</span>
                           <span className="font-bold text-emerald-400">
@@ -493,6 +843,27 @@ export default function CodexBottomComposer({
                               : "N/A"}
                           </span>
                         </div>
+
+                        {preflight.recommendedModel?.modelId && (
+                          <div className="pt-1.5 border-t border-white/5 space-y-0.5">
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="text-zinc-500 flex items-center gap-1">
+                                {preflight.recommendedModel.isContextExceeded ? (
+                                  <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
+                                ) : (
+                                  <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                                )}
+                                Advisor:
+                              </span>
+                              <span className={`font-semibold truncate max-w-[125px] ${preflight.recommendedModel.isContextExceeded ? "text-amber-300" : "text-cyan-300"}`}>
+                                {preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}
+                              </span>
+                            </div>
+                            <div className={`text-[9.5px] leading-tight ${preflight.recommendedModel.isContextExceeded ? "text-amber-300/90" : "text-zinc-400"}`}>
+                              {preflight.recommendedModel.reason}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="text-[9px] text-zinc-600 pt-0.5 text-center">
@@ -501,6 +872,76 @@ export default function CodexBottomComposer({
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Model Selection Intelligence / Context Window Pre-Gating Suggestion */}
+              {preflight?.recommendedModel?.modelId && !preflight.recommendedModel.isCurrentOptimal && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (preflight.recommendedModel?.providerId && preflight.recommendedModel?.modelId) {
+                      onSelectModel(preflight.recommendedModel.providerId, preflight.recommendedModel.modelId);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: preflight.recommendedModel.isContextExceeded
+                      ? "rgba(245, 158, 11, 0.12)"
+                      : "rgba(6, 182, 212, 0.08)",
+                    borderColor: preflight.recommendedModel.isContextExceeded
+                      ? "rgba(245, 158, 11, 0.45)"
+                      : "rgba(6, 182, 212, 0.3)",
+                    color: preflight.recommendedModel.isContextExceeded
+                      ? "#fbbf24"
+                      : "#67e8f9",
+                  }}
+                  className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:brightness-125 transition-all"
+                  title={`Click to switch: ${preflight.recommendedModel.reason}`}
+                >
+                  {preflight.recommendedModel.isContextExceeded ? (
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  ) : (
+                    <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                  )}
+                  <span>
+                    {preflight.recommendedModel.isContextExceeded
+                      ? `⚠️ Context Limit Risk: Switch to ${preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}`
+                      : `Suggested: ${preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}`}
+                  </span>
+                </button>
+              )}
+
+              {/* Unresolved Context Exceeded State (No larger compatible model configured) */}
+              {preflight?.isContextExceeded && !preflight?.recommendedModel?.modelId && (
+                <div
+                  style={{
+                    backgroundColor: "rgba(239, 68, 68, 0.12)",
+                    borderColor: "rgba(239, 68, 68, 0.4)",
+                    color: "#f87171",
+                  }}
+                  className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5"
+                  title={preflight.recommendedModel?.reason || "Estimated context exceeds active model limit"}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                  <span>⚠️ Context Limit Risk (No larger configured model)</span>
+                </div>
+              )}
+
+              {/* Multi-File Refactor Plan Trigger Button (High-Risk / Multi-File Only) */}
+              {isRefactorCandidate && (
+                <button
+                  type="button"
+                  onClick={handleOpenRefactorPlan}
+                  style={{
+                    backgroundColor: "rgba(168, 85, 247, 0.12)",
+                    borderColor: "rgba(168, 85, 247, 0.35)",
+                    color: "#d8b4fe",
+                  }}
+                  className="px-2.5 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:bg-purple-950/50 hover:border-purple-400 transition-all font-medium"
+                  title="Generate visual task DAG, scope boundaries, and step-by-step refactor plan"
+                >
+                  <GitMerge className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span>Plan Refactor</span>
+                </button>
               )}
             </div>
 
@@ -519,8 +960,116 @@ export default function CodexBottomComposer({
               <Send className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          {/* Compact API Usage & Credential Status Area */}
+          <div
+            style={{ borderColor: "var(--theme-border-subtle, #1a1a28)" }}
+            className="flex items-center justify-between px-1 pt-2 border-t text-[10.5px] font-mono text-zinc-400 select-text"
+          >
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1">
+                <span className="text-zinc-500">Provider:</span>
+                <span className="text-zinc-200 font-semibold">{getProviderDisplayName(activeProvider)}</span>
+              </div>
+              <span className="text-zinc-700">•</span>
+              <div className="flex items-center gap-1">
+                <span className="text-zinc-500">Credential:</span>
+                <span className={isKeyConfigured ? "text-emerald-400 font-semibold" : "text-zinc-500"}>
+                  {isKeyConfigured ? "Configured ✓" : "Not configured"}
+                </span>
+              </div>
+              <span className="text-zinc-700">•</span>
+              <div className="flex items-center gap-1">
+                <span className="text-zinc-500">Account usage:</span>
+                <span className={verifiedUsage?.isAvailable ? "text-cyan-400 font-semibold" : "text-zinc-500"}>
+                  {verifiedUsage?.display || "Not available"}
+                </span>
+              </div>
+            </div>
+
+            {/* Non-Blocking Test Verification & Autonomous Repair Status Badge */}
+            {testVerificationStatus && (
+              <div
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono border animate-in fade-in duration-200"
+                style={{
+                  backgroundColor:
+                    testVerificationStatus.status === "PASSED"
+                      ? "rgba(16, 185, 129, 0.1)"
+                      : testVerificationStatus.status === "REPAIRING"
+                      ? "rgba(234, 179, 8, 0.12)"
+                      : testVerificationStatus.status === "VERIFYING"
+                      ? "rgba(6, 182, 212, 0.1)"
+                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                        testVerificationStatus.status === "SKIPPED" ||
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                      ? "rgba(113, 113, 122, 0.15)"
+                      : "rgba(239, 68, 68, 0.1)",
+                  borderColor:
+                    testVerificationStatus.status === "PASSED"
+                      ? "rgba(16, 185, 129, 0.35)"
+                      : testVerificationStatus.status === "REPAIRING"
+                      ? "rgba(234, 179, 8, 0.4)"
+                      : testVerificationStatus.status === "VERIFYING"
+                      ? "rgba(6, 182, 212, 0.35)"
+                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                        testVerificationStatus.status === "SKIPPED" ||
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                      ? "rgba(113, 113, 122, 0.35)"
+                      : "rgba(239, 68, 68, 0.35)",
+                  color:
+                    testVerificationStatus.status === "PASSED"
+                      ? "#34d399"
+                      : testVerificationStatus.status === "REPAIRING"
+                      ? "#fde047"
+                      : testVerificationStatus.status === "VERIFYING"
+                      ? "#67e8f9"
+                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                        testVerificationStatus.status === "SKIPPED" ||
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                      ? "#a1a1aa"
+                      : "#f87171",
+                }}
+              >
+                {testVerificationStatus.status === "VERIFYING" && (
+                  <Loader2 className="w-3 h-3 animate-spin text-cyan-400 shrink-0" />
+                )}
+                {testVerificationStatus.status === "PASSED" && (
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                )}
+                {testVerificationStatus.status === "REPAIRING" && (
+                  <RefreshCw className="w-3 h-3 animate-spin text-yellow-400 shrink-0" />
+                )}
+                {(testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                  testVerificationStatus.status === "SKIPPED" ||
+                  testVerificationStatus.status === "RUNNER_NOT_DETECTED") && (
+                  <Info className="w-3 h-3 text-zinc-400 shrink-0" />
+                )}
+                {testVerificationStatus.status !== "VERIFYING" &&
+                  testVerificationStatus.status !== "PASSED" &&
+                  testVerificationStatus.status !== "REPAIRING" &&
+                  testVerificationStatus.status !== "NO_TESTS_FOUND" &&
+                  testVerificationStatus.status !== "SKIPPED" &&
+                  testVerificationStatus.status !== "RUNNER_NOT_DETECTED" && (
+                    <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+                  )}
+                <span>{testVerificationStatus.display || testVerificationStatus.badge || testVerificationStatus.status}</span>
+              </div>
+            )}
+          </div>
         </div>
       </form>
+
+      {/* Interactive Multi-File Refactor Plan & Execution Reviewer Modal */}
+      {showRefactorModal && refactorPlan && (
+        <RefactorPlanModal
+          isOpen={showRefactorModal}
+          onClose={() => setShowRefactorModal(false)}
+          plan={refactorPlan}
+          onApproveAndExecute={handleApproveAndExecuteRefactor}
+          onCancelPlan={handleCancelRefactorPlan}
+          isExecuting={isRefactorExecuting}
+        />
+      )}
     </div>
   );
 }

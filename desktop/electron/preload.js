@@ -181,12 +181,27 @@ contextBridge.exposeInMainWorld('electronAPI', {
     removeProviderApiKey: (providerId) => ipcRenderer.invoke('ai:remove-api-key', providerId),
     discoverProviderModels: (providerId) => ipcRenderer.invoke('ai:discover-models', providerId),
     getProviderDiagnostics: (providerId) => ipcRenderer.invoke('ai:get-diagnostics', providerId),
+    getVerifiedUsage: (providerId) => ipcRenderer.invoke('ai:get-verified-usage', providerId),
     setActiveProviderModel: (providerId, modelId) => ipcRenderer.invoke('ai:set-config', { providerId, modelId }),
     onConfigChange: (callback) => {
       const handler = (_event, config) => callback(config);
       ipcRenderer.on('ai:config-changed', handler);
       return () => {
         ipcRenderer.removeListener('ai:config-changed', handler);
+      };
+    },
+    onFailover: (callback) => {
+      const handler = (_event, data) => callback(data);
+      ipcRenderer.on('ai:failover-triggered', handler);
+      return () => {
+        ipcRenderer.removeListener('ai:failover-triggered', handler);
+      };
+    },
+    onTestVerificationStatus: (callback) => {
+      const handler = (_event, data) => callback(data);
+      ipcRenderer.on('ai:test-verification-status', handler);
+      return () => {
+        ipcRenderer.removeListener('ai:test-verification-status', handler);
       };
     },
     roles: {
@@ -261,6 +276,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getEvents: (filter) => ipcRenderer.invoke('harness:get-events', filter),
     cancelSwarm: (swarmId, reason) => ipcRenderer.invoke('harness:cancel-swarm', { swarmId, reason }),
     getSwarmStatus: (swarmId) => ipcRenderer.invoke('harness:get-swarm-status', swarmId),
+    // Refactor Plan & Swarm Coordinator (Milestone 21)
+    planRefactor: (payload) => ipcRenderer.invoke('harness:plan-refactor', payload),
+    getRefactorPlan: (planId) => ipcRenderer.invoke('harness:get-refactor-plan', planId),
+    approveRefactorPlan: (payload) => ipcRenderer.invoke('harness:approve-refactor-plan', payload),
+    rejectRefactorPlan: (payload) => ipcRenderer.invoke('harness:reject-refactor-plan', payload),
+    executeRefactorPlan: (payload) => ipcRenderer.invoke('harness:execute-refactor-plan', payload),
+    onRefactorPlanUpdate: (callback) => {
+      const listener = (_, data) => callback(data);
+      ipcRenderer.on('harness:refactor-plan-updated', listener);
+      return () => ipcRenderer.removeListener('harness:refactor-plan-updated', listener);
+    },
+    verifyPostMutation: (payload) => ipcRenderer.invoke('harness:verify-post-mutation', payload),
     discoverProjectCapabilities: (workspacePath) => ipcRenderer.invoke('harness:discover-project-capabilities', workspacePath),
     loadProjectCapabilities: (payload) => ipcRenderer.invoke('harness:load-project-capabilities', payload),
     reloadProjectCapabilities: (payload) => ipcRenderer.invoke('harness:reload-project-capabilities', payload),

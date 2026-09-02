@@ -39,9 +39,12 @@ const { RepositorySymbolIndex, repositorySymbolIndex, IGNORED_DIRECTORIES, SUPPO
 const { ImpactAnalyzer, impactAnalyzer } = require('./ImpactAnalyzer');
 const { LanguageIntelligence, languageIntelligence } = require('./LanguageIntelligence');
 const { RefactorPlan, MAX_REPAIR_CYCLES } = require('./RefactorPlan');
+const { WorkspacePathResolver, workspacePathResolver } = require('./WorkspacePathResolver');
 
 module.exports = {
   ...types,
+  WorkspacePathResolver,
+  workspacePathResolver,
 
   LanguageIntelligence,
   languageIntelligence,

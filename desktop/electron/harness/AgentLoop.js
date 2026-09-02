@@ -18,6 +18,7 @@ const { HandoffState } = require('./HandoffState');
 const { swarmOrchestrator: defaultSwarmOrchestrator } = require('./SwarmOrchestrator');
 const { isGreeting, getConversationalGreetingResponse, getConversationalResponse, requestRouter, ROUTER_MODES } = require('./RequestRouter');
 const { continuumContextBuilder } = require('../../engine/continuum_context_builder');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const secretFilter = require('../../security/secretFilter');
 
 let evidenceGraphInstance = null;
@@ -134,8 +135,8 @@ class AgentLoop {
     const {
       threadId,
       userInput = '',
-      workspacePath = process.cwd(),
-      activeFilePath = null,
+      workspacePath: rawWorkspacePath = process.cwd(),
+      activeFilePath: rawActiveFilePath = null,
       intent = 'MUTATION',
       approvalMode = 'strict',
       maxIterations = DEFAULT_MAX_ITERATIONS,
@@ -147,6 +148,11 @@ class AgentLoop {
       continuumContextText: rawContinuumContextText,
       continuumActive: rawContinuumActive,
     } = payload;
+
+    const workspacePath = workspacePathResolver.canonicalizeWorkspaceRoot(rawWorkspacePath);
+    const activeFilePath = rawActiveFilePath
+      ? workspacePathResolver.toRelative(workspacePath, rawActiveFilePath)
+      : null;
 
     const continuumActive = payload.continuumActive === true;
     let continuumSnapshot = null;
@@ -437,6 +443,9 @@ class AgentLoop {
     let totalToolCalls = 0;
     let finalAssistantResponse = null;
     let lastContextMetrics = null;
+    const mutatedFilesSet = new Set();
+    const executedToolHistory = new Map();
+    let consecutiveDuplicateTurns = 0;
 
     try {
       while (iterations < maxIterations) {
@@ -571,6 +580,24 @@ class AgentLoop {
           modelResponse.content = accumulatedText;
           modelResponse.toolCalls = streamToolCalls;
         } catch (streamErr) {
+          const checkTurn = this.runtime.getTurn(turnId);
+          if (
+            (checkTurn && checkTurn.status === TURN_STATUS.CANCELLED) ||
+            streamErr.name === 'AbortError' ||
+            abortController.signal.aborted
+          ) {
+            if (streamItem && streamItem.status !== ITEM_STATUS.COMPLETED && streamItem.status !== ITEM_STATUS.CANCELLED) {
+              this.runtime.cancelItem(streamItem.itemId, 'Turn cancelled during streaming');
+            }
+            return {
+              success: false,
+              status: TURN_STATUS.CANCELLED,
+              turnId,
+              threadId,
+              iterations,
+              message: 'Agent turn was cancelled during streaming',
+            };
+          }
           if (streamItem) {
             this.runtime.failItem(streamItem.itemId, streamErr.message);
           }
@@ -614,6 +641,8 @@ class AgentLoop {
             };
           }
 
+          let allBlockedDuplicates = true;
+
           for (const tc of toolCalls) {
             // Check cancellation before executing individual tool
             const preToolCheck = this.runtime.getTurn(turnId);
@@ -635,6 +664,13 @@ class AgentLoop {
             if (alreadyExecuted) {
               continue;
             }
+
+            // Track duplicate read-only tool calls to prevent infinite loops
+            const READ_ONLY_TOOLS = new Set(['read_file', 'search_workspace', 'inspect_file', 'list_dir']);
+            const isReadOnly = READ_ONLY_TOOLS.has(tc.toolName);
+            const toolKey = `${tc.toolName}:${JSON.stringify(tc.arguments || {})}`;
+            const prevHistory = executedToolHistory.get(toolKey);
+            const callCount = (prevHistory ? prevHistory.count : 0) + 1;
 
             totalToolCalls++;
 
@@ -684,9 +720,33 @@ class AgentLoop {
                 error: 'Mutation tool "apply_patch" is strictly disallowed in READ_ONLY intent.',
                 requiresApproval: false,
               };
+              allBlockedDuplicates = false;
+            } else if (isReadOnly && callCount >= 3) {
+              execResult = {
+                success: false,
+                error: `Duplicate tool call prevented: You have already executed "${tc.toolName}" ${callCount - 1} times with identical parameters in this turn. Further duplicate calls are disallowed. Please synthesize your final answer using the information already retrieved.`,
+                isDuplicateLoop: true,
+              };
+            } else if (isReadOnly && callCount === 2 && prevHistory?.lastResult) {
+              allBlockedDuplicates = false;
+              execResult = {
+                ...(prevHistory.lastExecResult || {}),
+                success: true,
+                result: {
+                  ...(prevHistory.lastResult || {}),
+                  notice: `This information was already retrieved in a previous step and is available in the conversation above. You have all required information. Please output your final natural-language response directly without calling "${tc.toolName}" again.`,
+                },
+              };
             } else {
+              allBlockedDuplicates = false;
               execResult = await this.toolRegistry.execute(tc.toolName, tc.arguments, execContext);
             }
+
+            executedToolHistory.set(toolKey, {
+              count: callCount,
+              lastResult: execResult.result,
+              lastExecResult: execResult,
+            });
 
             if (isExternal && this.runtime?.eventBus) {
               if (execResult.success) {
@@ -796,6 +856,7 @@ class AgentLoop {
               if (execResult.success) {
                 for (const edit of tc.arguments.edits) {
                   try {
+                    if (edit?.filePath) mutatedFilesSet.add(edit.filePath);
                     const fileChangeItem = this.runtime.startItem(turnId, ITEM_TYPES.FILE_CHANGE, {
                       filePath: edit.filePath,
                       changeType: 'MODIFY',
@@ -830,6 +891,26 @@ class AgentLoop {
                       } catch (e) {}
                     }
                   } catch (fcErr) {}
+                }
+              }
+            }
+
+            // Track file mutations for other mutation tools
+            if (execResult.success) {
+              if (tc.toolName === 'edit_file' || tc.toolName === 'write_file' || tc.toolName === 'safe_remove' || tc.toolName === 'modify_file') {
+                const targetF = tc.arguments?.path || tc.arguments?.filePath || tc.arguments?.targetFile;
+                if (targetF && typeof targetF === 'string') {
+                  mutatedFilesSet.add(targetF);
+                }
+              }
+              const resPath = execResult.result?.filePath || execResult.result?.path || execResult.result?.targetFile;
+              if (resPath && typeof resPath === 'string') {
+                mutatedFilesSet.add(resPath);
+              }
+              if (Array.isArray(execResult.result?.files)) {
+                for (const f of execResult.result.files) {
+                  if (typeof f === 'string') mutatedFilesSet.add(f);
+                  else if (f?.filePath) mutatedFilesSet.add(f.filePath);
                 }
               }
             }
@@ -906,12 +987,85 @@ class AgentLoop {
             }
           }
 
+          if (allBlockedDuplicates) {
+            consecutiveDuplicateTurns++;
+            if (consecutiveDuplicateTurns >= 2) {
+              const lastRetrieved = Array.from(executedToolHistory.values()).find(
+                (h) => h.lastResult && (h.lastResult.content || h.lastResult.matches)
+              );
+              const snippet = lastRetrieved?.lastResult?.content
+                ? (typeof lastRetrieved.lastResult.content === 'string'
+                    ? lastRetrieved.lastResult.content.slice(0, 1500)
+                    : JSON.stringify(lastRetrieved.lastResult.content))
+                : null;
+              finalAssistantResponse = accumulatedText.trim() ||
+                (snippet
+                  ? `Task completed. Retreived content:\n\n${snippet}`
+                  : 'Task completed. All requested file and workspace information has been retrieved.');
+
+              const agentMsgItem = this.runtime.startItem(turnId, ITEM_TYPES.AGENT_MESSAGE, {
+                text: finalAssistantResponse,
+                summary: finalAssistantResponse,
+              });
+              this.runtime.completeItem(agentMsgItem.itemId);
+
+              const completedTurn = this.runtime.completeTurn(turnId, {
+                outcome: 'SUCCESS',
+                summary: finalAssistantResponse,
+                iterations,
+                totalToolCalls,
+                testVerification: null,
+              });
+
+              return {
+                success: true,
+                status: TURN_STATUS.COMPLETED,
+                turnId,
+                turn: completedTurn,
+                finalResponse: finalAssistantResponse,
+                iterations,
+                totalToolCalls,
+                contextMetrics: lastContextMetrics,
+              };
+            }
+          } else {
+            consecutiveDuplicateTurns = 0;
+          }
+
           // Continue to next iteration loop to let model observe results
           continue;
         }
 
         // 6. If model returned final conversational text (no tool calls): complete turn
         finalAssistantResponse = modelResponse.content || 'Task completed successfully.';
+
+        // Run closed-loop post-mutation test sentinel if files were mutated
+        let testVerification = null;
+        if (mutatedFilesSet.size > 0 && payload.disablePostMutationTest !== true) {
+          try {
+            const { postMutationSentinel } = require('../testing/PostMutationSentinel');
+            testVerification = await postMutationSentinel.verify({
+              workspacePath,
+              mutatedFiles: Array.from(mutatedFilesSet),
+              threadId,
+              turnId,
+              modelAdapter: this.modelAdapter,
+              testExecutor: payload.testExecutor || payload.options?.testExecutor,
+              repairGenerator: payload.repairGenerator || payload.options?.repairGenerator,
+              onProgress: (prog) => {
+                if (this.runtime?.eventBus) {
+                  this.runtime.eventBus.emit(EVENT_TYPES.TEST_VERIFICATION_STATUS || 'ai:test-verification-status', {
+                    threadId,
+                    turnId,
+                    payload: prog,
+                    ...prog,
+                  });
+                }
+              },
+              options: payload.options || {},
+            });
+          } catch (_) {}
+        }
 
         if (streamItem) {
           this.runtime.completeItem(streamItem.itemId, {
@@ -931,9 +1085,10 @@ class AgentLoop {
           summary: finalAssistantResponse,
           iterations,
           totalToolCalls,
+          testVerification,
         });
 
-        if (evidenceGraphInstance && threadId) {
+        if (evidenceGraphInstance && threadId && !testVerification?.verified) {
           try {
             evidenceGraphInstance.addNode({
               sessionId: threadId,
@@ -953,6 +1108,7 @@ class AgentLoop {
           providerId,
           modelId,
           turn: completedTurn,
+          testVerification,
           finalResponse: finalAssistantResponse,
           iterations,
           totalToolCalls,
@@ -979,12 +1135,12 @@ class AgentLoop {
       };
     } catch (err) {
       console.error('[HARNESS-AGENTLOOP] Turn execution error:', err);
-      const actualProviderId = err.rateInfo?.providerId || err.providerId || providerId;
-      const actualModelId = err.rateInfo?.modelId || err.modelId || modelId;
+      const actualProviderId = err.primaryProviderId || err.rateInfo?.providerId || err.providerId || providerId;
+      const actualModelId = err.primaryModelId || err.rateInfo?.modelId || err.modelId || modelId;
       const { parseRateLimitError } = require('../ai/types');
       const rateInfo = err.rateInfo || parseRateLimitError(err, actualProviderId, actualModelId);
-      const finalProviderId = rateInfo?.providerId || actualProviderId || 'groq';
-      const finalModelId = rateInfo?.modelId || actualModelId || '';
+      const finalProviderId = rateInfo?.providerId || actualProviderId || providerId || 'nexus1';
+      const finalModelId = rateInfo?.modelId || actualModelId || modelId || '';
       const safeErrorMsg = secretFilter.sanitizeString(rateInfo ? rateInfo.message : (err.message || 'Agent loop encountered an error'));
 
       try {

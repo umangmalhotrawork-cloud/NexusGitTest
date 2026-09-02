@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { ChangeSet } = require('./harness/ChangeSet');
 const { transactionalPatchApplier } = require('./transactionalPatchApplier');
+const { workspacePathResolver } = require('./harness/WorkspacePathResolver');
 let secretFilter = null;
 try {
   secretFilter = require('../security/secretFilter');
@@ -150,6 +151,9 @@ class SearchManager {
       };
     }
 
+    const effectiveWorkspace = workspacePathResolver.canonicalizeWorkspaceRoot(workspacePath);
+    const rootWorkspace = payload.rootWorkspacePath ? workspacePathResolver.canonicalizeWorkspaceRoot(payload.rootWorkspacePath) : effectiveWorkspace;
+
     const results = [];
     const matchedFilesSet = new Set();
 
@@ -172,7 +176,7 @@ class SearchManager {
         }
 
         const fullPath = path.join(dir, name);
-        const relPath = path.relative(workspacePath, fullPath);
+        const relPath = workspacePathResolver.toRelative(rootWorkspace, fullPath);
 
         if (entry.isDirectory()) {
           if (!IGNORE_DIRS.has(name) && !isExcludedByGlobs(relPath, excludeGlobs)) {
@@ -186,6 +190,18 @@ class SearchManager {
           if (!matchesAnyGlob(relPath, includeGlobs)) continue;
           if (isExcludedByGlobs(relPath, excludeGlobs)) continue;
 
+          let matchesFile = false;
+          if (isRegex) {
+            try { matchesFile = regex.test(name) || regex.test(relPath); } catch (e) {}
+          } else {
+            const queryNorm = isCaseSensitive ? query : query.toLowerCase();
+            const nameNorm = isCaseSensitive ? name : name.toLowerCase();
+            const relNorm = isCaseSensitive ? relPath : relPath.toLowerCase();
+            matchesFile = nameNorm.includes(queryNorm) || relNorm.includes(queryNorm);
+          }
+
+          const fileMatchesStart = results.length;
+
           try {
             const stat = fs.statSync(fullPath);
             if (stat.size > 5 * 1024 * 1024) continue; // Skip files > 5MB
@@ -197,15 +213,17 @@ class SearchManager {
 
             const lines = content.split(/\r?\n/);
 
+            let fileMatches = 0;
             for (let i = 0; i < lines.length; i++) {
-              if (results.length >= maxResults) break;
+              if (results.length >= maxResults || fileMatches >= (payload.maxMatchesPerFile || 25)) break;
 
               const lineText = lines[i];
               regex.lastIndex = 0;
               let match;
 
               while ((match = regex.exec(lineText)) !== null) {
-                if (results.length >= maxResults) break;
+                if (results.length >= maxResults || fileMatches >= (payload.maxMatchesPerFile || 25)) break;
+                fileMatches++;
                 const matchStart = match.index;
                 const matchEnd = match.index + match[0].length;
                 const matchId = `${relPath}:${i + 1}:${matchStart + 1}:${matchStart}`;
@@ -231,6 +249,24 @@ class SearchManager {
                 }
               }
             }
+
+            // If file matched by name/path but had no content matches, record file match at line 1
+            if (matchesFile && results.length === fileMatchesStart && results.length < maxResults) {
+              results.push({
+                matchId: `${relPath}:1:1:0`,
+                file: relPath,
+                filePath: relPath,
+                fullPath,
+                line: 1,
+                column: 1,
+                text: lines[0] || `File match: ${relPath}`,
+                lineText: lines[0] || `File match: ${relPath}`,
+                matchText: query,
+                matchStart: 0,
+                matchEnd: query.length,
+              });
+              matchedFilesSet.add(relPath);
+            }
           } catch (fileErr) {
             // Ignore unreadable files
           }
@@ -238,7 +274,7 @@ class SearchManager {
       }
     };
 
-    scanDirectory(workspacePath);
+    scanDirectory(effectiveWorkspace);
 
     return {
       success: true,

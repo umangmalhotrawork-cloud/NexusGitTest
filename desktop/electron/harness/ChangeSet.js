@@ -19,6 +19,7 @@ const { analyzeSemanticIntentDrift } = require('../../engine/semantic_intent_dri
 const { astDiffEngine } = require('./ASTDiffEngine');
 const { impactAnalyzer } = require('./ImpactAnalyzer');
 const { transactionalPatchApplier } = require('../transactionalPatchApplier');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const secretFilter = require('../../security/secretFilter');
 
 let evidenceGraphInstance = null;
@@ -186,7 +187,7 @@ class ChangeSet {
     this.updatedAt = Date.now();
     this._emit(EVENT_TYPES.CHANGE_SET_EVALUATING);
 
-    const workspaceRoot = path.resolve(options.workspacePath || this.workspacePath || process.cwd());
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(options.workspacePath || this.workspacePath);
     const blockedFiles = [];
     const reasons = [];
 
@@ -197,9 +198,11 @@ class ChangeSet {
 
     // 1. Individual File & Hunk Safety Evaluations
     for (const file of this.files) {
-      const absPath = path.isAbsolute(file.filePath)
-        ? file.filePath
-        : path.resolve(workspaceRoot, file.filePath);
+      const res = workspacePathResolver.resolve(workspaceRoot, file.filePath, { allowDirectory: false });
+      const absPath = res.success ? res.absolutePath : path.resolve(workspaceRoot, file.filePath);
+      if (res.success) {
+        file.filePath = res.relativePath;
+      }
 
       let candidateLine = 1;
 
@@ -452,7 +455,7 @@ class ChangeSet {
    * @returns {Promise<Object>} Apply outcome
    */
   async apply(options = {}) {
-    const workspaceRoot = path.resolve(options.workspacePath || this.workspacePath || process.cwd());
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(options.workspacePath || this.workspacePath);
     const applier = options.applier || transactionalPatchApplier;
 
 

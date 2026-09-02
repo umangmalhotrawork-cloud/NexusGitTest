@@ -12,6 +12,7 @@ const {
   EVENT_TYPES,
 } = require('./types');
 const { continuumContextBuilder } = require('../../engine/continuum_context_builder');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const secretFilter = require('../../security/secretFilter');
 
 // Default Context Budgets (in tokens or characters)
@@ -616,8 +617,8 @@ class ContextEngine {
       continuumContextText = null,
       continuumActive = false,
       handoffState = null,
-      workspacePath = process.cwd(),
-      activeFilePath = null,
+      workspacePath: rawWorkspacePath = process.cwd(),
+      activeFilePath: rawActiveFilePath = null,
       selectionText = null,
       selectionStartLine = null,
       selectionStartColumn = null,
@@ -634,6 +635,11 @@ class ContextEngine {
       capabilities = [],
       options = {},
     } = params;
+
+    const workspacePath = workspacePathResolver.canonicalizeWorkspaceRoot(rawWorkspacePath);
+    const activeFilePath = rawActiveFilePath
+      ? workspacePathResolver.toRelative(workspacePath, rawActiveFilePath)
+      : null;
 
     const isCodingTask = intent === 'MUTATION' || intent === 'READ_ONLY' || options.isCodingTask !== false;
     const baseBudget = isCodingTask ? CODING_TASK_BUDGETS : DEFAULT_BUDGETS;

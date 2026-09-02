@@ -76,6 +76,8 @@ export type AgentTaskResult = {
   execution?: {
     providerId: string;
     modelId: string;
+    requestedProviderId?: string;
+    requestedModelId?: string;
     isFallback?: boolean;
   };
 };
@@ -90,6 +92,8 @@ export type AgentMessage = {
   execution?: {
     providerId: string;
     modelId: string;
+    requestedProviderId?: string;
+    requestedModelId?: string;
     isFallback?: boolean;
   };
   steps?: AgentStep[];
@@ -2165,7 +2169,7 @@ export default function AgentPanel({
                   {/* Message Action Controls: Run Again & View Evidence */}
                   <div className="flex items-center gap-2 pt-2 border-t border-[#1a1a26] text-[10px]">
                     <button
-                      onClick={() => handleRunAgent(msg.content)}
+                      onClick={() => handleRunAgent(msg.content, msg.execution?.requestedProviderId || msg.execution?.providerId || activeProvider, msg.execution?.requestedModelId || msg.execution?.modelId || activeModel)}
                       disabled={loading}
                       className="px-2 py-0.5 rounded bg-[#101422] hover:bg-[#182034] border border-cyan-500/30 text-cyan-300 font-medium flex items-center gap-1 cursor-pointer transition-colors"
                     >

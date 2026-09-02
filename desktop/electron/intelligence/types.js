@@ -152,6 +152,86 @@ function getModelPricing(providerId = '', modelId = '') {
 }
 
 // =========================================================================
+// 3. MODEL CONTEXT WINDOW SPECIFICATIONS (Authoritative Tokens)
+// =========================================================================
+
+/**
+ * Authoritative context window limits for verified catalog models (in tokens).
+ */
+const MODEL_CONTEXT_WINDOWS = Object.freeze({
+  // Google Gemini Models
+  'gemini-2.5-flash': 1_048_576,
+  'gemini-3.5-flash': 1_048_576,
+  'gemini-2.0-flash': 1_048_576,
+  'gemini-1.5-flash': 1_048_576,
+  'gemini-2.5-pro': 2_097_152,
+  'gemini-1.5-pro': 2_097_152,
+
+  // Anthropic Claude Models
+  'claude-3-5-sonnet-20241022': 200_000,
+  'claude-3-5-sonnet': 200_000,
+  'claude-3-5-haiku-20241022': 200_000,
+  'claude-3-5-haiku': 200_000,
+  'claude-3-opus-20240229': 200_000,
+  'claude-3-haiku-20240307': 200_000,
+
+  // OpenAI Models
+  'gpt-4o': 128_000,
+  'gpt-4o-mini': 128_000,
+  'o1-preview': 128_000,
+  'o1-mini': 128_000,
+  'gpt-4-turbo': 128_000,
+  'gpt-3.5-turbo': 16_385,
+
+  // Groq Models
+  'openai/gpt-oss-120b': 128_000,
+  'openai/gpt-oss-20b': 128_000,
+  'llama-3.3-70b-versatile': 128_000,
+  'llama-3.1-8b-instant': 128_000,
+  'groq/compound': 128_000,
+  'groq/compound-mini': 128_000,
+  'qwen/qwen3.6-27b': 128_000,
+  'mixtral-8x7b-32768': 32_768,
+
+  // DeepSeek Models
+  'deepseek-coder': 64_000,
+  'deepseek-chat': 64_000,
+  'deepseek-reasoner': 64_000,
+
+  // xAI Grok Models
+  'grok-2-latest': 128_000,
+  'grok-beta': 128_000,
+  'grok-vision-beta': 128_000,
+});
+
+/**
+ * Resolves the authoritative context window for a given provider and model.
+ * Returns null if the model's limit is unknown (never guesses or invents a fallback).
+ * @param {string} [providerId]
+ * @param {string} [modelId]
+ * @returns {number|null} Token limit or null if unknown
+ */
+function getModelContextWindow(providerId = '', modelId = '') {
+  const normProvider = String(providerId || '').toLowerCase().trim();
+  let candidateModel = String(modelId || '').trim();
+
+  if (candidateModel.startsWith('models/')) {
+    candidateModel = candidateModel.slice(7);
+  }
+
+  if (!candidateModel || candidateModel === 'default') {
+    candidateModel = SLOT_DEFAULT_MODELS[normProvider] || '';
+  }
+
+  const windowLimit = MODEL_CONTEXT_WINDOWS[candidateModel];
+  if (typeof windowLimit === 'number' && windowLimit > 0) {
+    return windowLimit;
+  }
+
+  return null;
+}
+
+// =========================================================================
 // 3. FACTORY / HELPER CONSTRUCTORS
 // =========================================================================
 
@@ -196,8 +276,10 @@ module.exports = {
   EVIDENCE_TYPES,
   PROVENANCE_SOURCE,
   MODEL_PRICING_CATALOG,
+  MODEL_CONTEXT_WINDOWS,
   SLOT_DEFAULT_MODELS,
   getModelPricing,
+  getModelContextWindow,
   createEvidenceRef,
   createEvidenceQueryResult,
 };

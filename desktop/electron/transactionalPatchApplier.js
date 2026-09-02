@@ -13,6 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { workspacePathResolver } = require('./harness/WorkspacePathResolver');
 const { evaluateAIPatchFirewall } = require('../engine/ai_patch_firewall');
 const { evidenceGraph, PROVENANCE_CLASSES, NODE_TYPES } = require('./evidence/EvidenceGraph');
 
@@ -21,39 +22,19 @@ class TransactionalPatchApplier {
    * Helper: Normalize path and assert it is strictly within the active workspace.
    */
   resolveAndValidatePath(filePath, workspacePath) {
-    if (!filePath || typeof filePath !== 'string') {
+    if (!filePath || typeof filePath !== 'string' || !filePath.trim()) {
       throw new Error('Invalid file path: path must be a non-empty string');
     }
     if (!workspacePath || typeof workspacePath !== 'string') {
       throw new Error('Invalid workspace path: workspace must be specified');
     }
 
-    const normWorkspace = path.resolve(workspacePath);
-    const resolved = path.isAbsolute(filePath)
-      ? path.resolve(filePath)
-      : path.resolve(normWorkspace, filePath);
-
-    // Prevent directory traversal attacks
-    if (!resolved.startsWith(normWorkspace + path.sep) && resolved !== normWorkspace) {
-      throw new Error(`Security Violation: Path "${filePath}" escapes workspace boundary "${workspacePath}"`);
+    const resolution = workspacePathResolver.resolve(workspacePath, filePath, { allowDirectory: false });
+    if (!resolution.success) {
+      throw new Error(resolution.error || `Security Violation: Path "${filePath}" escapes workspace boundary "${workspacePath}"`);
     }
 
-    // Check realpath if file exists to prevent symlink escape attacks
-    if (fs.existsSync(resolved)) {
-      try {
-        const realResolved = fs.realpathSync(resolved);
-        const realWorkspace = fs.existsSync(normWorkspace) ? fs.realpathSync(normWorkspace) : normWorkspace;
-        if (!realResolved.startsWith(realWorkspace + path.sep) && realResolved !== realWorkspace) {
-          throw new Error(`Security Violation: Symlink "${filePath}" points outside workspace boundary "${workspacePath}"`);
-        }
-      } catch (e) {
-        if (e.message && e.message.startsWith('Security Violation:')) {
-          throw e;
-        }
-      }
-    }
-
-    return resolved;
+    return resolution.absolutePath;
   }
 
   /**
@@ -230,7 +211,7 @@ class TransactionalPatchApplier {
             error: syntaxCheck.error,
             reason: 'SYNTAX_ERROR',
             rolledBack: true,
-            conflictingFiles: [path.relative(workspacePath, absPath)],
+            conflictingFiles: [workspacePathResolver.toRelative(workspacePath, absPath)],
           };
         }
       }
@@ -244,7 +225,7 @@ class TransactionalPatchApplier {
         const originalContent = originalContentsMap.get(absPath);
         if (originalContent !== candidateContent) {
           try {
-            const relPath = path.relative(workspacePath, absPath);
+            const relPath = workspacePathResolver.toRelative(workspacePath, absPath);
             const firewallRes = await evaluateAIPatchFirewall({
               file_path: absPath,
               patch_text: `--- a/${relPath}\n+++ b/${relPath}\n@@ -1,3 +1,3 @@\n-${originalContent.slice(0, 40)}\n+${candidateContent.slice(0, 40)}`,
@@ -305,7 +286,7 @@ class TransactionalPatchApplier {
             throw new Error(`Write verification mismatch for ${path.basename(absPath)}`);
           }
 
-          const relPath = path.relative(workspacePath, absPath);
+          const relPath = workspacePathResolver.toRelative(workspacePath, absPath);
           modifiedFiles.push({
             filePath: absPath,
             relPath,
@@ -351,7 +332,7 @@ class TransactionalPatchApplier {
         error: writeErr.message,
         reason: writeErr.message.includes('Concurrency Conflict') ? 'WORKSPACE_CHANGED' : 'WRITE_FAILURE',
         rolledBack: true,
-        conflictingFiles: writtenFiles.map((p) => path.relative(workspacePath, p)),
+        conflictingFiles: writtenFiles.map((p) => workspacePathResolver.toRelative(workspacePath, p)),
       };
     }
 

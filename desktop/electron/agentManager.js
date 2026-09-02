@@ -9,6 +9,7 @@ const { continuumEngine } = require('../engine/continuum_engine');
 const { continuumCapsuleBuilder } = require('../engine/continuum_capsule_builder');
 const { continuumManager } = require('./continuumManager');
 const { aiProviderRouter } = require('./ai/AIProviderRouter');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 
 const IGNORE_DIRS = new Set([
   'node_modules',
@@ -98,13 +99,13 @@ class AgentManager {
   }
 
   resolveTargetFile(workspacePath, files, activeFilePath, taskText = '', isExplicitEditorTarget = false) {
-    const workspaceRoot = path.resolve(workspacePath);
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(workspacePath);
     const text = (taskText || '').toLowerCase();
 
     // 1. Check if user explicitly mentioned a file name or path in the prompt
     for (const f of files) {
       const base = path.basename(f).toLowerCase();
-      const rel = path.relative(workspacePath, f).toLowerCase();
+      const rel = workspacePathResolver.toRelative(workspaceRoot, f).toLowerCase();
       if (text.includes(base) || text.includes(rel)) {
         return f;
       }
@@ -112,21 +113,19 @@ class AgentManager {
 
     // 2. If caller explicitly requested a file-specific action (e.g. editor selection / code action)
     if (isExplicitEditorTarget && typeof activeFilePath === 'string' && activeFilePath.trim()) {
+      const res = workspacePathResolver.resolve(workspaceRoot, activeFilePath.trim(), { mustExist: false });
+      if (res.success && res.exists && res.isFile) {
+        return res.absolutePath;
+      }
+
       const normActive = activeFilePath.trim().toLowerCase();
       for (const f of files) {
         const base = path.basename(f).toLowerCase();
-        const rel = path.relative(workspacePath, f).toLowerCase();
-        if (normActive === base || normActive === rel || path.resolve(workspacePath, activeFilePath) === path.resolve(f) || path.resolve(activeFilePath) === path.resolve(f)) {
+        const rel = workspacePathResolver.toRelative(workspaceRoot, f).toLowerCase();
+        if (normActive === base || normActive === rel || (res.success && res.absolutePath === path.resolve(f))) {
           return f;
         }
       }
-
-      const candidate = path.resolve(workspaceRoot, activeFilePath);
-      try {
-        if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-          return candidate;
-        }
-      } catch (e) {}
     }
 
     // 3. For generic tasks without explicit file reference, return null (no implicit target file)

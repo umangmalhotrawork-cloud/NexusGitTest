@@ -48,6 +48,15 @@ export interface PreflightEstimateData {
     tools?: number;
     system?: number;
   };
+  recommendedModel?: {
+    providerId: string | null;
+    modelId: string | null;
+    modelDisplayName?: string | null;
+    reason: string;
+    savingsEstimate?: string | null;
+    isCurrentOptimal?: boolean;
+    tier?: string;
+  } | null;
 }
 
 interface PreflightModalProps {

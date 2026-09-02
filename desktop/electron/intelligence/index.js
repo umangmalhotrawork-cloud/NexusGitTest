@@ -12,6 +12,7 @@ const types = require('./types');
 const { SoftwareEvidenceLayer, softwareEvidenceLayer } = require('./SoftwareEvidenceLayer');
 const { PreflightEstimator, preflightEstimator } = require('./PreflightEstimator');
 const { PreflightCostEstimator, preflightCostEstimator } = require('./PreflightCostEstimator');
+const { ModelSelectionAdvisor, modelSelectionAdvisor } = require('./ModelSelectionAdvisor');
 const { BreakageCorrelator, breakageCorrelator } = require('./BreakageCorrelator');
 const {
   DECISION_STATUS,
@@ -242,4 +243,8 @@ module.exports = {
   FAILURE_CATEGORY,
   DeploymentFailureDiagnoser,
   deploymentFailureDiagnoser,
+
+  // Model Selection Intelligence
+  ModelSelectionAdvisor,
+  modelSelectionAdvisor,
 };

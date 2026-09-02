@@ -34,8 +34,11 @@ const {
   CONFIDENCE_TIERS,
   CONFIDENCE_LEVELS,
   getModelPricing,
+  getModelContextWindow,
   MODEL_PRICING_CATALOG,
 } = require('./types');
+const { modelSelectionAdvisor } = require('./ModelSelectionAdvisor');
+const { aiProviderRouter } = require('../ai/AIProviderRouter');
 
 // Default Token Ceilings & Heuristic Weights
 const DEFAULT_TOTAL_BUDGET = 6000;
@@ -624,6 +627,48 @@ class PreflightEstimator {
       overallConfidenceTier = CONFIDENCE_TIERS.LOW;
     }
 
+    // 10. Context Window Pre-Gating Assessment
+    const activeContextWindow = getModelContextWindow(providerId, modelId);
+    const contextUsageRatio = activeContextWindow ? Math.round((estimatedTotalTokens / activeContextWindow) * 1000) / 1000 : null;
+    const isContextExceeded = Boolean(activeContextWindow !== null && estimatedTotalTokens > activeContextWindow);
+
+    // 11. Model Selection Intelligence Recommendation (Deterministic & Local)
+    let recommendedModel = null;
+    try {
+      let configuredProviders = [];
+      if (input.configuredProviders && Array.isArray(input.configuredProviders)) {
+        configuredProviders = input.configuredProviders;
+      } else if (aiProviderRouter && typeof aiProviderRouter.getConfig === 'function') {
+        const routerConfig = aiProviderRouter.getConfig();
+        configuredProviders = routerConfig ? routerConfig.providers : [];
+      }
+
+      recommendedModel = modelSelectionAdvisor.recommendModel({
+        mode: routeClassification.mode,
+        codingIntent: routeClassification.codingIntent,
+        riskLevel,
+        estimatedInputTokens,
+        estimatedMaxOutputTokens,
+        estimatedTotalTokens,
+        estimatedFilesCount: filesAssessment.count,
+        estimatedToolCalls: toolsAssessment.approximate,
+        currentProviderId: providerId,
+        currentModelId: modelId,
+        configuredProviders,
+      });
+    } catch (_) {
+      recommendedModel = {
+        providerId: null,
+        modelId: null,
+        modelDisplayName: null,
+        reason: 'Recommendation unavailable',
+        savingsEstimate: null,
+        isCurrentOptimal: false,
+        isContextExceeded,
+        contextWindow: activeContextWindow,
+      };
+    }
+
     return {
       schemaVersion: '1.0.0',
       timestamp: Date.now(),
@@ -632,6 +677,10 @@ class PreflightEstimator {
       codingIntent: routeClassification.codingIntent,
       providerId,
       modelId: costAssessment.rates ? (modelId || costAssessment.rates && getModelPricing(providerId, modelId).resolvedModelId) : (modelId || 'unknown'),
+      recommendedModel,
+      contextWindow: activeContextWindow,
+      contextUsageRatio,
+      isContextExceeded,
       estimatedInputTokens,
       estimatedMaxOutputTokens,
       estimatedTotalTokens,

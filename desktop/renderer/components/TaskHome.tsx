@@ -359,9 +359,11 @@ export default function TaskHome({
     }
   };
 
-  const handleComposerSubmit = async (promptText: string) => {
+  const handleComposerSubmit = async (promptText: string, _approvalMode?: "auto" | "strict", providerId?: string, modelId?: string) => {
     if (!promptText || !promptText.trim()) return;
-    checkAndStartTask(promptText.trim());
+    const targetProv = providerId || activeProvider;
+    const targetMod = modelId || activeModel;
+    onStartTask(promptText.trim(), targetProv, targetMod, importedCapsule);
   };
 
   const workspaceName = workspacePath ? workspacePath.split("/").pop() || "NEXUS" : "NEXUS";

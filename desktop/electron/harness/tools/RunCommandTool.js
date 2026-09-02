@@ -7,6 +7,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { workspacePathResolver } = require('../WorkspacePathResolver');
 const secretFilter = require('../../../security/secretFilter');
 
 const MAX_COMMAND_OUTPUT_BYTES = 50 * 1024; // 50 KB output limit
@@ -90,19 +91,25 @@ const RunCommandTool = {
       };
     }
 
-    const workspaceRoot = path.resolve(context.workspacePath || process.cwd());
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(context.workspacePath);
     let cwd = workspaceRoot;
 
     if (args.cwd && typeof args.cwd === 'string' && args.cwd.trim()) {
-      const candidateCwd = path.resolve(workspaceRoot, args.cwd.trim());
-      if (!candidateCwd.startsWith(workspaceRoot + path.sep) && candidateCwd !== workspaceRoot) {
+      const res = workspacePathResolver.resolve(workspaceRoot, args.cwd.trim(), {
+        isDirectory: true,
+        allowDirectory: true,
+        mustExist: false,
+      });
+      if (!res.success) {
         return {
           success: false,
-          error: `Security Violation: Working directory "${args.cwd}" escapes workspace boundary`,
+          error: res.isSecurityViolation
+            ? `Security Violation: Working directory "${args.cwd}" escapes workspace boundary`
+            : res.error,
         };
       }
-      if (fs.existsSync(candidateCwd) && fs.statSync(candidateCwd).isDirectory()) {
-        cwd = candidateCwd;
+      if (res.exists && res.isDirectory) {
+        cwd = res.absolutePath;
       }
     }
 

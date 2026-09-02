@@ -25,6 +25,7 @@ const {
 } = require('./types');
 const { ChangeSet } = require('./ChangeSet');
 const { impactAnalyzer } = require('./ImpactAnalyzer');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const secretFilter = require('../../security/secretFilter');
 
 let evidenceGraphInstance = null;
@@ -43,11 +44,12 @@ class RefactorPlan {
     this.planId = options.planId || generateRefactorPlanId();
     this.parentThreadId = options.parentThreadId || null;
     this.parentTurnId = options.parentTurnId || null;
-    this.workspacePath = options.workspacePath ? path.resolve(options.workspacePath) : process.cwd();
+    this.workspacePath = workspacePathResolver.canonicalizeWorkspaceRoot(options.workspacePath);
 
     this.goal = options.goal || 'Refactoring Task';
     this.rootTargets = Array.isArray(options.rootTargets) ? options.rootTargets : [];
-    this.affectedFiles = Array.isArray(options.affectedFiles) ? options.affectedFiles : [];
+    this.affectedFiles = (Array.isArray(options.affectedFiles) ? options.affectedFiles : [])
+      .map((f) => workspacePathResolver.toRelative(this.workspacePath, f));
     this.requiredUpdates = Array.isArray(options.requiredUpdates) ? options.requiredUpdates : [];
     this.testsToRun = Array.isArray(options.testsToRun) ? options.testsToRun : [];
     this.riskLevel = options.riskLevel || 'MEDIUM';
@@ -85,12 +87,13 @@ class RefactorPlan {
    * @returns {Array<Object>} Generated tasks
    */
   decomposeTasks(impactResult = {}) {
+    const safeImpact = impactResult && typeof impactResult === 'object' ? impactResult : {};
     const tasks = [];
     let seq = 1;
 
     // 1. Definition Task
     const rootTarget = this.rootTargets[0] || 'Target';
-    const defFile = impactResult.rootSymbol?.filePath || this.affectedFiles[0] || 'src/main.ts';
+    const defFile = safeImpact.rootSymbol?.filePath || this.affectedFiles[0] || 'src/main.ts';
     const defTaskId = `task_def_${seq++}`;
 
     tasks.push({
@@ -107,7 +110,7 @@ class RefactorPlan {
     });
 
     // 2. Caller Tasks (grouped per file)
-    const callers = impactResult.callers || [];
+    const callers = safeImpact.callers || [];
     const callersByFile = new Map();
     for (const c of callers) {
       if (!callersByFile.has(c.sourceFilePath)) callersByFile.set(c.sourceFilePath, []);
@@ -135,7 +138,7 @@ class RefactorPlan {
     }
 
     // 3. Test Task
-    const testFiles = this.testsToRun.length > 0 ? this.testsToRun : (impactResult.tests || []).map((t) => t.testPath);
+    const testFiles = this.testsToRun.length > 0 ? this.testsToRun : (safeImpact.tests || []).map((t) => t.testPath);
     if (testFiles.length > 0) {
       const testTaskId = `task_tests_${seq++}`;
       tasks.push({
@@ -224,10 +227,13 @@ class RefactorPlan {
 
     const reasons = [];
     let scopeDrift = false;
-    const allowedFiles = new Set(task ? task.relevantFiles : this.affectedFiles);
+    const allowedList = task ? (task.relevantFiles || []) : this.affectedFiles;
+    const allowedFiles = new Set(allowedList.map((f) => workspacePathResolver.toRelative(this.workspacePath, f)));
+    const canonicalAffected = this.affectedFiles.map((f) => workspacePathResolver.toRelative(this.workspacePath, f));
 
     for (const f of childChangeSet.files) {
-      if (!allowedFiles.has(f.filePath) && !this.affectedFiles.includes(f.filePath)) {
+      const normF = workspacePathResolver.toRelative(this.workspacePath, f.filePath);
+      if (!allowedFiles.has(normF) && !canonicalAffected.includes(normF)) {
         scopeDrift = true;
         reasons.push(`Unplanned file modified by child worker: "${f.filePath}"`);
       }

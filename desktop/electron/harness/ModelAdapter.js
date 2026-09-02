@@ -60,6 +60,55 @@ class ModelAdapter {
   }
 
   /**
+   * Formats internal conversation messages into the provider's expected wire format.
+   * When native tools are enabled, preserves OpenAI-standard assistant tool_calls and role: 'tool' responses.
+   * When tools are disabled or omitted, formats tool results as user messages for text-based models.
+   * @param {Array<Object>} messages
+   * @param {Array<Object>} tools
+   * @returns {Array<Object>}
+   */
+  formatConversationMessages(messages = [], tools = []) {
+    const hasTools = Array.isArray(tools) && tools.length > 0;
+    const conversationMessages = (messages || []).filter((m) => m && m.role !== 'system');
+
+    return conversationMessages.map((m) => {
+      if (m.role === 'tool') {
+        const compactJson = typeof m.content === 'string' ? m.content : JSON.stringify(m.content !== undefined ? m.content : {});
+        if (hasTools) {
+          return {
+            role: 'tool',
+            tool_call_id: m.tool_call_id || m.callId || m.id || 'call_0',
+            name: m.name || 'tool',
+            content: compactJson,
+          };
+        }
+        return {
+          role: 'user',
+          content: `[TOOL_RESULT for call "${m.tool_call_id || m.callId || m.id || 'call_0'}"]: ${compactJson}`,
+        };
+      }
+
+      if (m.role === 'assistant') {
+        const assistantMsg = {
+          role: 'assistant',
+          content: m.content !== undefined && m.content !== null
+            ? (typeof m.content === 'string' ? m.content : JSON.stringify(m.content))
+            : (Array.isArray(m.tool_calls) && m.tool_calls.length > 0 ? null : ''),
+        };
+        if (Array.isArray(m.tool_calls) && m.tool_calls.length > 0) {
+          assistantMsg.tool_calls = m.tool_calls;
+        }
+        return assistantMsg;
+      }
+
+      return {
+        role: m.role || 'user',
+        content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content !== undefined ? m.content : ''),
+      };
+    });
+  }
+
+  /**
    * Parses raw model text or structured response into a normalized ModelTurnOutput.
    * @param {string|Object} rawResponse
    * @returns {{ role: string, content: string|null, toolCalls: Array<Object> }}
@@ -172,66 +221,260 @@ class ModelAdapter {
   }
 
   /**
-   * Invokes the model with conversational messages and tool definitions.
-   * @param {Array<Object>} messages - Array of { role, content, tool_calls, tool_call_id }
-   * @param {Array<Object>} tools - Array of tool declarations from ToolRegistry
-   * @param {Object} options - { providerId, modelId, modelHandler, workspacePath, intent }
-   * @returns {Promise<{ role: string, content: string|null, toolCalls: Array<Object> }>}
+   * Determines if an error is eligible for auto-failover.
+   * Eligible: 429 Rate Limit, 503 Service Unavailable, Quota Exhaustion, Network Timeout.
+   * Ineligible: 401/403 Auth errors, 400 Bad Request / Schema errors, local code errors.
    */
-  async invoke(messages = [], tools = [], options = {}) {
-    // 1. If a custom or mock model handler is provided (e.g. for offline unit tests), use it directly
-    if (typeof options.modelHandler === 'function') {
-      const rawRes = await options.modelHandler(messages, tools, options);
-      return this.normalizeResponse(rawRes);
+  isFailoverEligibleError(err) {
+    if (!err) return null;
+    const status = Number(err.status || err.statusCode || err.response?.status || err.code);
+    const msg = String(err.message || '').toLowerCase();
+    const raw = String(err.rawResponse || err.data || (typeof err.data === 'object' ? JSON.stringify(err.data) : '')).toLowerCase();
+    const combined = `${msg} ${raw}`;
+
+    // Strictly Ineligible errors (Authentication, Authorization, Invalid Keys, Bad Request, Schema validation)
+    if (
+      status === 401 ||
+      status === 403 ||
+      combined.includes('401') ||
+      combined.includes('403') ||
+      combined.includes('unauthorized') ||
+      combined.includes('forbidden') ||
+      combined.includes('authentication') ||
+      combined.includes('authenticate') ||
+      combined.includes('invalid api key') ||
+      combined.includes('invalid_api_key') ||
+      combined.includes('incorrect api key') ||
+      combined.includes('invalid key') ||
+      combined.includes('invalid token') ||
+      combined.includes('invalid_token') ||
+      combined.includes('unauthenticated') ||
+      combined.includes('permission denied') ||
+      combined.includes('access denied') ||
+      combined.includes('account suspended') ||
+      combined.includes('billing disabled') ||
+      combined.includes('api key not valid')
+    ) {
+      return null;
     }
 
-    // 2. Resolve target AI provider through AIProviderRouter
-    const resolved = this.router.resolveProviderAndModel(options.providerId, options.modelId);
-    if (!resolved) {
-      throw new Error(
-        `[HARNESS-MODELADAPTER] No configured AI provider available for providerId "${options.providerId || this.router.activeProviderId}". ` +
-        `The iterative agent loop requires an active, configured provider or custom modelHandler.`
-      );
+    if (
+      status === 400 ||
+      combined.includes('invalid_request_error') ||
+      combined.includes('bad request') ||
+      combined.includes('schema validation') ||
+      combined.includes('unsupported parameter') ||
+      combined.includes('context length exceeded') ||
+      combined.includes('maximum context length')
+    ) {
+      return null;
     }
 
+    // 1. 429 Rate Limit / Quota Exhaustion (Eligible)
+    if (
+      status === 429 ||
+      err.isRateLimit === true ||
+      combined.includes('rate limit') ||
+      combined.includes('429') ||
+      combined.includes('too many requests') ||
+      combined.includes('resource exhausted') ||
+      combined.includes('quota') ||
+      combined.includes('credits exhausted') ||
+      combined.includes('balance depleted') ||
+      combined.includes('insufficient_quota')
+    ) {
+      return {
+        category: '429_RATE_LIMIT',
+        reason: '429 Rate Limit Exceeded',
+      };
+    }
+
+    // 2. 503 / 502 / 504 Service Unavailable / Overloaded (Eligible)
+    if (
+      status === 503 ||
+      status === 502 ||
+      status === 504 ||
+      combined.includes('503') ||
+      combined.includes('502') ||
+      combined.includes('504') ||
+      combined.includes('service unavailable') ||
+      combined.includes('overloaded') ||
+      combined.includes('bad gateway') ||
+      combined.includes('gateway timeout')
+    ) {
+      return {
+        category: '503_SERVICE_UNAVAILABLE',
+        reason: '503 Service Unavailable',
+      };
+    }
+
+    // 3. Network Timeout / Connection Reset (Eligible)
+    if (
+      err.code === 'ETIMEDOUT' ||
+      err.code === 'ECONNRESET' ||
+      err.code === 'ECONNABORTED' ||
+      err.code === 'ENOTFOUND' ||
+      err.name === 'TimeoutError' ||
+      combined.includes('timed out') ||
+      combined.includes('timeout') ||
+      combined.includes('network error') ||
+      combined.includes('econnreset')
+    ) {
+      return {
+        category: 'NETWORK_TIMEOUT',
+        reason: 'Network Timeout',
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Checks if an error from a provider represents a tool-use schema validation rejection.
+   * e.g. Groq 400 with "tool call validation failed; parameters for tool `xyz` did not match schema".
+   * @param {Error|Object} err
+   * @param {Array<Object>} tools
+   * @returns {boolean}
+   */
+  _isProviderToolValidationError(err, tools = []) {
+    if (!err || !Array.isArray(tools) || tools.length === 0) return false;
+    const status = Number(err.statusCode || err.status || err.response?.status || 0);
+    if (status !== 400) return false;
+
+    const msg = String(err.message || '').toLowerCase();
+    const raw = String(err.data?.error?.message || err.data?.message || (typeof err.data === 'string' ? err.data : '')).toLowerCase();
+    const code = String(err.data?.error?.code || '').toLowerCase();
+    const combined = `${msg} ${raw} ${code}`;
+
+    const hasValidationPattern =
+      combined.includes('tool call validation failed') ||
+      combined.includes('parameters for tool') ||
+      code === 'tool_use_failed' ||
+      (combined.includes('schema validation') && combined.includes('tool'));
+
+    if (!hasValidationPattern) return false;
+
+    // Verify it matches one of our available tools
+    return tools.some((t) => t && t.name && combined.includes(t.name.toLowerCase()));
+  }
+
+  /**
+   * Extracts a normalized tool call from a provider-side tool validation error.
+   * @param {Error|Object} err
+   * @param {Array<Object>} tools
+   * @returns {{ role: string, content: string|null, toolCalls: Array<Object> }|null}
+   */
+  _extractProviderToolValidationError(err, tools = []) {
+    const rawMsg = `${err.message || ''} ${err.data?.error?.message || ''}`;
+    let matchedTool = null;
+
+    // Find the tool name referenced in the error message
+    for (const t of tools) {
+      if (!t || !t.name) continue;
+      const regex = new RegExp(`\\b${t.name}\\b`, 'i');
+      if (regex.test(rawMsg)) {
+        matchedTool = t;
+        break;
+      }
+    }
+
+    if (!matchedTool) return null;
+
+    let args = {};
+    const failedGen = err.data?.error?.failed_generation;
+    if (failedGen) {
+      if (typeof failedGen === 'object') {
+        args = failedGen.arguments || failedGen.args || failedGen;
+      } else if (typeof failedGen === 'string') {
+        try {
+          const parsed = JSON.parse(failedGen);
+          args = parsed.arguments || parsed.args || parsed;
+        } catch (_) {
+          const jsonMatch = failedGen.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            try {
+              const parsedMatch = JSON.parse(jsonMatch[0]);
+              args = parsedMatch.arguments || parsedMatch.args || parsedMatch;
+            } catch (__) {}
+          }
+        }
+      }
+    }
+
+    return {
+      role: 'assistant',
+      content: null,
+      toolCalls: [
+        {
+          type: 'tool_call',
+          callId: `call_val_${Date.now()}_0`,
+          toolName: matchedTool.name,
+          arguments: typeof args === 'object' && args !== null ? args : {},
+        },
+      ],
+    };
+  }
+
+  /**
+   * Broadcasts safe non-sensitive failover event to UI.
+   */
+  emitFailoverEvent(data = {}) {
+    const safePayload = {
+      primaryProviderId: data.primaryProviderId,
+      primaryModelId: data.primaryModelId,
+      fallbackProviderId: data.fallbackProviderId,
+      fallbackModelId: data.fallbackModelId,
+      fallbackDisplayName: data.fallbackDisplayName,
+      failureCategory: data.failureCategory,
+      reason: data.reason,
+      attempt: data.attempt,
+      timestamp: Date.now(),
+    };
+
+    try {
+      const { eventBus } = require('./eventBus');
+      if (eventBus && typeof eventBus.emit === 'function') {
+        eventBus.emit('AI_FAILOVER_TRIGGERED', {
+          threadId: data.threadId,
+          turnId: data.turnId,
+          payload: safePayload,
+        });
+      }
+    } catch (_) {}
+
+    try {
+      const { BrowserWindow } = require('electron');
+      if (BrowserWindow && typeof BrowserWindow.getAllWindows === 'function') {
+        for (const win of BrowserWindow.getAllWindows()) {
+          if (win && win.webContents && !win.isDestroyed()) {
+            win.webContents.send('ai:failover-triggered', safePayload);
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  /**
+   * Core provider execution handler.
+   */
+  async _executeProviderInvocation(resolved, messages = [], tools = [], options = {}) {
     const { provider, apiKey, modelId } = resolved;
 
-    // 3. Build system prompt & messages
+    // Build system prompt & messages
     const systemMessage = messages.find((m) => m.role === 'system');
     let existingSystemText = systemMessage ? systemMessage.content : 'You are NEXUS Autonomous AI Pair Programmer.';
-    
-    // Only include markdown tools prompt if native tools parameter is not supported/passed
     if (tools && tools.length > 0) {
       existingSystemText += '\n\n## RULES: When proposing or editing code, invoke apply_patch to create a ChangeSet.';
     }
 
-    // Filter out existing system message to avoid duplicates
-    const conversationMessages = messages.filter((m) => m.role !== 'system');
-
-    // Convert tool results in conversation into compact formatted user observation
-    const formattedMessages = conversationMessages.map((m) => {
-      if (m.role === 'tool') {
-        const compactJson = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
-        return {
-          role: 'user',
-          content: `[TOOL_RESULT for call "${m.tool_call_id}"]: ${compactJson}`,
-        };
-      }
-      return {
-        role: m.role,
-        content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
-      };
-    });
+    const formattedMessages = this.formatConversationMessages(messages, tools);
 
     const fullMessages = [
       { role: 'system', content: existingSystemText },
       ...formattedMessages,
     ];
 
-    // 4. Call provider endpoint
-    let rawText = '';
     if (typeof provider.request === 'function') {
-      // OpenAI-compatible endpoint (Groq, OpenAI, DeepSeek, Grok)
       const requestPayload = {
         model: modelId,
         messages: fullMessages,
@@ -251,27 +494,148 @@ class ModelAdapter {
         requestPayload.tool_choice = 'auto';
       }
 
-      const res = await provider.request(
-        '/chat/completions',
-        'POST',
-        apiKey,
-        requestPayload,
-        {},
-        35000
-      );
-      const choiceMessage = res.data?.choices?.[0]?.message;
-      return this.normalizeResponse(choiceMessage || res.data?.choices?.[0] || res.data?.choices?.[0]?.text || '');
+      try {
+        const res = await provider.request(
+          '/chat/completions',
+          'POST',
+          apiKey,
+          requestPayload,
+          {},
+          options.timeoutMs || 35000
+        );
+        const choiceMessage = res.data?.choices?.[0]?.message;
+        return this.normalizeResponse(choiceMessage || res.data?.choices?.[0] || res.data?.choices?.[0]?.text || '');
+      } catch (err) {
+        if (this._isProviderToolValidationError(err, tools)) {
+          const recovered = this._extractProviderToolValidationError(err, tools);
+          if (recovered) {
+            return recovered;
+          }
+        }
+        throw err;
+      }
     } else if (typeof provider.generateAgentPlan === 'function') {
-      // General provider fallback
       const lastUserMsg = [...formattedMessages].reverse().find((m) => m.role === 'user')?.content || 'Continue task';
       const planRes = await provider.generateAgentPlan(apiKey, modelId, {
-        task: `${combinedSystemPrompt}\n\n${lastUserMsg}`,
+        task: `${existingSystemText}\n\n${lastUserMsg}`,
         workspacePath: options.workspacePath || process.cwd(),
       });
-      rawText = planRes?.rawResponse || planRes?.summary || JSON.stringify(planRes);
+      const rawText = planRes?.rawResponse || planRes?.summary || JSON.stringify(planRes);
       return this.normalizeResponse(rawText);
     } else {
       throw new Error(`[HARNESS-MODELADAPTER] Provider "${provider.getId()}" does not support iterative invocation.`);
+    }
+  }
+
+  /**
+   * Invokes the model with conversational messages and tool definitions.
+   * Automatically fails over to configured compatible alternatives on 429/503/timeout.
+   * @param {Array<Object>} messages - Array of { role, content, tool_calls, tool_call_id }
+   * @param {Array<Object>} tools - Array of tool declarations from ToolRegistry
+   * @param {Object} options - { providerId, modelId, modelHandler, workspacePath, intent }
+   * @returns {Promise<{ role: string, content: string|null, toolCalls: Array<Object> }>}
+   */
+  async invoke(messages = [], tools = [], options = {}) {
+    // 1. If a custom or mock model handler is provided (e.g. for offline unit tests), use it directly
+    if (typeof options.modelHandler === 'function') {
+      const rawRes = await options.modelHandler(messages, tools, options);
+      return this.normalizeResponse(rawRes);
+    }
+
+    // 2. Resolve primary target AI provider through AIProviderRouter
+    const primaryProvId = options.providerId || this.router.activeProviderId;
+    const primaryModId = options.modelId;
+    const resolved = this.router.resolveProviderAndModel(primaryProvId, primaryModId);
+
+    if (!resolved) {
+      throw new Error(
+        `[HARNESS-MODELADAPTER] No configured AI provider available for providerId "${primaryProvId}". ` +
+        `The iterative agent loop requires an active, configured provider or custom modelHandler.`
+      );
+    }
+
+    // 3. Attempt primary execution
+    try {
+      return await this._executeProviderInvocation(resolved, messages, tools, options);
+    } catch (primaryErr) {
+      const failoverCheck = this.isFailoverEligibleError(primaryErr);
+      if (!failoverCheck || options.disableFailover === true) {
+        throw primaryErr;
+      }
+
+      // 4. Resolve bounded fallback candidates
+      let fallbackCandidates = [];
+      try {
+        const { modelSelectionAdvisor } = require('../intelligence/ModelSelectionAdvisor');
+        const routerConfig = this.router ? this.router.getConfig() : null;
+        const configuredProviders = routerConfig ? routerConfig.providers : [];
+        fallbackCandidates = modelSelectionAdvisor.getFallbackCandidates({
+          primaryProviderId: resolved.provider.getId(),
+          primaryModelId: resolved.modelId,
+          tier: options.tier || 'TIER_2_BALANCED_CODING',
+          configuredProviders,
+          maxCandidates: 2,
+        });
+      } catch (_) {
+        fallbackCandidates = [];
+      }
+
+      if (!fallbackCandidates || fallbackCandidates.length === 0) {
+        throw primaryErr;
+      }
+
+      // 5. Try bounded fallback chain with complete payload preservation
+      let attempt = 0;
+      let lastErr = primaryErr;
+
+      for (const fallback of fallbackCandidates) {
+        attempt++;
+        const fallbackResolved = this.router.resolveProviderAndModel(fallback.providerId, fallback.modelId);
+        if (!fallbackResolved) continue;
+
+        // Emit renderer-safe failover event (no keys)
+        this.emitFailoverEvent({
+          primaryProviderId: resolved.provider.getId(),
+          primaryModelId: resolved.modelId,
+          fallbackProviderId: fallbackResolved.provider.getId(),
+          fallbackModelId: fallbackResolved.modelId,
+          fallbackDisplayName: fallback.modelDisplayName || fallbackResolved.modelId,
+          failureCategory: failoverCheck.category,
+          reason: failoverCheck.reason,
+          attempt,
+          threadId: options.threadId,
+          turnId: options.turnId,
+        });
+
+        try {
+          // Replay with identical payload and fallback provider's isolated key
+          const fallbackRes = await this._executeProviderInvocation(fallbackResolved, messages, tools, options);
+          if (fallbackRes && typeof fallbackRes === 'object') {
+            fallbackRes.execution = {
+              providerId: fallbackResolved.provider.getId(),
+              modelId: fallbackResolved.modelId,
+              requestedProviderId: resolved.provider.getId(),
+              requestedModelId: resolved.modelId,
+              isFallback: true,
+            };
+          }
+          return fallbackRes;
+        } catch (fallbackErr) {
+          const nextCheck = this.isFailoverEligibleError(fallbackErr);
+          if (!nextCheck) {
+            fallbackErr.primaryProviderId = resolved.provider.getId();
+            fallbackErr.primaryModelId = resolved.modelId;
+            throw fallbackErr; // If 401 or invalid request, stop immediately
+          }
+          lastErr = fallbackErr;
+        }
+      }
+
+      if (lastErr) {
+        lastErr.primaryProviderId = resolved.provider.getId();
+        lastErr.primaryModelId = resolved.modelId;
+      }
+      throw lastErr;
     }
   }
 
@@ -341,20 +705,7 @@ class ModelAdapter {
       existingSystemText += '\n\n## RULES: When proposing or editing code, invoke apply_patch to create a ChangeSet.';
     }
 
-    const conversationMessages = messages.filter((m) => m.role !== 'system');
-    const formattedMessages = conversationMessages.map((m) => {
-      if (m.role === 'tool') {
-        const compactJson = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
-        return {
-          role: 'user',
-          content: `[TOOL_RESULT for call "${m.tool_call_id}"]: ${compactJson}`,
-        };
-      }
-      return {
-        role: m.role,
-        content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
-      };
-    });
+    const formattedMessages = this.formatConversationMessages(messages, tools);
 
     const fullMessages = [
       { role: 'system', content: existingSystemText },
@@ -431,12 +782,25 @@ class ModelAdapter {
             options.modelId || resolved?.modelId
           );
         }
-        if (rateInfo) {
-          streamErr.isRateLimit = true;
-          streamErr.rateInfo = rateInfo;
+        const failoverEligible = this.isFailoverEligibleError(streamErr);
+        if (!failoverEligible && (streamErr.statusCode === 401 || streamErr.statusCode === 403 || String(streamErr.message).toLowerCase().includes('auth') || String(streamErr.message).toLowerCase().includes('key'))) {
           throw streamErr;
         }
-        // If streaming failed for other non-rate-limit reasons and wasn't aborted, fall back to non-streaming invoke below
+        if (this._isProviderToolValidationError(streamErr, tools)) {
+          const recovered = this._extractProviderToolValidationError(streamErr, tools);
+          if (recovered && recovered.toolCalls && recovered.toolCalls.length > 0) {
+            yield {
+              type: 'tool_call_delta',
+              delta: '',
+              accumulated: '',
+              toolCalls: recovered.toolCalls,
+              finishReason: 'tool_calls',
+              sequence: sequence + 1,
+            };
+            return;
+          }
+        }
+        // Fall back to invoke with failover
       }
     }
 
@@ -447,7 +811,7 @@ class ModelAdapter {
       delta: fallbackRes.content || '',
       accumulated: fallbackRes.content || '',
       toolCalls: fallbackRes.toolCalls,
-      finishReason: 'stop',
+      finishReason: fallbackRes.toolCalls.length > 0 ? 'tool_calls' : 'stop',
       sequence: 1,
     };
   }

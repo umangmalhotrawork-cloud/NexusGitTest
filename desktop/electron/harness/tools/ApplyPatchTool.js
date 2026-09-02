@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { workspacePathResolver } = require('../WorkspacePathResolver');
 const { transactionalPatchApplier } = require('../../transactionalPatchApplier');
 const { ChangeSet } = require('../ChangeSet');
 const { evaluateAIPatchFirewall } = require('../../../engine/ai_patch_firewall');
@@ -44,7 +45,7 @@ const ApplyPatchTool = {
       };
     }
 
-    const workspaceRoot = path.resolve(context.workspacePath || process.cwd());
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(context.workspacePath);
 
     // 1. Validate edit structures & construct ChangeSet
     const changeSet = new ChangeSet({
@@ -75,14 +76,19 @@ const ApplyPatchTool = {
         };
       }
 
-      let filePathToUse = e.filePath.trim();
-      const directResolved = path.isAbsolute(filePathToUse) ? path.resolve(filePathToUse) : path.resolve(workspaceRoot, filePathToUse);
-      if (!fs.existsSync(directResolved)) {
-        const candidateInSrc = path.resolve(workspaceRoot, 'src', filePathToUse);
-        if (fs.existsSync(candidateInSrc)) {
-          filePathToUse = path.relative(workspaceRoot, candidateInSrc);
-        }
+      const resolution = workspacePathResolver.resolve(workspaceRoot, e.filePath.trim(), {
+        allowDirectory: false,
+        activeFilePath: context.activeFilePath,
+      });
+
+      if (!resolution.success) {
+        return {
+          success: false,
+          error: `Edit at index ${i}: ${resolution.error}`,
+        };
       }
+
+      const filePathToUse = resolution.relativePath;
 
       changeSet.addFile({
         filePath: filePathToUse,

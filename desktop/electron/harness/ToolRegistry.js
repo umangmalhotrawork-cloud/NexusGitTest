@@ -82,6 +82,80 @@ class ToolRegistry {
   }
 
   /**
+   * Validates tool input arguments against the registered JSON schema before execution.
+   * @param {Object} schema - Tool inputSchema
+   * @param {Object} args - Supplied tool arguments
+   * @param {string} toolName - Tool name
+   * @returns {{ valid: boolean, error?: string, errors?: Array<string> }}
+   */
+  validateInputSchema(schema, args = {}, toolName = '') {
+    if (!schema || typeof schema !== 'object') {
+      return { valid: true };
+    }
+
+    if (schema.type === 'object' && (typeof args !== 'object' || args === null || Array.isArray(args))) {
+      const errorMsg = `tool call validation failed; parameters for tool \`${toolName}\` did not match schema: errors: [parameters must be an object]`;
+      return { valid: false, error: errorMsg, errors: ['parameters must be an object'] };
+    }
+
+    const errors = [];
+    const missing = [];
+
+    // 1. Enforce required properties
+    if (Array.isArray(schema.required)) {
+      for (const reqProp of schema.required) {
+        const val = args ? args[reqProp] : undefined;
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && !val.trim()) ||
+          (Array.isArray(val) && val.length === 0)
+        ) {
+          missing.push(`'${reqProp}'`);
+        }
+      }
+    }
+
+    if (missing.length > 0) {
+      errors.push(`missing properties: ${missing.join(', ')}`);
+    }
+
+    // 2. Validate property types if defined
+    if (schema.properties && typeof schema.properties === 'object' && args && typeof args === 'object') {
+      for (const [propName, propDef] of Object.entries(schema.properties)) {
+        if (propName in args && args[propName] !== undefined && args[propName] !== null) {
+          const val = args[propName];
+          const expectedType = propDef?.type;
+          if (expectedType === 'string' && typeof val !== 'string') {
+            errors.push(`'${propName}' must be a string`);
+          } else if (expectedType === 'boolean' && typeof val !== 'boolean') {
+            errors.push(`'${propName}' must be a boolean`);
+          } else if (expectedType === 'integer' && !Number.isInteger(val)) {
+            errors.push(`'${propName}' must be an integer`);
+          } else if (expectedType === 'number' && (typeof val !== 'number' || Number.isNaN(val))) {
+            errors.push(`'${propName}' must be a number`);
+          } else if (expectedType === 'array' && !Array.isArray(val)) {
+            errors.push(`'${propName}' must be an array`);
+          } else if (expectedType === 'object' && (typeof val !== 'object' || Array.isArray(val))) {
+            errors.push(`'${propName}' must be an object`);
+          }
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      const errorMsg = `tool call validation failed; parameters for tool \`${toolName}\` did not match schema: errors: [${errors.join('; ')}]`;
+      return {
+        valid: false,
+        error: errorMsg,
+        errors,
+      };
+    }
+
+    return { valid: true };
+  }
+
+  /**
    * Executes a tool through the registry with contextual validation and secret filtering.
    * @param {string} toolName
    * @param {Object} args
@@ -104,6 +178,20 @@ class ToolRegistry {
     }
 
     const tool = this.get(toolName);
+
+    // Validate parameters against inputSchema BEFORE execution
+    const validation = this.validateInputSchema(tool.inputSchema, args, toolName);
+    if (!validation.valid) {
+      return {
+        type: 'tool_result',
+        callId,
+        toolName,
+        success: false,
+        result: null,
+        error: validation.error,
+        validationErrors: validation.errors,
+      };
+    }
 
     // Sanitize input arguments before execution (guaranteeing zero sensitive leaks in args)
     const sanitizedArgs = secretFilter.sanitizeObject(args || {});

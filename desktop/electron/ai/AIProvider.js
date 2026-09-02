@@ -102,6 +102,20 @@ class AIProvider {
   async generateCodeAction(apiKey, model, payload) {
     throw new Error(`generateCodeAction not implemented for provider ${this.id}`);
   }
+
+  /**
+   * Retrieves genuinely verified account usage, quota, rate-limit, or balance information.
+   * Default implementation returns "Not available" for providers without verified usage endpoints.
+   * @param {string} apiKey
+   * @returns {Promise<{ isAvailable: boolean, display: string, raw: Object|null, error?: string }>}
+   */
+  async getVerifiedUsage(apiKey) {
+    return {
+      isAvailable: false,
+      display: 'Not available',
+      raw: null,
+    };
+  }
 }
 
 module.exports = AIProvider;

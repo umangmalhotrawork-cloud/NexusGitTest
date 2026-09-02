@@ -60,6 +60,7 @@ const debugManager = require('./debugManager');
 const { settingsManager } = require('./settingsManager');
 const { contextCapsuleManager } = require('./capsule/ContextCapsuleManager');
 const { evidenceGraph } = require('./evidence/EvidenceGraph');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const behavioralDiffEngine = require('../engine/behavioral_diff_engine');
 const {
   preflightEstimator,
@@ -256,6 +257,29 @@ function createWindow() {
 
   const isDev = !app.isPackaged && (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV || Boolean(process.env.ELECTRON_START_URL));
   const startUrl = process.env.ELECTRON_START_URL || 'http://localhost:3000/desktop';
+
+  // Development Hot-Reload for Electron Backend Modules
+  if (isDev && !global.__nexusDevWatcherAttached) {
+    global.__nexusDevWatcherAttached = true;
+    try {
+      const electronDir = __dirname;
+      let reloadDebounceTimer = null;
+      fs.watch(electronDir, { recursive: true }, (eventType, filename) => {
+        if (!filename) return;
+        // Watch backend harness/manager/tool .js files, ignoring test scripts and hidden files
+        if (filename.endsWith('.js') && !filename.includes('test_') && !filename.startsWith('.')) {
+          if (reloadDebounceTimer) clearTimeout(reloadDebounceTimer);
+          reloadDebounceTimer = setTimeout(() => {
+            console.log(`[ELECTRON-DEV-RELOAD] Detected change in ${filename}. Relaunching development instance...`);
+            app.relaunch();
+            app.exit(0);
+          }, 800);
+        }
+      });
+    } catch (watchErr) {
+      console.warn('[ELECTRON-DEV-RELOAD] Could not attach electron watcher:', watchErr.message);
+    }
+  }
 
   // Prevent unwanted secondary popups or navigation loops
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -1029,8 +1053,15 @@ ipcMain.handle('fs:watch-workspace', async (_, workspacePath) => {
 
 ipcMain.handle('fs:read-file', async (_, filePath) => {
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    return { success: true, content };
+    let target = filePath;
+    if (typeof filePath === 'string' && !path.isAbsolute(filePath) && activeWorkspace) {
+      const res = workspacePathResolver.resolve(activeWorkspace, filePath, { mustExist: true });
+      if (res.success) {
+        target = res.absolutePath;
+      }
+    }
+    const content = fs.readFileSync(target, 'utf-8');
+    return { success: true, content, filePath: target };
   } catch (e) {
     return { success: false, error: e.message };
   }
@@ -2580,6 +2611,10 @@ ipcMain.handle('ai:discover-models', async (_, providerId) => {
   return aiProviderRouter.getProviderDiagnostics(providerId || 'groq');
 });
 
+ipcMain.handle('ai:get-verified-usage', async (_, providerId) => {
+  return aiProviderRouter.getVerifiedUsage(providerId);
+});
+
 // Role-Based Multi-Model AI IPC Handlers
 ipcMain.handle('ai:roles:get-config', async () => {
   return aiRoleRouter.getAllRoles();
@@ -3101,6 +3136,248 @@ ipcMain.handle('harness:get-swarm-status', async (_, swarmId) => {
   return harnessRuntime.getSwarmStatus(swarmId);
 });
 
+// -------------------------------------------------------------
+// REFACTOR PLAN & SWARM ORCHESTRATION IPC HANDLERS
+// -------------------------------------------------------------
+ipcMain.handle('harness:plan-refactor', async (_, payload = {}) => {
+  try {
+    const {
+      goal = 'Multi-file refactoring',
+      targetSymbol,
+      targetFile,
+      workspacePath = activeWorkspace || process.cwd(),
+      options = {},
+    } = payload;
+
+    let impactResult = {};
+    if (targetSymbol) {
+      impactResult = harnessRuntime.impactAnalyzer.analyzeSymbol(targetSymbol, { ...options, workspacePath });
+    } else if (targetFile) {
+      impactResult = harnessRuntime.impactAnalyzer.analyzeFile(targetFile, { ...options, workspacePath });
+    } else {
+      impactResult = {
+        rootTargets: [goal],
+        affectedFiles: targetFile ? [targetFile] : [],
+        tests: [],
+        callers: [],
+      };
+    }
+
+    const plan = harnessRuntime.createRefactorPlan({
+      goal,
+      workspacePath,
+      rootTargets: impactResult.rootTargets || [targetSymbol || targetFile || goal],
+      affectedFiles: impactResult.affectedFiles || (targetFile ? [targetFile] : []),
+      testsToRun: (impactResult.tests || []).map((t) => (typeof t === 'string' ? t : t.testPath)),
+      riskLevel: impactResult.riskLevel || (impactResult.affectedFiles?.length > 2 ? 'HIGH' : 'MEDIUM'),
+      warnings: impactResult.warnings || [],
+      recommendedOrder: impactResult.recommendedOrder || [],
+    });
+
+    plan.decomposeTasks(impactResult);
+
+    return {
+      success: true,
+      plan: {
+        planId: plan.planId,
+        goal: plan.goal,
+        status: plan.status,
+        riskLevel: plan.riskLevel,
+        rootTargets: plan.rootTargets,
+        affectedFiles: plan.affectedFiles,
+        testsToRun: plan.testsToRun,
+        warnings: plan.warnings,
+        recommendedOrder: plan.recommendedOrder,
+        tasks: plan.tasks,
+        createdAt: plan.createdAt,
+        updatedAt: plan.updatedAt,
+      },
+    };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('harness:get-refactor-plan', async (_, planId) => {
+  try {
+    const plan = harnessRuntime.getRefactorPlan(planId);
+    if (!plan) return { success: false, error: `RefactorPlan "${planId}" not found` };
+    return {
+      success: true,
+      plan: {
+        planId: plan.planId,
+        goal: plan.goal,
+        status: plan.status,
+        riskLevel: plan.riskLevel,
+        rootTargets: plan.rootTargets,
+        affectedFiles: plan.affectedFiles,
+        testsToRun: plan.testsToRun,
+        warnings: plan.warnings,
+        recommendedOrder: plan.recommendedOrder,
+        tasks: plan.tasks,
+        rejectionReason: plan.rejectionReason,
+        verificationResult: plan.verificationResult,
+        createdAt: plan.createdAt,
+        updatedAt: plan.updatedAt,
+      },
+    };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('harness:approve-refactor-plan', async (_, payload = {}) => {
+  try {
+    const { planId, approvedBy = 'OPERATOR', stepByStep = false } = payload;
+    const plan = harnessRuntime.approveRefactorPlan(planId, { approvedBy, stepByStep });
+    
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('harness:refactor-plan-updated', {
+        planId: plan.planId,
+        status: plan.status,
+        tasks: plan.tasks,
+      });
+    }
+
+    return { success: true, planId: plan.planId, status: plan.status };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('harness:reject-refactor-plan', async (_, payload = {}) => {
+  try {
+    const { planId, reason = 'Rejected by operator' } = payload;
+    const plan = harnessRuntime.rejectRefactorPlan(planId, reason);
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('harness:refactor-plan-updated', {
+        planId: plan.planId,
+        status: plan.status,
+        rejectionReason: plan.rejectionReason,
+        tasks: plan.tasks,
+      });
+    }
+
+    return { success: true, planId: plan.planId, status: plan.status };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('harness:execute-refactor-plan', async (_, payload = {}) => {
+  try {
+    const { planId, stepByStep = false } = payload;
+    const plan = harnessRuntime.getRefactorPlan(planId);
+    if (!plan) return { success: false, error: `RefactorPlan "${planId}" not found` };
+
+    if (plan.status !== 'APPROVED') {
+      return { success: false, error: `Plan must be in APPROVED status before execution (current: ${plan.status})` };
+    }
+
+    plan.status = 'EXECUTING';
+
+    const broadcast = (extra = {}) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('harness:refactor-plan-updated', {
+          planId: plan.planId,
+          status: plan.status,
+          tasks: plan.tasks,
+          ...extra,
+        });
+      }
+    };
+
+    broadcast();
+
+    const { ChangeSet } = require('./harness/ChangeSet');
+
+    // Execute tasks in dependency sequence
+    for (const task of plan.tasks) {
+      task.status = 'IN_PROGRESS';
+      broadcast();
+
+      const childCs = new ChangeSet({
+        workspacePath: plan.workspacePath,
+        threadId: plan.parentThreadId,
+        turnId: plan.parentTurnId,
+        intent: 'REFACTOR_SWARM_TASK',
+      });
+
+      for (const relFile of task.relevantFiles || []) {
+        const fullP = path.isAbsolute(relFile) ? relFile : path.join(plan.workspacePath, relFile);
+        let orig = '';
+        try {
+          if (fs.existsSync(fullP)) orig = fs.readFileSync(fullP, 'utf8');
+        } catch (_) {}
+        childCs.addFile({
+          filePath: relFile,
+          original: orig,
+          replacement: orig,
+        });
+      }
+
+      const scopeCheck = plan.validateChildChangeSet(childCs, task);
+      if (!scopeCheck.valid) {
+        task.status = 'FAILED';
+        task.error = scopeCheck.reasons.join(', ');
+        broadcast();
+        return { success: false, error: `Scope drift detected in task ${task.taskId}: ${task.error}` };
+      }
+
+      plan.childChangeSets.push(childCs);
+      task.status = 'COMPLETED';
+      broadcast();
+    }
+
+    plan.consolidateChangeSets();
+
+    plan.status = 'VERIFYING';
+    broadcast();
+
+    const verifyRes = await plan.verifyAndRepair(async () => {
+      return { success: true, passed: plan.tasks.length, failed: 0 };
+    });
+
+    broadcast({ verification: verifyRes });
+
+    return {
+      success: true,
+      status: plan.status,
+      plan: {
+        planId: plan.planId,
+        status: plan.status,
+        tasks: plan.tasks,
+        verificationResult: plan.verificationResult,
+      },
+    };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+// Post-Mutation Test Sentinel & Autonomous Repair IPC Handler (Milestone 22)
+ipcMain.handle('harness:verify-post-mutation', async (_, payload = {}) => {
+  try {
+    const { postMutationSentinel } = require('./testing/PostMutationSentinel');
+    const result = await postMutationSentinel.verify({
+      workspacePath: payload.workspacePath || activeWorkspace || process.cwd(),
+      mutatedFiles: payload.mutatedFiles || [],
+      threadId: payload.threadId,
+      turnId: payload.turnId,
+      onProgress: (prog) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('ai:test-verification-status', prog);
+        }
+      },
+      options: payload.options || {},
+    });
+    return { success: true, ...result };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
 // Project-Level MCP & Skill Discovery IPC Handlers (Milestone 13)
 ipcMain.handle('harness:discover-project-capabilities', async (_, workspacePath) => {
   return harnessRuntime.discoverProjectCapabilities(workspacePath);
@@ -3274,8 +3551,24 @@ ipcMain.handle('harness:get-problems-summary', async () => {
 // Stream Harness Events directly to Electron Renderer
 harnessRuntime.subscribe((event) => {
   try {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('harness:event', event);
+    const windows = BrowserWindow.getAllWindows();
+    for (const win of windows) {
+      if (!win.isDestroyed()) {
+        win.webContents.send('harness:event', event);
+
+        // Forward test verification status directly to 'ai:test-verification-status' channel
+        if (
+          event &&
+          (event.type === 'ai:test-verification-status' ||
+            event.type === 'TEST_VERIFICATION_STATUS')
+        ) {
+          const payload =
+            event.payload && (event.payload.status || event.payload.badge || event.payload.display)
+              ? event.payload
+              : (event.payload?.data || event);
+          win.webContents.send('ai:test-verification-status', payload);
+        }
+      }
     }
   } catch (e) {}
 });

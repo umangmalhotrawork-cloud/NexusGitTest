@@ -38,7 +38,7 @@ class HarnessEventBus {
       threadId: data.threadId || null,
       turnId: data.turnId || null,
       itemId: data.itemId || null,
-      payload: data.payload !== undefined ? data.payload : {},
+      payload: data.payload !== undefined ? data.payload : (data && typeof data === 'object' ? data : {}),
     };
 
     // Store in history buffer

@@ -4,6 +4,7 @@
  */
 
 const path = require('path');
+const { workspacePathResolver } = require('../WorkspacePathResolver');
 const { testExecutor } = require('../../testing/TestExecutor');
 const secretFilter = require('../../../security/secretFilter');
 
@@ -26,12 +27,19 @@ const RunTestsTool = {
   requiresApproval: false,
 
   async execute(args = {}, context = {}) {
-    const workspaceRoot = path.resolve(context.workspacePath || process.cwd());
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(context.workspacePath);
+    let targetScope = undefined;
+    if (args.scope && typeof args.scope === 'string' && args.scope.trim()) {
+      const scopeRes = workspacePathResolver.resolve(workspaceRoot, args.scope.trim(), { mustExist: false });
+      if (scopeRes.success) {
+        targetScope = scopeRes.relativePath;
+      }
+    }
 
     try {
       const runResult = await testExecutor.runTests({
         workspacePath: workspaceRoot,
-        target: args.scope || undefined,
+        target: targetScope,
         command: args.command || undefined,
         timeoutMs: 60000, // 60s timeout for harness tool runs
       });

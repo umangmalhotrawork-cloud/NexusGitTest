@@ -31,6 +31,7 @@ const { RepositorySymbolIndex, repositorySymbolIndex } = require('./RepositorySy
 const { ImpactAnalyzer, impactAnalyzer } = require('./ImpactAnalyzer');
 const { LanguageIntelligence, languageIntelligence } = require('./LanguageIntelligence');
 const { RefactorPlan } = require('./RefactorPlan');
+const { workspacePathResolver } = require('./WorkspacePathResolver');
 const {
   THREAD_STATUS,
   TURN_STATUS,
@@ -529,8 +530,8 @@ class HarnessRuntime {
     const {
       userInput = '',
       context = {},
-      workspacePath = process.cwd(),
-      activeFilePath = null,
+      workspacePath: rawWorkspacePath = process.cwd(),
+      activeFilePath: rawActiveFilePath = null,
       providerId,
       modelId,
       threadId: inputThreadId,
@@ -538,10 +539,15 @@ class HarnessRuntime {
       continuumSnapshot,
     } = payload;
 
+    const workspacePath = workspacePathResolver.canonicalizeWorkspaceRoot(rawWorkspacePath || context.workspacePath || process.cwd());
+    const activeFilePath = (rawActiveFilePath || context.activeFilePath)
+      ? workspacePathResolver.toRelative(workspacePath, rawActiveFilePath || context.activeFilePath)
+      : null;
+
     const classification = this.classifyRequest(userInput, {
       ...context,
-      activeFilePath: activeFilePath || context.activeFilePath,
-      workspacePath: workspacePath || context.workspacePath,
+      activeFilePath,
+      workspacePath,
     });
 
     const continuumActive = payload.continuumActive === true;

@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { workspacePathResolver } = require('../WorkspacePathResolver');
 const secretFilter = require('../../../security/secretFilter');
 
 const MAX_FILE_READ_BYTES = 200 * 1024; // 200 KB max read bound per tool invocation
@@ -42,33 +43,21 @@ const ReadFileTool = {
       };
     }
 
-    const workspaceRoot = path.resolve(context.workspacePath || process.cwd());
-    let resolvedPath = path.isAbsolute(targetRelPath)
-      ? path.resolve(targetRelPath)
-      : path.resolve(workspaceRoot, targetRelPath);
+    const resolution = workspacePathResolver.resolve(context.workspacePath, targetRelPath, {
+      mustExist: true,
+      allowDirectory: false,
+      activeFilePath: context.activeFilePath,
+    });
 
-    // If direct path does not exist, check subdirectories like src/
-    if (!fs.existsSync(resolvedPath)) {
-      const candidateInSrc = path.resolve(workspaceRoot, 'src', targetRelPath);
-      if (fs.existsSync(candidateInSrc)) {
-        resolvedPath = candidateInSrc;
-      }
-    }
-
-    // Path traversal defense
-    if (!resolvedPath.startsWith(workspaceRoot + path.sep) && resolvedPath !== workspaceRoot) {
+    if (!resolution.success) {
       return {
         success: false,
-        error: `Security Violation: Path "${targetRelPath}" escapes workspace boundary`,
+        error: resolution.error,
       };
     }
 
-    if (!fs.existsSync(resolvedPath)) {
-      return {
-        success: false,
-        error: `File not found: "${targetRelPath}"`,
-      };
-    }
+    const resolvedPath = resolution.absolutePath;
+    const relPath = resolution.relativePath;
 
     let stat;
     try {
@@ -108,8 +97,6 @@ const ReadFileTool = {
         outputContent = lines.slice(start - 1, end).join('\n');
         lineRange = `${start}-${end}`;
       }
-
-      const relPath = path.relative(workspaceRoot, resolvedPath);
 
       return {
         success: true,
