@@ -13,12 +13,12 @@ interface ApiKeyRequiredModalProps {
 }
 
 const PROVIDER_METAS: Record<string, { name: string; placeholder: string; helpUrl: string }> = {
-  nexus1: { name: "NEXUS 1 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
-  nexus2: { name: "NEXUS 2 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
-  nexus3: { name: "NEXUS 3 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
-  nexus4: { name: "NEXUS 4 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
-  nexus5: { name: "NEXUS 5 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
-  nexus6: { name: "NEXUS 6 (Groq)", placeholder: "gsk_...", helpUrl: "https://console.groq.com/keys" },
+  nexus1: { name: "Sentinel 1 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
+  nexus2: { name: "Sentinel 2 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
+  nexus3: { name: "Sentinel 3 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
+  nexus4: { name: "Sentinel 4 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
+  nexus5: { name: "Sentinel 5 (Gemini)", placeholder: "AQ.Ab8RN6... / AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
+  nexus6: { name: "Sentinel 6 (Groq)", placeholder: "gsk_...", helpUrl: "https://console.groq.com/keys" },
   gemini: { name: "Google Gemini", placeholder: "AIzaSy...", helpUrl: "https://aistudio.google.com/app/apikey" },
   groq: { name: "Groq", placeholder: "gsk_...", helpUrl: "https://console.groq.com/keys" },
   openai: { name: "OpenAI", placeholder: "sk-...", helpUrl: "https://platform.openai.com/api-keys" },

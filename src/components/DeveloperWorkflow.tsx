@@ -38,7 +38,7 @@ export default function DeveloperWorkflow() {
       title: "REMEMBER",
       icon: History,
       badge: "Continuum",
-      desc: "Snapshot engineering decisions, verification status, and pending tasks into portable Nexus Capsules.",
+      desc: "Snapshot engineering decisions, verification status, and pending tasks into portable Sentinel AI Capsules.",
     },
     {
       stage: "06",
@@ -61,11 +61,11 @@ export default function DeveloperWorkflow() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-zinc-100 tracking-tight">
-            How NEXUS Executes Engineering Tasks
+            How Sentinel AI Executes Engineering Tasks
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm font-sans max-w-2xl leading-relaxed">
-            Rather than making unconstrained code edits, NEXUS follows a structured engineering workflow designed for control, safety, and continuity.
+            Rather than making unconstrained code edits, Sentinel AI follows a structured engineering workflow designed for control, safety, and continuity.
           </p>
         </div>
 

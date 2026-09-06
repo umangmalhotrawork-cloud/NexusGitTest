@@ -214,7 +214,7 @@ export default function DeploymentAdvisorModal({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base font-bold text-zinc-100 tracking-tight">NEXUS Deployment Advisor</h2>
+                <h2 className="text-base font-bold text-zinc-100 tracking-tight">Sentinel AI Deployment Advisor</h2>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
                   Evidence-Grounded Architecture Rankings
                 </span>
@@ -536,7 +536,7 @@ export default function DeploymentAdvisorModal({
         <footer className="px-5 py-3.5 border-t border-zinc-800 bg-[#0e1017] flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
             <Info className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-            <span>NEXUS recommends complete architectures • You choose the target</span>
+            <span>Sentinel AI recommends complete architectures • You choose the target</span>
           </div>
 
           <div className="flex items-center gap-2">

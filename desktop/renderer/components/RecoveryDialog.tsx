@@ -76,7 +76,7 @@ export default function RecoveryDialog({
             )}
             <div>
               <h2 className="text-xs font-bold text-zinc-100">
-                {wasCrash ? "NEXUS may have closed unexpectedly." : "Restore Previous Session"}
+                {wasCrash ? "Sentinel AI may have closed unexpectedly." : "Restore Previous Session"}
               </h2>
               <p className="text-[10.5px] text-zinc-500 flex items-center gap-1 mt-0.5">
                 <Clock className="w-3 h-3" />

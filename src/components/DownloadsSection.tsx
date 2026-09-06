@@ -43,7 +43,7 @@ export default function DownloadsSection() {
             Native Desktop Environment
           </h2>
           <p className="text-zinc-400 text-xs sm:text-sm font-sans leading-relaxed">
-            Run NEXUS locally on macOS, Windows, and Linux with full Monaco editor support, native terminal execution, and local context persistence.
+            Run Sentinel AI locally on macOS, Windows, and Linux with full Monaco editor support, native terminal execution, and local context persistence.
           </p>
         </div>
 

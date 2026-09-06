@@ -53,7 +53,7 @@ function formatTimeAgo(timestamp?: number): string {
 }
 
 export default function CodexSidebar({
-  currentProjectName = "NEXUS",
+  currentProjectName = "Sentinel AI",
   workspacePath = "",
   activeThreadId,
   threads = [],
@@ -209,7 +209,7 @@ export default function CodexSidebar({
   const projectGroups = React.useMemo(() => {
     const map = new Map<string, SidebarThread[]>();
     for (const t of filteredThreads) {
-      const projectName = t.workspaceName || currentProjectName || "NEXUS";
+      const projectName = t.workspaceName || currentProjectName || "Sentinel AI";
       if (!map.has(projectName)) {
         map.set(projectName, []);
       }
@@ -217,7 +217,7 @@ export default function CodexSidebar({
     }
     return Array.from(map.entries()).map(([name, groupThreads]) => ({
       name,
-      isCurrent: name === (currentProjectName || "NEXUS"),
+      isCurrent: name === (currentProjectName || "Sentinel AI"),
       threads: groupThreads,
     }));
   }, [filteredThreads, currentProjectName]);
@@ -242,12 +242,10 @@ export default function CodexSidebar({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: "var(--theme-accent, #4CC2DE)" }} />
-            <span className="font-semibold text-sm tracking-tight text-[#E6E8EB]">NEXUS</span>
+            <span className="font-semibold text-sm tracking-tight text-[#E6E8EB]">Sentinel AI</span>
           </div>
-          <span 
-            className="text-[9.5px] px-1.5 py-0.5 rounded font-mono border border-[#22252B] bg-[#14161B] text-[#9AA1AC]"
-          >
-            IDE v1.0
+          <span className="text-[10px] text-[#6B7280] font-sans font-normal tracking-normal select-none">
+            v1.0
           </span>
         </div>
 

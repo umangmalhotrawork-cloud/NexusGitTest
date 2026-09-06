@@ -710,7 +710,7 @@ export default function SourceControlPanel({
               {onOpenConflictResolver && (
                 <button
                   onClick={onOpenConflictResolver}
-                  className="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-500 text-black font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all shadow-sm shrink-0"
+                  className="px-2.5 py-1 rounded bg-[#D9A441] hover:bg-[#c29033] text-[#0A0B0D] font-medium text-[10px] flex items-center gap-1 cursor-pointer transition-all shadow-sm shrink-0"
                 >
                   <GitMerge className="w-3 h-3" />
                   <span>Resolve</span>
@@ -730,7 +730,7 @@ export default function SourceControlPanel({
             {/* 1. Repository Info Display */}
             <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-[#111318] border border-[#22252B] text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
-                <FolderGit2 className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+                <FolderGit2 className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                 <span className="font-medium text-zinc-100 truncate" title={workspacePath || repositoryName || "LocalRepo"}>
                   {repositoryName || (workspacePath ? workspacePath.split(/[\\/]/).filter(Boolean).pop() : "LocalRepo")}
                 </span>
@@ -754,10 +754,10 @@ export default function SourceControlPanel({
                     backgroundColor: "#14161B",
                     borderColor: "#22252B",
                   }}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs font-medium text-[#4CC2DE] hover:border-[#4CC2DE]/50 transition-colors cursor-pointer truncate flex-1 min-w-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs font-medium text-[#E6E8EB] hover:border-[#4CC2DE]/50 transition-colors cursor-pointer truncate flex-1 min-w-0"
                   title={`Active branch: ${currentBranch}${tracking ? ` (tracking ${tracking})` : ""}`}
                 >
-                  <GitBranch className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+                  <GitBranch className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span className="truncate">{currentBranch || "HEAD"}</span>
                   {isDetached && (
                     <span className="px-1 py-0.2 rounded bg-[#1A1C22] text-[#D9A441] text-[10px] font-medium border border-[#22252B]">
@@ -785,7 +785,7 @@ export default function SourceControlPanel({
                   className="px-2.5 py-1.5 rounded-md border text-zinc-300 hover:text-white text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors hover:border-[#22252B] shrink-0"
                   title="Create New Branch"
                 >
-                  <Plus className="w-3.5 h-3.5 text-[#4CC2DE]" />
+                  <Plus className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>New Branch</span>
                 </button>
               </div>

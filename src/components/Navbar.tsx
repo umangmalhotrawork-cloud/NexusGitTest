@@ -55,7 +55,7 @@ export default function Navbar() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-zinc-100 uppercase tracking-widest text-xs group-hover:text-cyan-300 transition-colors">
-                NEXUS
+                Sentinel AI
               </span>
               <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full bg-[#151520] border border-[#262626] text-cyan-400 text-[9.5px]">
                 Autonomous SE

@@ -39,7 +39,7 @@ export default function ThemesPopover({
       >
         <div className="flex items-center gap-2 font-medium text-xs text-[#E6E8EB]">
           <Palette className="w-4 h-4 text-[#4CC2DE]" />
-          <span>NEXUS Themes</span>
+          <span>Sentinel AI Themes</span>
         </div>
         <div className="flex items-center gap-2">
           <span

@@ -34,7 +34,7 @@ export const PROVIDER_METADATA: Record<string, ProviderMetadata> = {
     helpText: "Tokens are encrypted using OS Keychain Services via Electron safeStorage. They are never sent to external servers or stored in plaintext.",
     helpUrl: "https://vercel.com/account/tokens",
     helpLinkText: "Create a token in Vercel Dashboard",
-    connectedDescription: "Your Vercel Personal Access Token is securely encrypted on this machine. NEXUS can deploy projects directly to production.",
+    connectedDescription: "Your Vercel Personal Access Token is securely encrypted on this machine. Sentinel AI can deploy projects directly to production.",
   },
   render: {
     title: "Connect Render",
@@ -44,7 +44,7 @@ export const PROVIDER_METADATA: Record<string, ProviderMetadata> = {
     helpText: "API keys are encrypted using OS Keychain Services via Electron safeStorage. They are never sent to external servers or stored in plaintext.",
     helpUrl: "https://dashboard.render.com/u/settings#api-keys",
     helpLinkText: "Create an API key in Render Account Settings",
-    connectedDescription: "Your Render API Key is securely encrypted on this machine. NEXUS can deploy services and databases directly to Render.",
+    connectedDescription: "Your Render API Key is securely encrypted on this machine. Sentinel AI can deploy services and databases directly to Render.",
   },
   netlify: {
     title: "Connect Netlify",
@@ -54,7 +54,7 @@ export const PROVIDER_METADATA: Record<string, ProviderMetadata> = {
     helpText: "Tokens are encrypted using OS Keychain Services via Electron safeStorage. They are never sent to external servers or stored in plaintext.",
     helpUrl: "https://app.netlify.com/user/applications#personal-access-tokens",
     helpLinkText: "Create a token in Netlify User Settings",
-    connectedDescription: "Your Netlify Personal Access Token is securely encrypted on this machine. NEXUS can deploy frontend projects directly to Netlify.",
+    connectedDescription: "Your Netlify Personal Access Token is securely encrypted on this machine. Sentinel AI can deploy frontend projects directly to Netlify.",
   },
   railway: {
     title: "Connect Railway",
@@ -265,7 +265,7 @@ export default function DeploymentCredentialsModal({
                   </span>
                 </div>
                 <p className="text-xs text-zinc-300 leading-relaxed font-semibold">
-                  {providerDisplayName || config.title} credentials are securely stored and available to NEXUS.
+                  {providerDisplayName || config.title} credentials are securely stored and available to Sentinel AI.
                 </p>
                 <p className="text-xs text-zinc-400 leading-relaxed">
                   {config.connectedDescription}

@@ -82,7 +82,7 @@ export default function GithubConnectModal({
           const api = (window as any).electronAPI.github;
           const configRes = await api.configStatus?.();
           if (isMounted && configRes && !configRes.isConfigured) {
-            setErrorMessage("GitHub OAuth is not configured. Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET to the project-root .env file, then restart NEXUS.");
+            setErrorMessage("GitHub OAuth is not configured. Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET to the project-root .env file, then restart Sentinel AI.");
           } else if (isMounted && configRes && !configRes.hasSecureStorage) {
             setErrorMessage("Secure credential storage is unavailable. GitHub cannot be connected on this system.");
           }
@@ -140,7 +140,7 @@ export default function GithubConnectModal({
           setErrorMessage(res?.error || "Failed to load GitHub repositories.");
         }
       } else {
-        setErrorMessage("GitHub repository selection is available only in the NEXUS desktop app.");
+        setErrorMessage("GitHub repository selection is available only in the Sentinel AI desktop app.");
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Failed to fetch repositories.");
@@ -225,7 +225,7 @@ export default function GithubConnectModal({
           }
         }
       } else {
-        setErrorMessage("GitHub repository selection is available only in the NEXUS desktop app.");
+        setErrorMessage("GitHub repository selection is available only in the Sentinel AI desktop app.");
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Failed to connect repository.");
@@ -274,7 +274,7 @@ export default function GithubConnectModal({
           setErrorMessage(res?.error || "Failed to clone repository.");
         }
       } else {
-        setErrorMessage("Repository cloning is available only in the NEXUS desktop app.");
+        setErrorMessage("Repository cloning is available only in the Sentinel AI desktop app.");
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Failed to clone repository.");
@@ -307,7 +307,7 @@ export default function GithubConnectModal({
           setErrorMessage(res?.error || "GitHub authentication failed. Please try again.");
         }
       } else {
-        setErrorMessage("GitHub connection is available only in the NEXUS desktop app.");
+        setErrorMessage("GitHub connection is available only in the Sentinel AI desktop app.");
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Failed to initiate GitHub authentication.");
@@ -422,7 +422,7 @@ export default function GithubConnectModal({
           </div>
 
           <p className="text-[#9AA1AC] text-xs leading-relaxed">
-            This repository is not yet checked out locally. Choose a destination folder to clone and set it as your active NEXUS workspace.
+            This repository is not yet checked out locally. Choose a destination folder to clone and set it as your active Sentinel AI workspace.
           </p>
 
           <div className="space-y-1.5">
@@ -761,7 +761,7 @@ export default function GithubConnectModal({
         /* Disconnected State */
         <div className="space-y-3.5">
           <p className="text-[#9AA1AC] text-xs leading-relaxed">
-            Connect your GitHub account to manage repositories and push your NEXUS workspace changes.
+            Connect your GitHub account to manage repositories and push your Sentinel AI workspace changes.
           </p>
 
           {errorMessage && (

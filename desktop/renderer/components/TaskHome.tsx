@@ -76,7 +76,7 @@ function isCodeTask(text: string): boolean {
     "thank you", "thanks", "thank you so much", "thx", "ty",
     "cool", "nice", "awesome", "great", "okay", "ok", "yes", "no", "yep", "nope",
     "what can you do", "what do you do", "how can you help", "how do you work",
-    "tell me about nexus", "what is nexus", "hi there", "hello there", "hey there",
+    "tell me about sentinel ai", "what is sentinel ai", "tell me about nexus", "what is nexus", "hi there", "hello there", "hey there",
     "sounds good", "that sounds good", "looks good", "that looks good", "sure", "alright",
     "i agree", "makes sense", "got it", "understood", "perfect"
   ];
@@ -366,7 +366,7 @@ export default function TaskHome({
     onStartTask(promptText.trim(), targetProv, targetMod, importedCapsule);
   };
 
-  const workspaceName = workspacePath ? workspacePath.split("/").pop() || "NEXUS" : "NEXUS";
+  const workspaceName = workspacePath ? workspacePath.split("/").pop() || "Sentinel AI" : "Sentinel AI";
 
   return (
     <CapsuleDropZone
@@ -395,15 +395,15 @@ export default function TaskHome({
             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-sans border border-[#22252B] bg-[#14161B] text-[#9AA1AC]"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
-            <span>NEXUS Coding Agent Engine</span>
+            <span>Sentinel AI Coding Agent Engine</span>
           </div>
 
           <h1 className={`${isSplitOpen ? "text-xl" : "text-3xl"} font-sans font-semibold tracking-tight text-[#E6E8EB]`}>
-            What should we build in NEXUS?
+            What should we build in Sentinel AI?
           </h1>
 
           <p className={`${isSplitOpen ? "text-xs max-w-sm" : "text-sm max-w-lg"} mx-auto font-sans text-[#9AA1AC]`}>
-            Describe a goal, bug, or refactoring. NEXUS will inspect dependencies, plan execution, and verify behavior safely.
+            Describe a goal, bug, or refactoring. Sentinel AI will inspect dependencies, plan execution, and verify behavior safely.
           </p>
         </div>
 

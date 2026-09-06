@@ -86,7 +86,7 @@ export function useSecurityAudit(workspacePath: string) {
       } catch (e) {}
     }
 
-    let md = `# NEXUS Security Audit Report\n\n`;
+    let md = `# Sentinel AI Security Audit Report\n\n`;
     md += `Generated: ${new Date(report.generatedAt).toLocaleString()}\n\n`;
     md += `## Summary\n\n`;
     md += `- Critical: ${report.summary.critical}\n`;

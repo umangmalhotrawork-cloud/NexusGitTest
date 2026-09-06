@@ -16,7 +16,7 @@ export default function Footer() {
                 <Activity className="w-3.5 h-3.5" />
               </div>
               <span className="font-bold text-zinc-100 uppercase tracking-widest text-xs">
-                NEXUS
+                Sentinel AI
               </span>
             </div>
             <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
@@ -130,7 +130,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-[#181820] flex flex-col sm:flex-row items-center justify-between gap-3 text-[10.5px] text-zinc-500">
           <div>
-            &copy; {new Date().getFullYear()} NEXUS Project. Distributed under the MIT License.
+            &copy; {new Date().getFullYear()} Sentinel AI Project. Distributed under the MIT License.
           </div>
           <div className="flex items-center gap-4">
             <span>Local-First Workspace</span>

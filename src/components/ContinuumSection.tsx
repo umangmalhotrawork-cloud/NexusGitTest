@@ -11,7 +11,7 @@ export default function ContinuumSection() {
       badge: "Session Memory",
     },
     {
-      title: "Portable Nexus Capsules",
+      title: "Portable Sentinel AI Capsules",
       desc: "Export and import project context as portable capsules (.capsule) to hand off complete engineering context to fresh AI sessions.",
       badge: "Capsule Handoff",
     },
@@ -53,7 +53,7 @@ export default function ContinuumSection() {
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm font-sans max-w-3xl leading-relaxed">
-            NEXUS preserves curated project context across long engineering sessions. Through structured session snapshots and portable Nexus Capsules, your engineering decisions, pending tasks, file states, and verification evidence persist seamlessly — even when starting a fresh AI conversation.
+            Sentinel AI preserves curated project context across long engineering sessions. Through structured session snapshots and portable Sentinel AI Capsules, your engineering decisions, pending tasks, file states, and verification evidence persist seamlessly — even when starting a fresh AI conversation.
           </p>
         </div>
 
@@ -84,7 +84,7 @@ export default function ContinuumSection() {
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-purple-400" />
               <span className="font-bold text-zinc-100 text-xs uppercase tracking-wider">
-                Nexus Capsule Inspector
+                Sentinel AI Capsule Inspector
               </span>
             </div>
             <span className="text-[10px] text-purple-300 bg-purple-950/80 px-2.5 py-0.5 rounded-full border border-purple-500/40 font-bold">

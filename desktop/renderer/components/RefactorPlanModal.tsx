@@ -172,7 +172,7 @@ export default function RefactorPlanModal({
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE]">
                 <GitMerge className="w-3.5 h-3.5 text-[#4CC2DE]" />
-                <span>NEXUS Refactor Plan</span>
+                <span>Sentinel AI Refactor Plan</span>
               </div>
               <div className={`px-2 py-0.5 rounded text-xs font-medium border ${getStatusBadge(plan.status)}`}>
                 STATUS: {plan.status}

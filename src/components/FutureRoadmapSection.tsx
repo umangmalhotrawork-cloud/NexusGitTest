@@ -40,7 +40,7 @@ export default function FutureRoadmapSection() {
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm font-sans max-w-3xl leading-relaxed">
-            As NEXUS evolves, we are expanding our model ecosystem and optional infrastructure connections while keeping your local workspace authoritative.
+            As Sentinel AI evolves, we are expanding our model ecosystem and optional infrastructure connections while keeping your local workspace authoritative.
           </p>
 
           <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-500/30 text-amber-300 text-[11px] font-sans flex items-center gap-2 max-w-3xl">
@@ -65,7 +65,7 @@ export default function FutureRoadmapSection() {
             </div>
 
             <p className="text-[11.5px] text-zinc-400 font-sans leading-relaxed">
-              Future releases will support BYO-Key multi-provider switching. Select your preferred provider and model directly within the NEXUS agent environment.
+              Future releases will support BYO-Key multi-provider switching. Select your preferred provider and model directly within the Sentinel AI agent environment.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[10.5px]">

@@ -763,4 +763,30 @@
   }
 }
 
+/* =========================================================
+ * FLOATING DEV / PORTAL CONTROL RESTRAINT
+ * Normalize floating indicator to Quiet Precision standard:
+ * - Subdued scale & neutral elevated styling when inactive
+ * - Unobtrusive positioning that does not occlude the composer or status bar
+ * - Elevates only on focus/hover, keeping full diagnostic utility intact
+ * ========================================================= */
+nextjs-portal {
+  position: fixed !important;
+  bottom: 28px !important;
+  right: 12px !important;
+  z-index: 35 !important;
+  opacity: 0.55 !important;
+  transform: scale(0.8) !important;
+  transform-origin: bottom right !important;
+  filter: grayscale(0.6) !important;
+  transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease !important;
+}
+
+nextjs-portal:hover,
+nextjs-portal:focus-within {
+  opacity: 1 !important;
+  transform: scale(0.95) !important;
+  filter: grayscale(0) !important;
+}
+
 

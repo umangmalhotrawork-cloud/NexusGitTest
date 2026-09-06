@@ -105,7 +105,7 @@ export default function FeatureSection() {
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm font-sans max-w-3xl leading-relaxed">
-            NEXUS combines AST analysis, Behavioral Dependency Graphs, pre-patch firewalls, and behavioral verification to perform safe, controlled software changes.
+            Sentinel AI combines AST analysis, Behavioral Dependency Graphs, pre-patch firewalls, and behavioral verification to perform safe, controlled software changes.
           </p>
         </div>
 

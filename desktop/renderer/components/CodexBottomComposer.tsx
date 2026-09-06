@@ -26,7 +26,7 @@ interface CodexBottomComposerProps {
 }
 
 export default function CodexBottomComposer({
-  workspaceName = "NEXUS",
+  workspaceName = "Sentinel AI",
   gitBranch = "main",
   activeProvider = "gemini",
   activeModel = "gemini-2.5-flash",
@@ -271,12 +271,12 @@ export default function CodexBottomComposer({
   });
 
   const getProviderDisplayName = (id: string) => {
-    if (id === "nexus1") return "NEXUS 1 (Gemini)";
-    if (id === "nexus2") return "NEXUS 2 (Gemini)";
-    if (id === "nexus3") return "NEXUS 3 (Gemini)";
-    if (id === "nexus4") return "NEXUS 4 (Gemini)";
-    if (id === "nexus5") return "NEXUS 5 (Gemini)";
-    if (id === "nexus6") return "NEXUS 6 (Groq)";
+    if (id === "nexus1") return "Sentinel 1 (Gemini)";
+    if (id === "nexus2") return "Sentinel 2 (Gemini)";
+    if (id === "nexus3") return "Sentinel 3 (Gemini)";
+    if (id === "nexus4") return "Sentinel 4 (Gemini)";
+    if (id === "nexus5") return "Sentinel 5 (Gemini)";
+    if (id === "nexus6") return "Sentinel 6 (Groq)";
     if (id === "gemini") return "Google Gemini";
     if (id === "groq") return "Groq";
     if (id === "openai") return "OpenAI";
@@ -399,7 +399,7 @@ export default function CodexBottomComposer({
             </div>
             <div className="space-y-0.5 text-xs font-mono min-w-0">
               <div className="text-[11px] font-bold text-cyan-300 flex items-center gap-1.5 font-sans">
-                <span>NEXUS analyzed your prompt</span>
+                <span>Sentinel AI analyzed your prompt</span>
               </div>
               <div className="text-[11px] text-zinc-300 flex items-center gap-2 flex-wrap">
                 <span>
@@ -696,7 +696,7 @@ export default function CodexBottomComposer({
                 }
               }
             }}
-            placeholder="Ask NEXUS to investigate or change code... (⌘Enter to send)"
+            placeholder="Ask Sentinel AI to investigate or change code... (⌘Enter to send)"
             disabled={disabled}
             className={`w-full bg-transparent text-xs text-[#E6E8EB] placeholder-[#6B7280] focus:outline-none resize-none font-sans transition-all ${
               attachedCapsule || prompt.length > 200 || prompt.includes("\n") ? "h-48" : "h-20"
@@ -772,7 +772,7 @@ export default function CodexBottomComposer({
                   <Cpu className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
                   <span className="truncate capitalize">
                     {activeProvider.startsWith("nexus") 
-                      ? (activeProvider === "nexus6" ? "NEXUS 6 (Groq)" : `NEXUS ${activeProvider.replace("nexus", "")} (Gemini)`) 
+                      ? (activeProvider === "nexus6" ? "Sentinel 6 (Groq)" : `Sentinel ${activeProvider.replace("nexus", "")} (Gemini)`) 
                       : `${activeProvider} (${activeModel.split('/').pop()?.replace(/^models\//, '') || activeModel})`}
                   </span>
                   <ChevronDown className="w-3 h-3 text-[#6B7280] shrink-0" />
@@ -784,12 +784,12 @@ export default function CodexBottomComposer({
                     className="absolute left-0 bottom-9 w-64 border border-[#22252B] rounded-lg shadow-popover bg-[#1A1C22] z-50 p-1 space-y-0.5 text-xs font-sans max-h-56 overflow-y-auto"
                   >
                     {[
-                      { id: "nexus1", name: "NEXUS 1", modelId: "gemini-2.5-flash", label: "NEXUS 1 (Gemini 2.5 Flash)" },
-                      { id: "nexus2", name: "NEXUS 2", modelId: "gemini-3.5-flash", label: "NEXUS 2 (Gemini 3.5 Flash)" },
-                      { id: "nexus3", name: "NEXUS 3", modelId: "gemini-3.5-flash", label: "NEXUS 3 (Gemini 3.5 Flash)" },
-                      { id: "nexus4", name: "NEXUS 4", modelId: "gemini-3.5-flash", label: "NEXUS 4 (Gemini 3.5 Flash)" },
-                      { id: "nexus5", name: "NEXUS 5", modelId: "gemini-3.5-flash", label: "NEXUS 5 (Gemini 3.5 Flash)" },
-                      { id: "nexus6", name: "NEXUS 6", modelId: "openai/gpt-oss-120b", label: "NEXUS 6 (Groq GPT-OSS 120B)" },
+                      { id: "nexus1", name: "Sentinel 1", modelId: "gemini-2.5-flash", label: "Sentinel 1 (Gemini 2.5 Flash)" },
+                      { id: "nexus2", name: "Sentinel 2", modelId: "gemini-3.5-flash", label: "Sentinel 2 (Gemini 3.5 Flash)" },
+                      { id: "nexus3", name: "Sentinel 3", modelId: "gemini-3.5-flash", label: "Sentinel 3 (Gemini 3.5 Flash)" },
+                      { id: "nexus4", name: "Sentinel 4", modelId: "gemini-3.5-flash", label: "Sentinel 4 (Gemini 3.5 Flash)" },
+                      { id: "nexus5", name: "Sentinel 5", modelId: "gemini-3.5-flash", label: "Sentinel 5 (Gemini 3.5 Flash)" },
+                      { id: "nexus6", name: "Sentinel 6", modelId: "openai/gpt-oss-120b", label: "Sentinel 6 (Groq GPT-OSS 120B)" },
                     ].map((p, idx) => {
                       const isSel = activeProvider === p.id && (activeModel === p.modelId || (!activeModel && idx === 0));
                       return (

@@ -87,7 +87,7 @@ export default function CapsuleDropZone({
       } else {
         capsule = JSON.parse(text);
         if (capsule.nexus_capsule_version !== "1.0.0" || !capsule.capsule_id || !capsule.source_chat?.thread_id) {
-          throw new Error("File does not match the Nexus Context Capsule schema specification.");
+          throw new Error("File does not match the Sentinel AI Context Capsule schema specification.");
         }
       }
 

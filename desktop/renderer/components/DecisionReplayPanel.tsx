@@ -213,23 +213,23 @@ export default function DecisionReplayPanel({
     switch (status) {
       case "CONFIRMED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
             <CheckCircle2 className="w-2.5 h-2.5" />
-            CONFIRMED
+            Confirmed
           </span>
         );
       case "CANDIDATE":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950/80 border border-amber-500/40 text-amber-300">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-amber-950/80 border border-amber-500/40 text-amber-300">
             <AlertCircle className="w-2.5 h-2.5" />
-            CANDIDATE
+            Candidate
           </span>
         );
       case "REJECTED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-400">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-zinc-900 border border-zinc-700 text-zinc-400">
             <XCircle className="w-2.5 h-2.5" />
-            REJECTED
+            Rejected
           </span>
         );
       default:
@@ -240,19 +240,19 @@ export default function DecisionReplayPanel({
   const getConfidenceBadge = (confidence: string) => {
     switch (confidence) {
       case "HIGH":
-        return <span className="text-[10px] font-mono text-emerald-400 font-bold">HIGH</span>;
+        return <span className="text-[10px] font-sans font-medium text-emerald-400">High</span>;
       case "MEDIUM":
-        return <span className="text-[10px] font-mono text-amber-400 font-bold">MEDIUM</span>;
+        return <span className="text-[10px] font-sans font-medium text-amber-400">Medium</span>;
       case "LOW":
       default:
-        return <span className="text-[10px] font-mono text-zinc-400 font-bold">LOW</span>;
+        return <span className="text-[10px] font-sans font-medium text-zinc-400">Low</span>;
     }
   };
 
   return (
     <div className="flex flex-col h-full w-full min-w-0 max-w-full bg-[#0E1013] text-zinc-200 border-r border-[#22252B] select-none font-sans text-xs overflow-hidden">
       {/* Header */}
-      <div className="h-10 px-3 border-b border-[#22252B] flex items-center justify-between shrink-0 min-w-0 max-w-full bg-[#0E1013]">
+      <div className="h-10 px-3 border-b border-[#22252B] flex items-center justify-between shrink-0 min-w-0 max-w-full bg-[#0E1013] font-sans">
         <div className="flex items-center gap-2 min-w-0">
           <BookmarkCheck className="w-4 h-4 text-[#4CC2DE] shrink-0" />
           <span className="font-semibold text-zinc-100 text-sm tracking-tight truncate">Decision Replay</span>
@@ -285,10 +285,10 @@ export default function DecisionReplayPanel({
       </div>
 
       {/* "Why" Replay Question Bar */}
-      <div className="p-2.5 border-b border-[#22252B] bg-[#0E1013] shrink-0 min-w-0 max-w-full">
+      <div className="p-2.5 border-b border-[#22252B] bg-[#0E1013] shrink-0 min-w-0 max-w-full font-sans">
         <form onSubmit={handleReplay} className="space-y-1.5 min-w-0 max-w-full">
-          <label className="text-[11px] font-mono text-[#4CC2DE] font-semibold flex items-center gap-1 min-w-0">
-            <HelpCircle className="w-3 h-3 text-[#4CC2DE] shrink-0" />
+          <label className="text-xs font-sans text-zinc-300 font-medium flex items-center gap-1.5 min-w-0">
+            <HelpCircle className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
             <span className="truncate">Ask "Why" about Architecture or Code:</span>
           </label>
           <div className="flex items-center gap-1.5 min-w-0 max-w-full">
@@ -297,14 +297,14 @@ export default function DecisionReplayPanel({
               value={replayQuery}
               onChange={(e) => setReplayQuery(e.target.value)}
               placeholder="e.g. Why is validation before payment?"
-              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE]"
+              className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] font-sans"
             />
             <button
               type="submit"
               disabled={replaying || !replayQuery.trim()}
-              className="px-2.5 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-mono text-[11px] font-medium transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-sans text-xs font-medium transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
-              <Sparkles className="w-3 h-3 shrink-0" />
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
               <span>Replay</span>
             </button>
           </div>
@@ -313,14 +313,14 @@ export default function DecisionReplayPanel({
 
       {/* Replay Answer Modal / Dropdown Box */}
       {replayAnswer && (
-        <div className="p-2.5 border-b border-[#22252B] bg-[#111318] space-y-2 shrink-0 min-w-0 max-w-full">
+        <div className="p-2.5 border-b border-[#22252B] bg-[#111318] space-y-2 shrink-0 min-w-0 max-w-full font-sans">
           <div className="flex items-center justify-between min-w-0">
-            <span className="text-[11px] font-mono text-[#4CC2DE] font-semibold uppercase tracking-wider truncate">
+            <span className="text-xs font-sans text-[#E6E8EB] font-medium tracking-normal truncate">
               Reconstructed Decision
             </span>
             <button
               onClick={() => setReplayAnswer(null)}
-              className="text-[#8C92A4] hover:text-zinc-300 text-xs font-mono shrink-0 cursor-pointer"
+              className="text-[#8C92A4] hover:text-zinc-300 text-xs font-sans shrink-0 cursor-pointer"
             >
               ✕ Dismiss
             </button>
@@ -329,7 +329,7 @@ export default function DecisionReplayPanel({
           <div className="p-2.5 rounded-lg bg-[#14161B] border border-[#22252B] space-y-2 text-xs min-w-0 max-w-full overflow-hidden">
             {/* 1. Decision */}
             <div className="min-w-0">
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">1. Decision</div>
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">1. Decision</div>
               <div className="text-zinc-200 font-medium break-words [overflow-wrap:anywhere] leading-snug">
                 {replayAnswer.decision}
               </div>
@@ -337,7 +337,7 @@ export default function DecisionReplayPanel({
 
             {/* 2. Problem */}
             <div className="min-w-0">
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">2. Problem Solved</div>
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">2. Problem Solved</div>
               <div className="text-zinc-300 break-words [overflow-wrap:anywhere] leading-snug">
                 {replayAnswer.problem || "Not explicitly recorded"}
               </div>
@@ -345,8 +345,8 @@ export default function DecisionReplayPanel({
 
             {/* 3. Rationale */}
             <div className="min-w-0">
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">3. Rationale</div>
-              <div className="text-cyan-200/90 font-mono text-[11px] bg-[#12121c] p-2 rounded border border-[#202030] break-words [overflow-wrap:anywhere] whitespace-pre-wrap leading-relaxed">
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">3. Rationale</div>
+              <div className="text-zinc-200 font-sans text-xs bg-[#111318] p-2.5 rounded-md border border-[#22252B] break-words [overflow-wrap:anywhere] whitespace-pre-wrap leading-relaxed">
                 {replayAnswer.rationale}
               </div>
             </div>
@@ -354,8 +354,8 @@ export default function DecisionReplayPanel({
             {/* 4. Rejected Alternatives */}
             {replayAnswer.alternativesRejected && replayAnswer.alternativesRejected.length > 0 && (
               <div className="min-w-0">
-                <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">4. Alternatives Rejected</div>
-                <ul className="list-disc list-inside text-zinc-400 text-[11px] space-y-0.5 min-w-0">
+                <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">4. Alternatives Rejected</div>
+                <ul className="list-disc list-inside text-zinc-400 text-xs space-y-0.5 min-w-0">
                   {replayAnswer.alternativesRejected.map((alt: string, i: number) => (
                     <li key={i} className="break-words [overflow-wrap:anywhere]">{alt}</li>
                   ))}
@@ -365,7 +365,7 @@ export default function DecisionReplayPanel({
 
             {/* 5. Evidence Tags */}
             <div className="min-w-0">
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">5. Evidence Tags</div>
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">5. Evidence Tags</div>
               <div className="flex flex-wrap gap-1 pt-1 min-w-0 max-w-full">
                 {replayAnswer.evidence?.map((ev: string, idx: number) => (
                   <span
@@ -427,30 +427,38 @@ export default function DecisionReplayPanel({
         </div>
 
         {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1 font-mono text-[10px] min-w-0">
-          {(["ALL", "CONFIRMED", "CANDIDATE", "REJECTED"] as const).map((filter) => (
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center gap-1 font-sans text-[11px] min-w-0">
+          {(
+            [
+              { id: "ALL", label: "All" },
+              { id: "CONFIRMED", label: "Confirmed" },
+              { id: "CANDIDATE", label: "Candidate" },
+              { id: "REJECTED", label: "Rejected" },
+            ] as const
+          ).map((filter) => (
             <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-2 py-0.5 rounded transition-colors cursor-pointer shrink-0 ${
-                activeFilter === filter
+              key={filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`px-2 py-0.5 rounded-md transition-colors cursor-pointer shrink-0 font-medium ${
+                activeFilter === filter.id
                   ? "bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30"
-                  : "text-[#8C92A4] hover:text-zinc-300 hover:bg-[#14161B]"
+                  : "text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
             >
-              {filter}
+              {filter.label}
             </button>
           ))}
         </div>
       </div>
 
       {/* Decision Records List */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2.5 space-y-2.5 min-w-0 max-w-full">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2.5 space-y-2.5 min-w-0 max-w-full font-sans">
         {filteredDecisions.length === 0 ? (
-          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0">
+          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0 font-sans">
             <BookOpen className="w-6 h-6 mx-auto text-[#5A6072] shrink-0" />
-            <p className="text-xs text-[#9AA1AC]">No decision records found.</p>
-            <p className="text-[10px] font-mono text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
+            <p className="text-xs text-[#9AA1AC] font-medium">No decision records found.</p>
+            <p className="text-[11px] font-sans text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
               Decisions are captured during architectural discussions or Context Capsule imports.
             </p>
           </div>
@@ -458,7 +466,7 @@ export default function DecisionReplayPanel({
           filteredDecisions.map((d) => (
             <div
               key={d.decisionId}
-              className="p-3 rounded-lg bg-[#111318] border border-[#22252B] hover:border-[#4CC2DE]/30 transition-colors space-y-2 text-xs min-w-0 max-w-full overflow-hidden"
+              className="p-3 rounded-lg bg-[#111318] border border-[#22252B] hover:border-[#4CC2DE]/30 transition-colors space-y-2 text-xs min-w-0 max-w-full overflow-hidden font-sans"
             >
               {/* Card Top */}
               <div className="flex items-start justify-between gap-2 min-w-0">
@@ -469,31 +477,31 @@ export default function DecisionReplayPanel({
               </div>
 
               {/* Decision Statement */}
-              <div className="text-zinc-300 leading-relaxed font-body break-words [overflow-wrap:anywhere] min-w-0">
-                <span className="font-semibold text-zinc-400 font-mono text-[10px]">DECISION: </span>
+              <div className="text-zinc-300 leading-relaxed font-sans break-words [overflow-wrap:anywhere] min-w-0">
+                <span className="font-medium text-[#8C92A4] font-sans text-[11px]">Decision: </span>
                 <span>{d.decision}</span>
               </div>
 
               {/* Problem Solved */}
               {d.problem && (
-                <div className="text-zinc-400 bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0">
-                  <span className="font-semibold text-amber-400/90 font-mono text-[10px]">PROBLEM: </span>
+                <div className="text-zinc-400 bg-[#0E1013] p-2 rounded-md border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0 font-sans">
+                  <span className="font-medium text-[#8C92A4] font-sans text-[11px]">Problem: </span>
                   <span>{d.problem}</span>
                 </div>
               )}
 
               {/* Rationale / Why */}
               {d.rationale && (
-                <div className="text-zinc-400 bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0 whitespace-pre-wrap leading-relaxed">
-                  <span className="font-semibold text-[#4CC2DE] font-mono text-[10px]">WHY: </span>
+                <div className="text-zinc-300 bg-[#0E1013] p-2 rounded-md border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0 whitespace-pre-wrap leading-relaxed font-sans">
+                  <span className="font-medium text-[#4CC2DE] font-sans text-[11px]">Why: </span>
                   <span>{d.rationale}</span>
                 </div>
               )}
 
               {/* Rejected Alternatives */}
               {d.rejectedAlternatives && d.rejectedAlternatives.length > 0 && (
-                <div className="text-[11px] text-zinc-400 break-words [overflow-wrap:anywhere] min-w-0">
-                  <span className="font-mono text-[10px] text-amber-400/90 font-semibold">REJECTED: </span>
+                <div className="text-[11px] text-zinc-400 break-words [overflow-wrap:anywhere] min-w-0 font-sans">
+                  <span className="font-sans text-[11px] text-[#8C92A4] font-medium">Rejected: </span>
                   {d.rejectedAlternatives.map((r, i) => (
                     <span key={i} className="mr-2 inline-block break-words [overflow-wrap:anywhere]">
                       {r.alternative} {r.reason ? `(${r.reason})` : ""}

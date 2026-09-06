@@ -83,7 +83,7 @@ export default function CodexAIControlPopover({
   if (!isOpen) return null;
 
   const providers = aiConfig?.providers || [
-    ...[1, 2, 3, 4, 5, 6].map((slot) => ({ id: `nexus${slot}`, name: `NEXUS ${slot}`, secondaryName: "Gemini", models: [{ id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" }], isConfigured: slot === 1 })),
+    ...[1, 2, 3, 4, 5, 6].map((slot) => ({ id: `nexus${slot}`, name: `Sentinel ${slot}`, secondaryName: "Gemini", models: [{ id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" }], isConfigured: slot === 1 })),
   ];
 
   const currentProvider = providers.find((p: any) => p.id === selectedProviderTab) || providers[0];
@@ -133,7 +133,7 @@ export default function CodexAIControlPopover({
               >
                 <div className="flex items-center gap-1 truncate">
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isConn ? "bg-emerald-400" : "bg-zinc-600"}`} />
-                  <span className="truncate">{p.name}</span>
+                  <span className="truncate">{p.name ? p.name.replace(/\bNEXUS\b/g, "Sentinel") : p.name}</span>
                 </div>
                 {isLive && <span className="text-[8.5px] text-cyan-400 font-bold ml-0.5">●</span>}
               </button>

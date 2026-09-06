@@ -58,10 +58,10 @@ export interface ThemeDefinition {
 }
 
 export const THEMES: ThemeDefinition[] = [
-  // 1. NEXUS Dark — DEFAULT
+  // 1. Sentinel AI Dark — DEFAULT
   {
     id: "nexus-dark",
-    name: "NEXUS Dark",
+    name: "Sentinel AI Dark",
     description: "Quiet, precise, professional engineering IDE theme with restrained cyan accents",
     category: "Default",
     colors: {

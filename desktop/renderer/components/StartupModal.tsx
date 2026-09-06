@@ -55,7 +55,7 @@ export default function StartupModal({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#4CC2DE]" />
             <h2 className="font-sans text-base font-semibold text-[#E6E8EB] tracking-tight">
-              NEXUS Workbench
+              Sentinel AI Workbench
             </h2>
             <span className="px-2 py-0.5 rounded-full bg-[#14161B] border border-[#22252B] text-[#9AA1AC] text-[10px] font-mono">
               v0.2.0

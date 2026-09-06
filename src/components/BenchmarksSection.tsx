@@ -47,7 +47,7 @@ export default function BenchmarksSection() {
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm font-sans max-w-3xl leading-relaxed">
-            NEXUS is built with native process isolation and optimized data structures to ensure low latency and predictable performance on large repositories.
+            Sentinel AI is built with native process isolation and optimized data structures to ensure low latency and predictable performance on large repositories.
           </p>
         </div>
 

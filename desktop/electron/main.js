@@ -242,7 +242,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'NEXUS — Autonomous Software Engineering',
+    title: 'Sentinel AI — Autonomous Software Engineering',
     backgroundColor: '#050505',
     titleBarStyle: 'hiddenInset',
     show: false,
@@ -981,10 +981,10 @@ ipcMain.handle('dialog:open-folder', async () => {
 ipcMain.handle('dialog:open-capsule-file', async () => {
   if (!mainWindow) return null;
   const result = await dialog.showOpenDialog(mainWindow, {
-    title: 'Select Nexus Capsule JSON File',
+    title: 'Select Sentinel AI Capsule JSON File',
     properties: ['openFile'],
     filters: [
-      { name: 'Nexus Capsule', extensions: ['json'] },
+      { name: 'Sentinel AI Capsule', extensions: ['json'] },
       { name: 'All Files', extensions: ['*'] },
     ],
   });

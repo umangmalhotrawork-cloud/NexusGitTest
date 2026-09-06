@@ -130,7 +130,7 @@ export default function CapsuleImportModal({
           onImportSuccess(capsule);
           onClose();
         } else {
-          setErrorMessage("Dropped file is not a valid NEXUS Context Capsule.");
+          setErrorMessage("Dropped file is not a valid Sentinel AI Context Capsule.");
         }
       } catch (err: any) {
         setErrorMessage(err?.message || "Failed to parse dropped capsule file.");
@@ -161,7 +161,7 @@ export default function CapsuleImportModal({
               <span className="tracking-wide">IMPORT CONTEXT CAPSULE</span>
             </div>
             <p className="text-[11px] text-zinc-400">
-              Continue a previous NEXUS conversation
+              Continue a previous Sentinel AI conversation
             </p>
           </div>
 

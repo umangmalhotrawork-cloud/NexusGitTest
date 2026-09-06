@@ -362,7 +362,7 @@ export default function SettingsPanel({
                     onChange={(e) => updateSetting("appearance.theme", e.target.value, scope)}
                     className="px-2 py-1 bg-[#12121c] border border-[#242436] rounded-lg text-xs text-white focus:outline-none focus:border-cyan-500"
                   >
-                    <option value="dark">Nexus Obsidian (Dark)</option>
+                    <option value="dark">Sentinel AI Dark</option>
                     <option value="midnight">Midnight Cyan</option>
                     <option value="cyberpunk">Cyberpunk Neon</option>
                   </select>

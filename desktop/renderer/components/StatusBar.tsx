@@ -163,9 +163,11 @@ export default function StatusBar({
   const activeDiagnostics = activeProviderObj?.diagnostics;
   const isConfigured = activeProviderObj?.isConfigured;
 
+  const formatSlotName = (name?: string) => name ? name.replace(/\bNEXUS\b/g, "Sentinel") : "Sentinel 1";
+
   const displayModelName = activeProviderObj 
-    ? `${activeProviderObj.name} (${activeProviderObj.secondaryName || 'Gemini'})` 
-    : `NEXUS 1 (Gemini)`;
+    ? `${formatSlotName(activeProviderObj.name)} (${activeProviderObj.secondaryName || 'Gemini'})` 
+    : `Sentinel 1 (Gemini)`;
 
   const targetKeyProvider = aiConfig?.providers?.find((p: any) => p.id === selectedKeyProviderId) || {
     id: selectedKeyProviderId,
@@ -243,14 +245,14 @@ export default function StatusBar({
             ref={statusModelTriggerRef}
             onClick={() => setShowModelDropdown(!showModelDropdown)}
             className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-[#E6E8EB] transition-colors cursor-pointer font-medium text-[11px]"
-            title={`Global AI Model & Provider Selector\nActive Slot: ${activeProviderObj?.name || 'NEXUS 1'}\nProvider: ${activeProviderObj?.secondaryName || 'Gemini'}\nStatus: ${isConfigured ? 'Configured' : 'Not Configured'}\nLast Request: ${activeDiagnostics?.lastRequestAt ? new Date(activeDiagnostics.lastRequestAt).toLocaleTimeString() : 'Never'}\nLast Status: ${activeDiagnostics?.status || 'IDLE'}`}
+            title={`Global AI Model & Provider Selector\nActive Slot: ${formatSlotName(activeProviderObj?.name)}\nProvider: ${activeProviderObj?.secondaryName || 'Gemini'}\nStatus: ${isConfigured ? 'Configured' : 'Not Configured'}\nLast Request: ${activeDiagnostics?.lastRequestAt ? new Date(activeDiagnostics.lastRequestAt).toLocaleTimeString() : 'Never'}\nLast Status: ${activeDiagnostics?.status || 'IDLE'}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[#3EAE79]" : "bg-[#6B7280]"}`} />
             <Bot className="w-3 h-3 text-[#9AA1AC]" />
             <span className="truncate max-w-[130px]">AI: {displayModelName}</span>
             <span className="text-[#5A6072]">•</span>
             <span className="hidden sm:inline text-[#8C92A4] font-normal text-[10px]">
-              {activeProviderObj?.name || "NEXUS 1"}
+              {formatSlotName(activeProviderObj?.name)}
               <span className={isConfigured ? "text-[#3EAE79] ml-1 font-medium" : "text-[#6B7280] ml-1"}>
                 ({isConfigured ? "Configured" : "No Key"})
               </span>
@@ -273,12 +275,12 @@ export default function StatusBar({
 
               <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
                 {(aiConfig?.providers || [
-                  { id: "nexus1", name: "NEXUS 1", secondaryName: "Gemini", status: "CONNECTED", isConfigured: true },
-                  { id: "nexus2", name: "NEXUS 2", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
-                  { id: "nexus3", name: "NEXUS 3", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
-                  { id: "nexus4", name: "NEXUS 4", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
-                  { id: "nexus5", name: "NEXUS 5", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
-                  { id: "nexus6", name: "NEXUS 6", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
+                  { id: "nexus1", name: "Sentinel 1", secondaryName: "Gemini", status: "CONNECTED", isConfigured: true },
+                  { id: "nexus2", name: "Sentinel 2", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
+                  { id: "nexus3", name: "Sentinel 3", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
+                  { id: "nexus4", name: "Sentinel 4", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
+                  { id: "nexus5", name: "Sentinel 5", secondaryName: "Gemini", status: "NOT_CONFIGURED", isConfigured: false },
+                  { id: "nexus6", name: "Sentinel 6", secondaryName: "Groq", status: "NOT_CONFIGURED", isConfigured: false },
                 ]).map((provider: any) => {
                   const isSelected = (aiConfig?.activeProvider || "nexus1") === provider.id;
                   const isConnected = provider.isConfigured;
@@ -304,7 +306,7 @@ export default function StatusBar({
                           className="flex items-center gap-1.5 font-medium text-xs hover:text-[#4CC2DE] cursor-pointer flex-1 text-left"
                         >
                           <span className={isSelected ? "text-[#4CC2DE]" : "text-[#E6E8EB]"}>
-                            {isSelected ? "✓ " : "  "}{provider.name}
+                            {isSelected ? "✓ " : "  "}{formatSlotName(provider.name)}
                           </span>
                           <span className="text-[10px] text-[#6B7280]">
                             ({provider.secondaryName || "Gemini"})

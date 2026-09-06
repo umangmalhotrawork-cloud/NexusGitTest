@@ -2174,7 +2174,7 @@ export default function IDEApp() {
   const [consoleHeight, setConsoleHeight] = useState(120);
 
   const [logs, setLogs] = useState<string[]>([
-    "[SYSTEM] NEXUS Workbench Initialized.",
+    "[SYSTEM] Sentinel AI Workbench Initialized.",
     "[ELECTRON] Context Bridge Connected.",
     "[DEMO] Auto-loaded workspace: demo-workspaces/ai_cart_project",
     "[ENGINE] Python analyze.py loaded. 4 Ghost lines detected in cart_calculator.py.",
@@ -6336,10 +6336,10 @@ return (
           <div className="flex items-center gap-2 pr-2 border-r border-[#22252B]">
             <span className="w-2 h-2 rounded-full bg-[#4CC2DE] shrink-0" />
             <span className="font-heading font-bold text-xs text-[#E6E8EB] tracking-tight whitespace-nowrap">
-              NEXUS
+              Sentinel AI
             </span>
             <span className="px-2 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-300 text-[10.5px] font-mono">
-              {folderPath ? folderPath.split('/').pop() : "NEXUS"}
+              {folderPath ? folderPath.split('/').pop() : "Sentinel AI"}
             </span>
           </div>
 
@@ -6362,7 +6362,7 @@ return (
           <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111318] border border-[#22252B] text-xs max-w-xl truncate">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE] shrink-0" />
             <span className="text-[#E6E8EB] font-medium truncate">
-              {activeTab ? activeTab.name : "NEXUS Workbench"}
+              {activeTab ? activeTab.name : "Sentinel AI Workbench"}
             </span>
             {activeTaskPrompt && (
               <span className="text-[#6B7280] text-[11px] truncate">
@@ -6409,7 +6409,7 @@ return (
                   ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
                   : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
-              title="Global NEXUS Themes"
+              title="Global Themes"
             >
               <Palette className="w-3.5 h-3.5 shrink-0" />
               <span>Themes ▾</span>
@@ -6516,16 +6516,16 @@ return (
             {moreMenuOpen && (
               <div
                 ref={moreMenuRef}
-                className="absolute top-full right-0 mt-1 w-56 bg-[#0a0a0d] border border-[#1f1f24] rounded-xl shadow-2xl z-50 p-1.5 space-y-1 font-mono text-xs animate-fade-in"
+                className="absolute top-full right-0 mt-1 w-56 bg-[#1A1C22] border border-[#22252B] rounded-lg shadow-popover z-50 p-1.5 space-y-1 font-sans text-xs animate-fade-in"
               >
                 <button
                   onClick={() => {
                     handleRunPythonDebugger();
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-cyan-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <Bug className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <Bug className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Debug (F10)</span>
                 </button>
                 <button
@@ -6533,9 +6533,9 @@ return (
                     setMainView(mainView === "test_explorer" ? "editor" : "test_explorer");
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-emerald-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <FlaskConical className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <FlaskConical className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Test Explorer (⌘⇧T)</span>
                 </button>
                 <button
@@ -6543,9 +6543,9 @@ return (
                     setMainView(mainView === "profiler" ? "editor" : "profiler");
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-amber-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <Flame className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Profiler (⌘⇧P)</span>
                 </button>
                 <button
@@ -6553,9 +6553,9 @@ return (
                     setMainView(mainView === "security_audit" ? "editor" : "security_audit");
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-red-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <ShieldAlert className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Security Audit (⌘⇧S)</span>
                 </button>
                 <button
@@ -6563,20 +6563,20 @@ return (
                     setMainView(mainView === "snapshots" ? "editor" : "snapshots");
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-cyan-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <HistoryIcon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <HistoryIcon className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Snapshots (⌘⇧B)</span>
                 </button>
-                <div className="h-px bg-[#1f1f24] my-1" />
+                <div className="h-px bg-[#22252B] my-1" />
                 <button
                   onClick={() => {
                     handleExportReport();
                     setMoreMenuOpen(false);
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-emerald-300 hover:bg-[#141418] cursor-pointer"
+                  className="w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[#E6E8EB] hover:bg-[#14161B] cursor-pointer"
                 >
-                  <Download className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <Download className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                   <span>Export Report</span>
                 </button>
               </div>
@@ -6593,9 +6593,9 @@ return (
         onClose={() => setToolsDrawerOpen(false)}
         explorerContent={
           <div className="flex flex-col h-full">
-            <div className="p-3 border-b border-[#1f1f1f] flex items-center justify-between font-mono text-xs">
-              <span className="text-zinc-400 uppercase tracking-widest font-bold text-[10px]">Explorer</span>
-              <span className="text-cyan-400 text-[10px]">Tree-sitter</span>
+            <div className="p-3 border-b border-[#22252B] flex items-center justify-between font-sans text-xs bg-[#0E1013]">
+              <span className="text-[#8C92A4] font-medium text-[11px]">Explorer</span>
+              <span className="text-[#6B7280] text-[10px]">Tree-sitter</span>
             </div>
             <div className="flex-1 p-2 overflow-y-auto space-y-1 font-mono text-xs">
               {fileTree && renderTree(fileTree)}
@@ -6819,7 +6819,7 @@ return (
 
         {/* Persistent Codex Left Sidebar */}
         <CodexSidebar
-          currentProjectName={folderPath ? folderPath.split("/").pop() || "NEXUS" : "NEXUS"}
+          currentProjectName={folderPath ? folderPath.split("/").pop() || "Sentinel AI" : "Sentinel AI"}
           workspacePath={folderPath || "demo-workspaces/ai_cart_project"}
           activeThreadId={activeSessionId}
           threads={sidebarThreads}
@@ -7079,7 +7079,7 @@ return (
                       </button>
                     </div>
                   ) : (
-                    <span className="text-cyan-400 text-[9.5px]">NEXUS</span>
+                    <span className="text-cyan-400 text-[9.5px]">Sentinel AI</span>
                   )}
                 </div>
 
@@ -9028,10 +9028,10 @@ return (
             style={{
               top: Math.min(explorerContextMenu.y, window.innerHeight - 220),
               left: Math.min(explorerContextMenu.x, window.innerWidth - 180),
-              backgroundColor: "var(--theme-surface-panel, #0a0a0f)",
-              borderColor: "var(--theme-border, #1f1f28)",
+              backgroundColor: "var(--theme-surface-panel, #111318)",
+              borderColor: "var(--theme-border, #22252B)",
             }}
-            className="absolute z-50 w-48 rounded-lg border shadow-xl p-1 font-mono text-xs text-zinc-300 space-y-0.5"
+            className="absolute z-50 w-48 rounded-lg border border-[#22252B] shadow-popover p-1 font-sans text-xs text-[#C5C9D3] space-y-0.5 bg-[#111318]"
             onClick={(e) => e.stopPropagation()}
           >
             {explorerContextMenu.node?.isDirectory ? (
@@ -9042,9 +9042,9 @@ return (
                     setExplorerContextMenu(null);
                     setExplorerNewItemModal({ isOpen: true, type: "file", targetDir: target, value: "" });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <FilePlus className="w-3.5 h-3.5 text-cyan-400" />
+                  <FilePlus className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>New File</span>
                 </button>
                 <button
@@ -9053,21 +9053,21 @@ return (
                     setExplorerContextMenu(null);
                     setExplorerNewItemModal({ isOpen: true, type: "folder", targetDir: target, value: "" });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <FolderPlus className="w-3.5 h-3.5 text-amber-400" />
+                  <FolderPlus className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>New Folder</span>
                 </button>
-                <div className="h-px bg-[#1f1f28] my-1" />
+                <div className="h-px bg-[#22252B] my-1" />
                 <button
                   onClick={() => {
                     const node = explorerContextMenu.node;
                     setExplorerContextMenu(null);
                     if (node) setExplorerRenameModal({ isOpen: true, node, value: node.name });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <Edit2 className="w-3.5 h-3.5 text-zinc-400" />
+                  <Edit2 className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Rename</span>
                 </button>
                 <button
@@ -9076,12 +9076,12 @@ return (
                     setExplorerContextMenu(null);
                     if (node) setExplorerDeleteConfirm({ isOpen: true, node });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-rose-950/60 hover:text-rose-300 flex items-center gap-2 text-left cursor-pointer text-rose-400"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-rose-950/60 hover:text-rose-300 flex items-center gap-2 text-left cursor-pointer text-rose-400 transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                   <span>Delete</span>
                 </button>
-                <div className="h-px bg-[#1f1f28] my-1" />
+                <div className="h-px bg-[#22252B] my-1" />
                 <button
                   onClick={() => {
                     const node = explorerContextMenu.node;
@@ -9091,9 +9091,9 @@ return (
                       showToast("Path copied to clipboard");
                     }
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                  <Copy className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Copy Path</span>
                 </button>
                 <button
@@ -9104,9 +9104,9 @@ return (
                       window.electronAPI.revealInFinder(node.path);
                     }
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Reveal in Finder</span>
                 </button>
               </>
@@ -9118,9 +9118,9 @@ return (
                     setExplorerContextMenu(null);
                     if (node) handleOpenFile(node);
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer font-bold"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer font-medium transition-colors text-[#E6E8EB]"
                 >
-                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                  <FileText className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Open File</span>
                 </button>
                 <button
@@ -9130,21 +9130,21 @@ return (
                     setExplorerContextMenu(null);
                     setExplorerNewItemModal({ isOpen: true, type: "file", targetDir: parentDir, value: "" });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <FilePlus className="w-3.5 h-3.5 text-cyan-400" />
+                  <FilePlus className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>New File Here</span>
                 </button>
-                <div className="h-px bg-[#1f1f28] my-1" />
+                <div className="h-px bg-[#22252B] my-1" />
                 <button
                   onClick={() => {
                     const node = explorerContextMenu.node;
                     setExplorerContextMenu(null);
                     if (node) setExplorerRenameModal({ isOpen: true, node, value: node.name });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <Edit2 className="w-3.5 h-3.5 text-zinc-400" />
+                  <Edit2 className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Rename</span>
                 </button>
                 <button
@@ -9153,12 +9153,12 @@ return (
                     setExplorerContextMenu(null);
                     if (node) setExplorerDeleteConfirm({ isOpen: true, node });
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-rose-950/60 hover:text-rose-300 flex items-center gap-2 text-left cursor-pointer text-rose-400"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-rose-950/60 hover:text-rose-300 flex items-center gap-2 text-left cursor-pointer text-rose-400 transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                   <span>Delete</span>
                 </button>
-                <div className="h-px bg-[#1f1f28] my-1" />
+                <div className="h-px bg-[#22252B] my-1" />
                 <button
                   onClick={() => {
                     const node = explorerContextMenu.node;
@@ -9168,9 +9168,9 @@ return (
                       showToast("Path copied to clipboard");
                     }
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                  <Copy className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Copy Path</span>
                 </button>
                 <button
@@ -9181,9 +9181,9 @@ return (
                       window.electronAPI.revealInFinder(node.path);
                     }
                   }}
-                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1f1f2e] hover:text-cyan-300 flex items-center gap-2 text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 rounded hover:bg-[#1A1C22] hover:text-[#E6E8EB] flex items-center gap-2 text-left cursor-pointer transition-colors text-[#C5C9D3]"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#8C92A4]" />
                   <span>Reveal in Finder</span>
                 </button>
               </>

@@ -259,28 +259,28 @@ export default function DeploymentInspectorPanel({
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 shrink-0">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            READY
+            Ready
           </span>
         );
       case "WARNING":
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-950/60 text-amber-400 border border-amber-500/30 shrink-0">
             <AlertTriangle className="w-3.5 h-3.5" />
-            WARNINGS
+            Warnings
           </span>
         );
       case "BLOCKED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-rose-950/60 text-rose-400 border border-rose-500/30 shrink-0">
             <XCircle className="w-3.5 h-3.5" />
-            BLOCKED
+            Blocked
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1A1C22] text-[#8C92A4] border border-[#22252B] shrink-0">
             <HelpCircle className="w-3.5 h-3.5" />
-            UNKNOWN
+            Unknown
           </span>
         );
     }
@@ -290,20 +290,20 @@ export default function DeploymentInspectorPanel({
     switch (severity) {
       case "BLOCKER":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/90 text-rose-300 border border-rose-500/40 shrink-0">
-            BLOCKER
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-950/90 text-rose-300 border border-rose-500/40 shrink-0">
+            Blocker
           </span>
         );
       case "WARNING":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/90 text-amber-300 border border-amber-500/40 shrink-0">
-            WARNING
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/90 text-amber-300 border border-amber-500/40 shrink-0">
+            Warning
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-500/40 shrink-0">
-            INFO
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30 shrink-0">
+            Info
           </span>
         );
     }
@@ -314,32 +314,32 @@ export default function DeploymentInspectorPanel({
       case "EXCELLENT":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 shrink-0">
-            EXCELLENT FIT
+            Excellent Fit
           </span>
         );
       case "GOOD":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30 shrink-0">
-            GOOD FIT
+            Good Fit
           </span>
         );
       case "CONDITIONAL":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/60 text-amber-300 border border-amber-500/30 shrink-0">
-            CONDITIONAL
+            Conditional Fit
           </span>
         );
       case "POOR":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#8C92A4] border border-[#22252B] shrink-0">
-            POOR FIT
+            Poor Fit
           </span>
         );
       case "INCOMPATIBLE":
       default:
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-950/60 text-rose-400 border border-rose-500/30 shrink-0">
-            INCOMPATIBLE
+            Incompatible
           </span>
         );
     }
@@ -365,7 +365,7 @@ export default function DeploymentInspectorPanel({
   const hasValidRecommendations = recommendations.some((r) => r.suitability === "EXCELLENT" || r.suitability === "GOOD" || r.suitability === "CONDITIONAL");
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0E1013] text-zinc-200 font-mono select-none overflow-hidden min-w-0">
+    <div className="w-full h-full flex flex-col bg-[#0E1013] text-zinc-200 font-sans select-none overflow-hidden min-w-0">
       {/* Top Header */}
       <header className="px-4 py-2.5 sm:px-5 border-b border-[#22252B] bg-[#0E1013] flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -418,9 +418,9 @@ export default function DeploymentInspectorPanel({
         )}
 
         {loading && (
-          <div className="p-8 rounded-xl bg-[#11131c] border border-cyan-500/30 text-center space-y-3">
-            <RefreshCw className="w-6 h-6 text-cyan-400 animate-spin mx-auto" />
-            <p className="text-xs text-cyan-300 font-semibold">Analyzing deployment readiness & platform compatibility…</p>
+          <div className="p-8 rounded-xl bg-[#111318] border border-[#22252B] text-center space-y-3">
+            <RefreshCw className="w-6 h-6 text-[#4CC2DE] animate-spin mx-auto" />
+            <p className="text-xs text-[#9AA1AC] font-medium">Analyzing deployment readiness & platform compatibility…</p>
           </div>
         )}
 
@@ -458,7 +458,7 @@ export default function DeploymentInspectorPanel({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-1">
-                <h2 className="text-xs font-bold text-zinc-100">
+                <h2 className="text-xs font-semibold text-zinc-100">
                   {report.overallStatus === "READY" && "Project Ready for Deployment"}
                   {report.overallStatus === "WARNING" && "Deployment Warnings Detected"}
                   {report.overallStatus === "BLOCKED" && "Deployment Blockers Detected"}
@@ -475,28 +475,28 @@ export default function DeploymentInspectorPanel({
 
         {/* Project Repository Boundary Card */}
         {report?.deploymentRepositoryContext && !loading && (
-          <div className="p-3.5 rounded-xl bg-[#101422] border border-cyan-500/30 text-xs space-y-2.5">
+          <div className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] text-xs space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 font-bold text-zinc-100">
-                <FolderGit2 className="w-4 h-4 text-cyan-400 shrink-0" />
+              <div className="flex items-center gap-2 font-semibold text-zinc-100">
+                <FolderGit2 className="w-4 h-4 text-[#8C92A4] shrink-0" />
                 <span>Project Repository Boundary</span>
               </div>
               <span
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                   userSelections.executionSource === "LOCAL_WORKSPACE"
-                    ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
+                    ? "bg-emerald-950/60 border border-emerald-500/30 text-emerald-400"
                     : report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT" || report.deploymentRepositoryContext.repositorySource === "EXPLICIT_PROVIDER_REPOSITORY" || userSelections.repository
-                    ? "bg-cyan-950/80 border border-cyan-500/40 text-cyan-300"
-                    : "bg-amber-950/80 border border-amber-500/40 text-amber-300"
+                    ? "bg-[#14161B] border border-[#22252B] text-[#8C92A4]"
+                    : "bg-amber-950/60 border border-amber-500/30 text-amber-400"
                 }`}
               >
                 {userSelections.executionSource === "LOCAL_WORKSPACE"
-                  ? "LOCAL WORKSPACE"
+                  ? "Local Workspace"
                   : userSelections.repository
-                  ? "GIT REMOTE (CONFIGURED)"
+                  ? "Git Remote (Configured)"
                   : report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT"
-                  ? "WORKSPACE GIT"
-                  : "CONFIGURATION REQUIRED"}
+                  ? "Workspace Git"
+                  : "Configuration Required"}
               </span>
             </div>
 
@@ -545,14 +545,14 @@ export default function DeploymentInspectorPanel({
                       }
                       setShowPlanModal(true);
                     }}
-                    className="px-2.5 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <span>Use Local Workspace</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowPlanModal(true)}
-                    className="px-2.5 py-1 rounded bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <span>Select Git Repository</span>
                   </button>
@@ -566,12 +566,12 @@ export default function DeploymentInspectorPanel({
         {report && !loading && (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-3">
             {/* Frontend Card */}
-            <div className="p-3.5 rounded-xl bg-[#11131c] border border-zinc-800/80 flex flex-col justify-between min-w-0 space-y-3">
+            <div className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] flex flex-col justify-between min-w-0 space-y-3">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-1.5 text-cyan-400 min-w-0">
-                    <Layout className="w-4 h-4 shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 truncate">Frontend</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Layout className="w-4 h-4 text-[#8C92A4] shrink-0" />
+                    <span className="text-xs font-semibold text-[#E6E8EB] truncate">Frontend</span>
                   </div>
                   {report.frontend ? getStatusBadge(report.frontend.status) : <span className="text-[10px] text-zinc-500 shrink-0">Not Detected</span>}
                 </div>
@@ -588,7 +588,7 @@ export default function DeploymentInspectorPanel({
                     </div>
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-zinc-500 shrink-0">Output Dir:</span>
-                      <span className="font-mono text-cyan-300 truncate text-right">{report.frontend.outputDirectory || "None"}</span>
+                      <span className="font-mono text-zinc-300 truncate text-right">{report.frontend.outputDirectory || "None"}</span>
                     </div>
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-zinc-500 shrink-0">Mode:</span>
@@ -605,7 +605,7 @@ export default function DeploymentInspectorPanel({
               {report.frontend?.evidence?.[0]?.file && (
                 <button
                   onClick={() => onOpenFile?.(report.frontend!.evidence[0].file, report.frontend!.evidence[0].line)}
-                  className="pt-2.5 border-t border-zinc-800/60 text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
+                  className="pt-2.5 border-t border-[#22252B] text-[11px] text-[#8C92A4] hover:text-[#E6E8EB] flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
                 >
                   <FileCode className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate min-w-0">{report.frontend.evidence[0].file}</span>
@@ -614,12 +614,12 @@ export default function DeploymentInspectorPanel({
             </div>
 
             {/* Backend Card */}
-            <div className="p-3.5 rounded-xl bg-[#11131c] border border-zinc-800/80 flex flex-col justify-between min-w-0 space-y-3">
+            <div className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] flex flex-col justify-between min-w-0 space-y-3">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-1.5 text-emerald-400 min-w-0">
-                    <Server className="w-4 h-4 shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 truncate">Backend</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Server className="w-4 h-4 text-[#8C92A4] shrink-0" />
+                    <span className="text-xs font-semibold text-[#E6E8EB] truncate">Backend</span>
                   </div>
                   {report.backend ? getStatusBadge(report.backend.status) : <span className="text-[10px] text-zinc-500 shrink-0">Not Detected</span>}
                 </div>
@@ -651,7 +651,7 @@ export default function DeploymentInspectorPanel({
               {report.backend?.evidence?.[0]?.file && (
                 <button
                   onClick={() => onOpenFile?.(report.backend!.evidence[0].file, report.backend!.evidence[0].line)}
-                  className="pt-2.5 border-t border-zinc-800/60 text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
+                  className="pt-2.5 border-t border-[#22252B] text-[11px] text-[#8C92A4] hover:text-[#E6E8EB] flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
                 >
                   <FileCode className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate min-w-0">{report.backend.evidence[0].file}{report.backend.evidence[0].line ? `:${report.backend.evidence[0].line}` : ""}</span>
@@ -660,12 +660,12 @@ export default function DeploymentInspectorPanel({
             </div>
 
             {/* Database Card */}
-            <div className="p-3.5 rounded-xl bg-[#11131c] border border-zinc-800/80 flex flex-col justify-between min-w-0 space-y-3">
+            <div className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] flex flex-col justify-between min-w-0 space-y-3">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-1.5 text-amber-400 min-w-0">
-                    <Database className="w-4 h-4 shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 truncate">Database</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Database className="w-4 h-4 text-[#8C92A4] shrink-0" />
+                    <span className="text-xs font-semibold text-[#E6E8EB] truncate">Database</span>
                   </div>
                   {report.database ? getStatusBadge(report.database.status) : <span className="text-[10px] text-zinc-500 shrink-0">Not Detected</span>}
                 </div>
@@ -695,7 +695,7 @@ export default function DeploymentInspectorPanel({
               {report.database?.evidence?.[0]?.file && (
                 <button
                   onClick={() => onOpenFile?.(report.database!.evidence[0].file, report.database!.evidence[0].line)}
-                  className="pt-2.5 border-t border-zinc-800/60 text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
+                  className="pt-2.5 border-t border-[#22252B] text-[11px] text-[#8C92A4] hover:text-[#E6E8EB] flex items-center gap-1.5 min-w-0 w-full cursor-pointer"
                 >
                   <FileCode className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate min-w-0">{report.database.evidence[0].file}</span>
@@ -710,8 +710,8 @@ export default function DeploymentInspectorPanel({
           <div className="space-y-3">
             <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
               <div className="flex items-center gap-2">
-                <Cloud className="w-4 h-4 text-cyan-400 shrink-0" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                <Cloud className="w-4 h-4 text-[#8C92A4] shrink-0" />
+                <h3 className="text-xs font-semibold text-[#E6E8EB]">
                   Recommended Deployment Platforms
                 </h3>
               </div>
@@ -751,20 +751,20 @@ export default function DeploymentInspectorPanel({
                       {/* Provider Card Header */}
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="flex items-start gap-2.5 min-w-0">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-medium text-xs shrink-0 ${
                             isTopRanked
-                              ? "bg-cyan-950 text-cyan-300 border border-cyan-500/40"
-                              : "bg-zinc-900 text-zinc-300 border border-zinc-800"
+                              ? "bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/40"
+                              : "bg-[#14161B] text-[#8C92A4] border border-[#22252B]"
                           }`}>
                             {idx + 1}
                           </div>
                           <div className="min-w-0 space-y-1">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <h4 className="text-sm font-bold text-zinc-100 truncate">{rec.displayName}</h4>
+                              <h4 className="text-sm font-semibold text-zinc-100 truncate">{rec.displayName}</h4>
                               {getSuitabilityBadge(rec.suitability)}
                               {isTopRanked && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/50 shrink-0">
-                                  <Award className="w-3 h-3 text-cyan-400" />
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30 shrink-0">
+                                  <Award className="w-3 h-3 text-[#4CC2DE]" />
                                   Recommended
                                 </span>
                               )}
@@ -775,36 +775,36 @@ export default function DeploymentInspectorPanel({
                               </span>
                               <span className="text-zinc-600">•</span>
                               <span
-                                className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
                                   rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify"
-                                    ? "bg-emerald-950/60 border border-emerald-500/40 text-emerald-300"
-                                    : "bg-zinc-800 border border-zinc-700 text-zinc-400"
+                                    ? "bg-emerald-950/60 border border-emerald-500/30 text-emerald-400"
+                                    : "bg-[#14161B] border border-[#22252B] text-[#8C92A4]"
                                 }`}
                               >
                                 {rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify"
-                                  ? "Execution: AVAILABLE"
-                                  : "Execution: NOT YET SUPPORTED"}
+                                  ? "Execution: Available"
+                                  : "Execution: Not Supported"}
                               </span>
                             </div>
                           </div>
                         </div>
 
                         <div className="text-right shrink-0 ml-auto">
-                          <div className="text-sm font-bold text-cyan-400">
-                            {rec.score} <span className="text-zinc-500 text-xs font-normal">/ 100</span>
+                          <div className="text-sm font-semibold text-[#E6E8EB]">
+                            {rec.score} <span className="text-[#8C92A4] text-xs font-normal">/ 100</span>
                           </div>
-                          <span className="text-[10px] text-zinc-500 block">compatibility</span>
+                          <span className="text-[10px] text-[#8C92A4] block">compatibility</span>
                         </div>
                       </div>
 
                       {/* Reasons List */}
                       {rec.reasons && rec.reasons.length > 0 && (
-                        <div className="pt-2.5 border-t border-zinc-800/60 space-y-1">
-                          <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Why this fits:</span>
+                        <div className="pt-2.5 border-t border-[#22252B] space-y-1">
+                          <span className="text-[10px] font-medium text-[#8C92A4] block">Why this fits:</span>
                           <ul className="space-y-1">
                             {rec.reasons.map((r, rIdx) => (
                               <li key={rIdx} className="text-xs text-zinc-300 flex items-start gap-2 min-w-0">
-                                <span className="text-cyan-400 shrink-0 mt-0.5">•</span>
+                                <span className="text-[#5A6072] shrink-0 mt-0.5">•</span>
                                 <span className="break-words leading-relaxed">{r}</span>
                               </li>
                             ))}
@@ -813,10 +813,10 @@ export default function DeploymentInspectorPanel({
                       )}
 
                       {/* Compute & Database Target Breakdown (Auto-fit Grid) */}
-                      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5 pt-2.5 border-t border-zinc-800/60 text-xs">
+                      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5 pt-2.5 border-t border-[#22252B] text-xs">
                         {/* Compute Target */}
-                        <div className="p-2.5 rounded-lg bg-[#0a0b10] border border-zinc-800/80 space-y-1 min-w-0">
-                          <div className="flex items-center gap-1.5 text-cyan-400 font-bold text-[10px] uppercase tracking-wider">
+                        <div className="p-2.5 rounded-lg bg-[#0E1013] border border-[#22252B] space-y-1 min-w-0">
+                          <div className="flex items-center gap-1.5 text-[#8C92A4] font-medium text-[10px]">
                             <Cpu className="w-3.5 h-3.5 shrink-0" />
                             <span>Application Compute</span>
                           </div>
@@ -826,7 +826,7 @@ export default function DeploymentInspectorPanel({
                           {rec.computeTarget?.rootDir && (
                             <div className="text-[11px] text-zinc-400 truncate">
                               <span className="text-zinc-500">Root: </span>
-                              <code className="text-cyan-300 font-mono">{rec.computeTarget.rootDir}</code>
+                              <code className="text-[#8C92A4] font-mono">{rec.computeTarget.rootDir}</code>
                             </div>
                           )}
                           {rec.computeTarget?.buildCommand && (
@@ -844,14 +844,14 @@ export default function DeploymentInspectorPanel({
                           {rec.computeTarget?.outputDir && (
                             <div className="text-[11px] text-zinc-400 truncate">
                               <span className="text-zinc-500">Output: </span>
-                              <code className="text-cyan-300 font-mono">{rec.computeTarget.outputDir}</code>
+                              <code className="text-[#8C92A4] font-mono">{rec.computeTarget.outputDir}</code>
                             </div>
                           )}
                         </div>
 
                         {/* Database Target */}
-                        <div className="p-2.5 rounded-lg bg-[#0a0b10] border border-zinc-800/80 space-y-1 min-w-0">
-                          <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[10px] uppercase tracking-wider">
+                        <div className="p-2.5 rounded-lg bg-[#0E1013] border border-[#22252B] space-y-1 min-w-0">
+                          <div className="flex items-center gap-1.5 text-[#8C92A4] font-medium text-[10px]">
                             <HardDrive className="w-3.5 h-3.5 shrink-0" />
                             <span>Database Storage</span>
                           </div>
@@ -917,9 +917,9 @@ export default function DeploymentInspectorPanel({
                             {rec.providerId === "vercel" || rec.providerId === "render" || rec.providerId === "netlify" ? (
                               <button
                                 onClick={() => setCredentialsModal({ isOpen: true, providerId: rec.providerId, displayName: rec.displayName })}
-                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
                               >
-                                <Key className="w-3.5 h-3.5 text-cyan-400" />
+                                <Key className="w-3.5 h-3.5 text-[#8C92A4]" />
                                 Connect {rec.displayName}
                               </button>
                             ) : (
@@ -934,17 +934,17 @@ export default function DeploymentInspectorPanel({
                               onClick={() => {
                                 setShowPlanModal(true);
                               }}
-                              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+                              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
                             >
-                              <Rocket className="w-3.5 h-3.5" />
+                              <Rocket className="w-3.5 h-3.5 text-[#8C92A4]" />
                               Select Target in Plan
                             </button>
 
                             <button
                               onClick={() => setPreviewModal({ isOpen: true, providerId: rec.providerId, displayName: rec.displayName })}
-                              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+                              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
                             >
-                              <FileCode className="w-3.5 h-3.5 text-cyan-400" />
+                              <FileCode className="w-3.5 h-3.5 text-[#8C92A4]" />
                               Preview Config
                             </button>
                           </div>
@@ -960,10 +960,10 @@ export default function DeploymentInspectorPanel({
 
         {/* Environment Variables Summary */}
         {report && !loading && report.environmentVariables && report.environmentVariables.required.length > 0 && (
-          <div className="p-3.5 rounded-xl bg-[#11131c] border border-zinc-800/80 space-y-2.5">
-            <div className="flex items-center gap-2 text-cyan-400">
+          <div className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] space-y-2.5">
+            <div className="flex items-center gap-2 text-[#8C92A4]">
               <Key className="w-4 h-4 shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Required Environment Variables</span>
+              <span className="text-xs font-semibold text-[#E6E8EB]">Required Environment Variables</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {report.environmentVariables.required.map((v) => {
@@ -973,7 +973,7 @@ export default function DeploymentInspectorPanel({
                     key={v}
                     className={`px-2 py-0.5 rounded-md text-[11px] font-mono border ${
                       isDocumented
-                        ? "bg-zinc-900/80 text-cyan-300 border-cyan-500/30"
+                        ? "bg-[#14161B] text-[#C5C9D3] border-[#22252B]"
                         : "bg-amber-950/40 text-amber-300 border-amber-500/30"
                     }`}
                   >
@@ -990,23 +990,23 @@ export default function DeploymentInspectorPanel({
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                <h3 className="text-xs font-semibold text-[#E6E8EB]">
                   Inspection Findings ({report.findings?.length || 0})
                 </h3>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1 bg-[#11131c] p-0.5 rounded-lg border border-zinc-800 text-[11px]">
+              <div className="flex flex-wrap items-center gap-1 bg-[#14161B] p-0.5 rounded-lg border border-[#22252B] text-[11px]">
                 {(["ALL", "BLOCKER", "WARNING", "INFO"] as const).map((sev) => (
                   <button
                     key={sev}
                     onClick={() => setFilterSeverity(sev)}
                     className={`px-2 py-0.5 rounded-md transition-colors cursor-pointer text-xs ${
                       filterSeverity === sev
-                        ? "bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-semibold"
-                        : "text-zinc-400 hover:text-zinc-200"
+                        ? "bg-[#1A1C22] text-[#E6E8EB] border border-[#4CC2DE]/50 font-medium"
+                        : "text-[#8C92A4] hover:text-[#E6E8EB]"
                     }`}
                   >
-                    {sev}
+                    {sev === "ALL" ? "All" : sev === "BLOCKER" ? "Blocker" : sev === "WARNING" ? "Warning" : "Info"}
                   </button>
                 ))}
               </div>
@@ -1014,22 +1014,22 @@ export default function DeploymentInspectorPanel({
 
             <div className="space-y-2.5">
               {filteredFindings.length === 0 ? (
-                <div className="p-6 rounded-xl bg-[#11131c] border border-zinc-800/80 text-center text-zinc-500 text-xs">
+                <div className="p-6 rounded-xl bg-[#111318] border border-[#22252B] text-center text-[#8C92A4] text-xs">
                   No findings matching filter "{filterSeverity}".
                 </div>
               ) : (
                 filteredFindings.map((finding) => (
                   <div
                     key={finding.id}
-                    className="p-3.5 rounded-xl bg-[#11131c] border border-zinc-800/80 space-y-2.5 min-w-0"
+                    className="p-3.5 rounded-xl bg-[#111318] border border-[#22252B] space-y-2.5 min-w-0"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2 min-w-0">
                         {getSeverityBadge(finding.severity)}
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 uppercase shrink-0">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#14161B] text-[#8C92A4] border border-[#22252B] shrink-0 font-medium">
                           {finding.category}
                         </span>
-                        <h4 className="text-xs font-bold text-zinc-100 break-words flex-1 min-w-0">{finding.title}</h4>
+                        <h4 className="text-xs font-semibold text-zinc-100 break-words flex-1 min-w-0">{finding.title}</h4>
                       </div>
                     </div>
 
@@ -1038,22 +1038,22 @@ export default function DeploymentInspectorPanel({
                     {/* Evidence Blocks */}
                     {finding.evidence && finding.evidence.length > 0 && (
                       <div className="space-y-1.5 pt-1">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Repository Evidence:</span>
+                        <span className="text-[10px] font-medium text-[#8C92A4] block">Repository Evidence:</span>
                         {finding.evidence.map((ev, idx) => (
                           <div
                             key={idx}
                             onClick={() => ev.file && onOpenFile?.(ev.file, ev.line)}
-                            className={`p-2 rounded bg-[#090a0f] border border-zinc-800/80 font-mono text-[11px] text-zinc-300 flex items-start justify-between gap-2 min-w-0 ${
-                              ev.file ? "cursor-pointer hover:border-cyan-500/40 hover:bg-cyan-950/10" : ""
+                            className={`p-2 rounded bg-[#0E1013] border border-[#22252B] font-mono text-[11px] text-zinc-300 flex items-start justify-between gap-2 min-w-0 ${
+                              ev.file ? "cursor-pointer hover:border-[#4CC2DE]/40 hover:bg-[#14161B]" : ""
                             }`}
                           >
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 text-cyan-400 font-semibold truncate">
-                                <FileCode className="w-3.5 h-3.5 shrink-0" />
+                              <div className="flex items-center gap-1.5 text-[#E6E8EB] font-medium truncate">
+                                <FileCode className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
                                 <span className="truncate min-w-0">{ev.file}{ev.line ? `:${ev.line}` : ""}</span>
                               </div>
                               {ev.snippet && (
-                                <pre className="mt-1 text-zinc-400 text-[10px] whitespace-pre-wrap break-all bg-black/40 px-2 py-1 rounded max-h-24 overflow-y-auto">
+                                <pre className="mt-1 text-zinc-400 text-[10px] whitespace-pre-wrap break-all bg-[#0E1013] px-2 py-1 rounded max-h-24 overflow-y-auto border border-[#22252B]">
                                   {ev.snippet}
                                 </pre>
                               )}
@@ -1066,10 +1066,10 @@ export default function DeploymentInspectorPanel({
 
                     {/* Recommendation */}
                     {finding.recommendation && (
-                      <div className="p-2.5 rounded-lg bg-cyan-950/20 border border-cyan-500/20 text-xs text-cyan-300 flex items-start gap-2 min-w-0">
-                        <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                      <div className="p-2.5 rounded-lg bg-[#14161B] border border-[#22252B] text-xs text-[#C5C9D3] flex items-start gap-2 min-w-0">
+                        <Info className="w-4 h-4 text-[#8C92A4] shrink-0 mt-0.5" />
                         <div className="break-words min-w-0">
-                          <strong className="text-cyan-200">Recommendation: </strong>
+                          <strong className="text-[#E6E8EB]">Recommendation: </strong>
                           <span>{finding.recommendation}</span>
                         </div>
                       </div>
@@ -1093,9 +1093,9 @@ export default function DeploymentInspectorPanel({
           {workspacePath && (
             <button
               onClick={() => setShowAdvisorModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Compass className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+              <Compass className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
               <span>Deployment Advisor</span>
             </button>
           )}
@@ -1103,7 +1103,7 @@ export default function DeploymentInspectorPanel({
           {report && report.overallStatus !== "UNKNOWN" && (
             <button
               onClick={() => setShowPlanModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-zinc-200 border border-[#22252B] transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
               <Layers className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
               <span>Review Deployment Plan</span>
@@ -1119,10 +1119,10 @@ export default function DeploymentInspectorPanel({
                   .join("\n\n");
                 onAskAgentToFix(`Please help resolve the following deployment readiness findings for this workspace:\n\n${issuesText}`);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-zinc-200 border border-[#22252B] transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
-              Fix Issues with AI
+              <span>Fix Issues with AI</span>
             </button>
           )}
 
@@ -1137,9 +1137,9 @@ export default function DeploymentInspectorPanel({
           ) : hasValidRecommendations && report?.recommendedProvider === "vercel" && !isVercelConnected ? (
             <button
               onClick={() => setCredentialsModal({ isOpen: true, providerId: "vercel", displayName: "Vercel" })}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Key className="w-3.5 h-3.5 text-[#4CC2DE]" />
+              <Key className="w-3.5 h-3.5 text-[#8C92A4]" />
               Connect Vercel to Deploy
             </button>
           ) : (

@@ -73,7 +73,7 @@ export default function AgentSection() {
             <div className="px-3 py-2 bg-[#09090d] border-b border-[#1f1f24] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bot className="w-3.5 h-3.5 text-purple-400" />
-                <span className="font-bold text-zinc-100 text-[11px] uppercase tracking-wider">NEXUS Agent Execution Stream</span>
+                <span className="font-bold text-zinc-100 text-[11px] uppercase tracking-wider">Sentinel AI Agent Execution Stream</span>
               </div>
               <span className="px-2 py-0.2 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-[9.5px] font-bold">
                 Step 2/3: VERIFIED
@@ -99,7 +99,7 @@ export default function AgentSection() {
 
               <div className="p-2.5 rounded-lg bg-[#0a0a0d] border border-[#1f1f24] opacity-50 space-y-1">
                 <div className="flex items-center justify-between text-[10.5px]">
-                  <span className="text-zinc-400 font-bold">3. Nexus Capsule Snapshot</span>
+                  <span className="text-zinc-400 font-bold">3. Sentinel AI Capsule Snapshot</span>
                   <span className="text-zinc-500">QUEUED</span>
                 </div>
               </div>

@@ -180,7 +180,7 @@ export default function CapabilityCenterPanel({
       </div>
 
       {/* Main View Area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 font-mono text-xs">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 font-sans text-xs">
         {/* ========================================================= */}
         {/* TAB 1: MCP SERVERS & TOOL INSPECTOR */}
         {/* ========================================================= */}
@@ -191,7 +191,7 @@ export default function CapabilityCenterPanel({
                 <Server className="w-8 h-8 text-[#6B7280] mx-auto opacity-50" />
                 <p className="text-sm font-semibold text-[#E6E8EB]">No MCP servers registered in current workspace</p>
                 <p className="text-xs text-[#868C96]">
-                  Declare servers in <code className="text-[#4CC2DE]">.nexus/mcp.json</code> to hydrate automatically.
+                  Declare servers in <code className="text-[#4CC2DE] font-mono">.nexus/mcp.json</code> to hydrate automatically.
                 </p>
               </div>
             ) : (
@@ -242,7 +242,7 @@ export default function CapabilityCenterPanel({
                                 : "bg-[#1A1C22] text-[#868C96] border border-[#22252B]"
                             }`}
                           >
-                            {srv.status}
+                            {srv.status.charAt(0) + srv.status.slice(1).toLowerCase()}
                           </span>
                         </div>
 
@@ -307,7 +307,7 @@ export default function CapabilityCenterPanel({
                                 className="p-2 rounded-md bg-[#0E1013] border border-[#22252B] text-[11px] space-y-0.5"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="font-semibold text-[#4CC2DE] flex items-center gap-1">
+                                  <span className="font-semibold text-[#4CC2DE] flex items-center gap-1 font-mono">
                                     <Code2 className="w-3 h-3 text-[#4CC2DE]" />
                                     {t.name}
                                   </span>
@@ -322,7 +322,7 @@ export default function CapabilityCenterPanel({
                                             : "bg-rose-950/80 text-rose-300 border border-rose-500/30"
                                         }`}
                                       >
-                                        {t.riskLevel}
+                                        {t.riskLevel === "SAFE" ? "Safe" : t.riskLevel === "REVIEW_REQUIRED" ? "Review Required" : "High Risk"}
                                       </span>
                                     )}
                                     {t.isReadOnly && (
@@ -364,7 +364,7 @@ export default function CapabilityCenterPanel({
                       : "text-[#868C96] hover:text-[#E6E8EB] bg-[#14161B] border border-transparent"
                   }`}
                 >
-                  {sc}
+                  {sc === "ALL" ? "All" : sc === "PROJECT" ? "Project" : "Built-in"}
                 </button>
               ))}
             </div>
@@ -410,7 +410,7 @@ export default function CapabilityCenterPanel({
                                 : "bg-[#1A1C22] text-[#868C96] border border-[#22252B] hover:text-[#E6E8EB]"
                             }`}
                           >
-                            {isActive ? "ACTIVE" : "DISABLED"}
+                            {isActive ? "Active" : "Disabled"}
                           </button>
                         </div>
                       </div>
@@ -478,7 +478,7 @@ export default function CapabilityCenterPanel({
                           : "bg-[#14161B] text-[#4CC2DE] border border-[#22252B]"
                       }`}
                     >
-                      {lg.status}
+                      {lg.status === "SUCCESS" ? "Success" : lg.status === "ERROR" ? "Error" : lg.status === "WARN" ? "Warning" : lg.status}
                     </span>
                     <span className="text-[#CCCCCC] break-all flex-1">{lg.message}</span>
                   </div>

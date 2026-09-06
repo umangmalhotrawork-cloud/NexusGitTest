@@ -11,16 +11,16 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: "Is NEXUS a cloud IDE or a local-first desktop application?",
-    answer: "NEXUS is strictly a local-first desktop software engineering environment built on Electron, Next.js, and Monaco Editor. Your local workspace is authoritative. Code remains local on your machine, and cloud infrastructure connections are purely optional.",
+    question: "Is Sentinel AI a cloud IDE or a local-first desktop application?",
+    answer: "Sentinel AI is strictly a local-first desktop software engineering environment built on Electron, Next.js, and Monaco Editor. Your local workspace is authoritative. Code remains local on your machine, and cloud infrastructure connections are purely optional.",
   },
   {
     question: "What is Continuum session memory and how does context handoff work?",
-    answer: "Continuum preserves curated project state, important files, key engineering decisions, pending tasks, and verification evidence across long engineering sessions. Through portable Nexus Capsules (.capsule) validated with SHA-256 integrity checks, fresh AI sessions can resume work without context window degradation.",
+    answer: "Continuum preserves curated project state, important files, key engineering decisions, pending tasks, and verification evidence across long engineering sessions. Through portable Sentinel AI Capsules (.capsule) validated with SHA-256 integrity checks, fresh AI sessions can resume work without context window degradation.",
   },
   {
-    question: "Does NEXUS require cloud AI servers to operate?",
-    answer: "No. NEXUS includes a deterministic offline agent fallback that provides AI engineering assistance without mandatory cloud dependence. When external cloud models are enabled, the local workspace remains authoritative.",
+    question: "Does Sentinel AI require cloud AI servers to operate?",
+    answer: "No. Sentinel AI includes a deterministic offline agent fallback that provides AI engineering assistance without mandatory cloud dependence. When external cloud models are enabled, the local workspace remains authoritative.",
   },
   {
     question: "How does the AI Patch Firewall protect my codebase?",
@@ -53,7 +53,7 @@ export default function FAQAccordion() {
             Product &amp; Technical Architecture FAQs
           </h2>
           <p className="text-zinc-400 text-xs sm:text-sm font-sans leading-relaxed">
-            Everything you need to know about NEXUS, local-first execution, Continuum, and our roadmap.
+            Everything you need to know about Sentinel AI, local-first execution, Continuum, and our roadmap.
           </p>
         </div>
 

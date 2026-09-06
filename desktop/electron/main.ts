@@ -151,7 +151,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'NEXUS — Autonomous Software Engineering',
+    title: 'Sentinel AI — Autonomous Software Engineering',
     backgroundColor: '#050505',
     titleBarStyle: 'hiddenInset',
     webPreferences: {

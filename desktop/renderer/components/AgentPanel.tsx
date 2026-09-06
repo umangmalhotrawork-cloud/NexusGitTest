@@ -1398,9 +1398,9 @@ export default function AgentPanel({
         className="border-b border-[#22252B] p-2.5 space-y-1.5 shrink-0 bg-[#0E1013]"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[#4CC2DE] font-semibold text-xs">
+          <div className="flex items-center gap-1.5 text-zinc-100 font-semibold text-xs">
             <Bot className="w-4 h-4 text-[#4CC2DE]" />
-            <span className="tracking-normal text-zinc-100">NEXUS AGENT</span>
+            <span className="tracking-tight text-sm font-semibold text-zinc-100">Sentinel AI Agent</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -1421,10 +1421,10 @@ export default function AgentPanel({
                 <GitBranch className={`w-3 h-3 ${continuumActive ? "text-[#4CC2DE]" : "text-zinc-500"}`} />
               )}
               <span>Continuum</span>
-              <span className={`text-[8.5px] px-1 py-0.1 rounded font-mono ${
+              <span className={`text-[8.5px] px-1 py-0.1 rounded font-sans font-medium ${
                 continuumActive ? "bg-[#1A1C22] text-[#4CC2DE]" : "bg-[#14161B] text-zinc-500"
               }`}>
-                {continuumActive ? "ON" : "OFF"}
+                {continuumActive ? "On" : "Off"}
               </span>
             </button>
 
@@ -1448,7 +1448,7 @@ export default function AgentPanel({
               {isCreatingCapsule ? (
                 <Loader2 className="w-3 h-3 animate-spin text-[#4CC2DE]" />
               ) : (
-                <Box className="w-3 h-3 text-[#4CC2DE]" />
+                <Box className="w-3 h-3 text-[#8C92A4]" />
               )}
               <span>{isCreatingCapsule ? "Creating Capsule..." : "Create Context Capsule"}</span>
             </button>
@@ -1459,7 +1459,7 @@ export default function AgentPanel({
               className="px-2 py-0.5 rounded-md border text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors bg-[#14161B] border-[#22252B] text-zinc-300 hover:text-white hover:bg-[#1A1C22]"
               title="Import Context Capsule (.json file) to continue previous conversation context"
             >
-              <Upload className="w-3 h-3 text-[#4CC2DE]" />
+              <Upload className="w-3 h-3 text-[#8C92A4]" />
               <span>Import Capsule</span>
             </button>
 
@@ -1468,13 +1468,13 @@ export default function AgentPanel({
               <button
                 ref={agentModelTriggerRef}
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="px-2 py-0.5 rounded-md bg-[#14161B] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#4CC2DE] hover:bg-[#1A1C22] text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors max-w-[170px]"
+                className="px-2 py-0.5 rounded-md bg-[#14161B] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#E6E8EB] hover:bg-[#1A1C22] text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors max-w-[170px]"
                 title="Select Active AI Model"
               >
                 <span className="truncate">
                   {aiConfig?.providers?.find((p: any) => p.id === aiConfig?.activeProvider)?.name || activeProviderName} ({aiConfig?.activeModel ? aiConfig.activeModel.split('/').pop().replace(/^models\//, '') : "Default"})
                 </span>
-                <ChevronDown className="w-3 h-3 text-[#4CC2DE] shrink-0" />
+                <ChevronDown className="w-3 h-3 text-[#8C92A4] shrink-0" />
               </button>
 
               {/* Model Dropdown Menu */}
@@ -2061,7 +2061,7 @@ export default function AgentPanel({
                   <div className="flex items-center justify-between border-b border-[#141420] pb-1.5 text-[10px]">
                     <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
                       <Bot className="w-3.5 h-3.5" />
-                      <span>{msg.steps && msg.steps.length > 0 ? "Execution Plan" : "NEXUS Assistant"}</span>
+                      <span>{msg.steps && msg.steps.length > 0 ? "Execution Plan" : "Sentinel AI Assistant"}</span>
                     </div>
 
                     {msg.execution && (
@@ -2369,7 +2369,7 @@ export default function AgentPanel({
               onClick={handleGenerateCapsule}
               disabled={generatingCapsule}
               className="text-[9.5px] text-zinc-500 hover:text-cyan-300 cursor-pointer transition-colors"
-              title="Export Nexus Capsule"
+              title="Export Sentinel AI Capsule"
             >
               {generatingCapsule ? "Exporting..." : "Capsule"}
             </button>
@@ -2409,7 +2409,7 @@ export default function AgentPanel({
                 }
               }
             }}
-            placeholder="Ask NEXUS about this file... (Enter to send, Shift+Enter for newline)"
+            placeholder="Ask Sentinel AI about this file... (Enter to send, Shift+Enter for newline)"
             rows={importedCapsule || taskInput.includes("\n") ? 6 : 2}
             className="w-full bg-transparent resize-none outline-none text-zinc-100 placeholder:text-zinc-600 text-[11px] font-mono p-1 leading-relaxed"
           />

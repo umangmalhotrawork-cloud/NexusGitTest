@@ -175,7 +175,7 @@ export function useTerminal(initialCwd: string = "") {
           cwd: cwdOverride || initialCwd || "~/workspace",
           shell: shellOverride || "/bin/sh",
           status: "running",
-          output: ["NEXUS Mock Terminal v1.0", "Type commands to simulate execution..."],
+          output: ["Sentinel AI Mock Terminal v1.0", "Type commands to simulate execution..."],
           unread: false,
           createdAt: Date.now(),
         };

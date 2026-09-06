@@ -151,24 +151,24 @@ export default function FutureBugSimulatorPanel({
     switch (mode) {
       case "SANDBOX_SIMULATION":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold shrink-0">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 shrink-0">
             <CheckCircle2 className="w-3 h-3" />
-            EXECUTED SANDBOX SIMULATION
+            Sandbox Simulation Executed
           </span>
         );
       case "HEURISTIC_INFERENCE":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950/90 border border-amber-500/50 text-amber-300 font-bold shrink-0">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-amber-950/90 border border-amber-500/50 text-amber-300 shrink-0">
             <Info className="w-3 h-3" />
-            HEURISTIC INFERENCE
+            Heuristic Inference
           </span>
         );
       case "STATIC_FORECAST":
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 font-bold shrink-0">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-sans font-medium bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 shrink-0">
             <ShieldAlert className="w-3 h-3" />
-            STATIC FORECAST — NOT EXECUTED
+            Static Forecast (Not Executed)
           </span>
         );
     }
@@ -177,38 +177,38 @@ export default function FutureBugSimulatorPanel({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "VERIFIED":
-        return <span className="text-[10px] font-mono font-bold text-emerald-400">VERIFIED</span>;
+        return <span className="text-[10px] font-sans font-medium text-emerald-400">Verified</span>;
       case "PREDICTED":
-        return <span className="text-[10px] font-mono font-bold text-cyan-400">PREDICTED</span>;
+        return <span className="text-[10px] font-sans font-medium text-cyan-400">Predicted</span>;
       case "INCONCLUSIVE":
       default:
-        return <span className="text-[10px] font-mono font-bold text-zinc-400">INCONCLUSIVE</span>;
+        return <span className="text-[10px] font-sans font-medium text-zinc-400">Inconclusive</span>;
     }
   };
 
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case "CRITICAL":
-        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-red-950 border border-red-500/50 text-red-300 font-bold">CRITICAL</span>;
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-sans font-medium bg-red-950 border border-red-500/50 text-red-300">Critical</span>;
       case "HIGH":
-        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-950 border border-amber-500/50 text-amber-300 font-bold">HIGH</span>;
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-sans font-medium bg-amber-950 border border-amber-500/50 text-amber-300">High</span>;
       case "MEDIUM":
-        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-950 border border-blue-500/50 text-blue-300 font-bold">MEDIUM</span>;
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-sans font-medium bg-blue-950 border border-blue-500/50 text-blue-300">Medium</span>;
       case "LOW":
       default:
-        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-400 font-bold">LOW</span>;
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-sans font-medium bg-zinc-900 border border-zinc-700 text-zinc-400">Low</span>;
     }
   };
 
   const getConfidenceBadge = (confidence: string) => {
     switch (confidence) {
       case "HIGH":
-        return <span className="text-[10px] font-mono font-bold text-emerald-400">HIGH</span>;
+        return <span className="text-[10px] font-sans font-medium text-emerald-400">High</span>;
       case "MEDIUM":
-        return <span className="text-[10px] font-mono font-bold text-amber-400">MEDIUM</span>;
+        return <span className="text-[10px] font-sans font-medium text-amber-400">Medium</span>;
       case "LOW":
       default:
-        return <span className="text-[10px] font-mono font-bold text-zinc-400">LOW</span>;
+        return <span className="text-[10px] font-sans font-medium text-zinc-400">Low</span>;
     }
   };
 
@@ -247,24 +247,24 @@ export default function FutureBugSimulatorPanel({
             e.preventDefault();
             handleSimulate();
           }}
-          className="space-y-1.5 min-w-0 max-w-full"
+          className="space-y-1.5 min-w-0 max-w-full font-sans"
         >
-          <label className="text-[11px] font-mono text-[#4CC2DE] font-semibold flex items-center gap-1 min-w-0">
-            <HelpCircle className="w-3 h-3 text-[#4CC2DE] shrink-0" />
+          <label className="text-xs font-sans text-zinc-300 font-medium flex items-center gap-1.5 min-w-0">
+            <HelpCircle className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
             <span className="truncate">What could break?</span>
           </label>
-          <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+          <div className="flex items-center gap-1.5 min-w-0 max-w-full font-sans">
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="e.g. What happens if the database becomes 10× slower?"
-              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE]"
+              className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] font-sans"
             />
             <button
               type="submit"
               disabled={simulating || !question.trim()}
-              className="px-3 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-mono text-[11px] font-medium transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-sans text-xs font-medium transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
               <Play className="w-3 h-3 fill-current shrink-0" />
               <span>Simulate</span>
@@ -273,14 +273,14 @@ export default function FutureBugSimulatorPanel({
         </form>
 
         {/* Preset Pills */}
-        <div className="space-y-1 min-w-0 max-w-full">
-          <div className="text-[10px] font-mono text-[#8C92A4]">Scenario Presets:</div>
+        <div className="space-y-1 min-w-0 max-w-full font-sans">
+          <div className="text-[11px] font-sans text-[#8C92A4]">Scenario Presets:</div>
           <div className="flex flex-wrap items-center gap-1 min-w-0 max-w-full">
             {presets.map((p) => (
               <button
                 key={p.id}
                 onClick={() => handleSelectPreset(p)}
-                className="px-2 py-0.5 rounded bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/40 text-zinc-300 font-mono text-[10px] transition-colors cursor-pointer shrink-0"
+                className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/40 text-zinc-300 font-sans text-xs transition-colors cursor-pointer shrink-0 font-medium"
               >
                 {p.title}
               </button>
@@ -290,64 +290,64 @@ export default function FutureBugSimulatorPanel({
       </div>
 
       {/* Report Body */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2.5 space-y-3 min-w-0 max-w-full">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2.5 space-y-3 min-w-0 max-w-full font-sans">
         {simulating ? (
-          <div className="text-center py-12 text-zinc-400 space-y-2 min-w-0">
+          <div className="text-center py-12 text-zinc-400 space-y-2 min-w-0 font-sans">
             <RefreshCw className="w-6 h-6 mx-auto text-amber-400 animate-spin" />
-            <p className="text-xs font-mono">Analyzing call graphs and fault propagation...</p>
+            <p className="text-xs font-sans text-[#8C92A4]">Analyzing call graphs and fault propagation...</p>
           </div>
         ) : !report ? (
-          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0">
+          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0 font-sans">
             <ShieldAlert className="w-7 h-7 mx-auto text-[#5A6072] shrink-0" />
             <p className="text-xs font-medium text-[#9AA1AC]">No active simulation.</p>
-            <p className="text-[10px] font-mono text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
+            <p className="text-[11px] font-sans text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
               Ask a question above or select a preset to evaluate failure scenarios before production.
             </p>
           </div>
         ) : (
-          <div className="p-3 rounded-lg bg-[#111318] border border-[#22252B] space-y-3 text-xs min-w-0 max-w-full overflow-hidden">
+          <div className="p-3 rounded-lg bg-[#111318] border border-[#22252B] space-y-3 text-xs min-w-0 max-w-full overflow-hidden font-sans">
             {/* Top Bar: Mode & Status */}
-            <div className="flex flex-wrap items-center justify-between gap-2 min-w-0 max-w-full pb-2 border-b border-[#22252B]">
+            <div className="flex flex-wrap items-center justify-between gap-2 min-w-0 max-w-full pb-2 border-b border-[#22252B] font-sans">
               {getModeBadge(report.mode)}
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] font-mono text-[#8C92A4]">STATUS:</span>
+                <span className="text-[11px] font-sans text-[#8C92A4]">Status:</span>
                 {getStatusBadge(report.status)}
               </div>
             </div>
 
             {/* Scenario & Question */}
-            <div className="space-y-0.5 min-w-0">
-              <div className="text-[10px] font-mono text-[#4CC2DE] font-semibold uppercase">Scenario</div>
+            <div className="space-y-0.5 min-w-0 font-sans">
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">Scenario</div>
               <div className="font-semibold text-zinc-100 text-xs leading-snug break-words [overflow-wrap:anywhere]">
                 {report.question}
               </div>
             </div>
 
             {/* Likely Impact */}
-            <div className="space-y-0.5 min-w-0">
-              <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Likely Impact</div>
-              <div className="text-zinc-200 leading-relaxed font-body bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere]">
+            <div className="space-y-0.5 min-w-0 font-sans">
+              <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">Likely Impact</div>
+              <div className="text-zinc-200 leading-relaxed font-sans bg-[#0E1013] p-2.5 rounded-md border border-[#22252B] text-xs break-words [overflow-wrap:anywhere]">
                 {report.summary}
               </div>
             </div>
 
             {/* Severity & Confidence */}
-            <div className="flex flex-wrap items-center justify-between gap-2 py-1 border-y border-[#22252B] min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-2 py-1.5 border-y border-[#22252B] min-w-0 max-w-full font-sans">
               <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] font-mono text-[#8C92A4]">SEVERITY:</span>
+                <span className="text-[11px] font-sans text-[#8C92A4]">Severity:</span>
                 {getSeverityBadge(report.severity)}
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] font-mono text-[#8C92A4]">CONFIDENCE:</span>
+                <span className="text-[11px] font-sans text-[#8C92A4]">Confidence:</span>
                 {getConfidenceBadge(report.confidence)}
               </div>
             </div>
 
             {/* Affected Files & Functions */}
-            <div className="space-y-1.5 min-w-0">
+            <div className="space-y-1.5 min-w-0 font-sans">
               {report.affectedFiles && report.affectedFiles.length > 0 && (
-                <div className="space-y-0.5 min-w-0">
-                  <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Affected Files</div>
+                <div className="space-y-0.5 min-w-0 font-sans">
+                  <div className="text-[10px] font-sans text-[#8C92A4] font-medium uppercase tracking-wider">Affected Files</div>
                   <div className="flex flex-wrap gap-1 min-w-0 max-w-full">
                     {report.affectedFiles.map((f, i) => (
                       <button

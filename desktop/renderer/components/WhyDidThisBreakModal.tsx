@@ -342,7 +342,7 @@ export default function WhyDidThisBreakModal({
               type="button"
               onClick={handleAskToFix}
               className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#4CC2DE] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
-              title="Pass causal context into standard NEXUS agent workflow"
+              title="Pass causal context into standard Sentinel AI agent workflow"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
               <span>Ask Agent to Fix</span>

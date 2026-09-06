@@ -558,7 +558,7 @@ export default function DeploymentPlanModal({
     if (!plan) return "Plan is loading…";
     if (plan.overallStatus === "UNKNOWN") return "Insufficient evidence to deploy project.";
     if (hasUnsupportedSelection) {
-      return "One or more selected deployment platforms do not yet have execution support in NEXUS.";
+      return "One or more selected deployment platforms do not yet have execution support in Sentinel AI.";
     }
     if (plan.overallStatus === "BLOCKED") return "Deployment plan is blocked: " + (plan.blockers[0] || "Security/integrity blockers detected.");
     if (plan.executionOrder.length === 0) return "No deployment stages available.";
@@ -1127,7 +1127,7 @@ export default function DeploymentPlanModal({
                     Target Components & Provider Selection
                   </h3>
                   <span className="text-[11px] text-zinc-500">
-                    NEXUS recommends • You choose the provider
+                    Sentinel AI recommends • You choose the provider
                   </span>
                 </div>
 
@@ -1221,7 +1221,7 @@ export default function DeploymentPlanModal({
 
                           {!svc.executionAvailable && (
                             <div className="p-2 rounded bg-amber-950/30 border border-amber-500/30 text-amber-300 text-[10.5px]">
-                              {svc.providerDisplayName} is selected, but execution support is not yet available in NEXUS.
+                              {svc.providerDisplayName} is selected, but execution support is not yet available in Sentinel AI.
                             </div>
                           )}
                         </div>
@@ -1342,7 +1342,7 @@ export default function DeploymentPlanModal({
                     <span>Important Notices</span>
                   </div>
                   <ul className="list-disc pl-4 space-y-1 text-amber-200/90">
-                    <li>Deployment uses the current local workspace state. NEXUS will not commit, stash, reset, or push Git changes.</li>
+                    <li>Deployment uses the current local workspace state. Sentinel AI will not commit, stash, reset, or push Git changes.</li>
                     <li>Deployment will execute against your selected providers.</li>
                     <li>Database provisioning is currently simulated for this validation phase.</li>
                   </ul>

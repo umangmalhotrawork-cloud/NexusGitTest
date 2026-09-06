@@ -54,7 +54,7 @@ export default function Hero() {
 
             {/* Headline */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white leading-[1.15]">
-              NEXUS <br />
+              Sentinel AI <br />
               <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-400 bg-clip-text text-transparent underline decoration-cyan-500/40 decoration-2">
                 Autonomous Software Engineering
               </span>
@@ -96,7 +96,7 @@ export default function Hero() {
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0a0a0d] border border-[#1f1f24] text-purple-400 font-bold">
                 <History className="w-3.5 h-3.5" />
-                <span>Nexus Capsules</span>
+                <span>Sentinel AI Capsules</span>
               </div>
             </div>
 
