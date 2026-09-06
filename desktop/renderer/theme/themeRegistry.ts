@@ -17,17 +17,20 @@ export interface ThemeColors {
   themeBorderSubtle: string;    // Subtle interior dividers
   themeBorderCard: string;      // Card and modal borders
   themeBorderFocus: string;     // Active ring, focused inputs
+  themeBorderStrong?: string;   // Strong divider / container outline
 
   // Typography
   themeText: string;            // Primary high-contrast text
   themeTextMuted: string;       // Secondary / muted text
   themeTextSubtle: string;      // Tertiary / placeholders / inactive icons
+  themeTextDisabled?: string;   // Disabled / inactive text
   themeTextAccent: string;      // Accent colored text
 
   // Accents & Actions
   themeAccent: string;          // Primary theme accent
   themeAccentHover: string;     // Primary accent hover
   themeAccentDim: string;       // Primary accent translucent fill
+  themeAccentActive?: string;   // Primary accent active state
   themeAccentSecondary: string; // Secondary theme accent
   themeSuccess: string;         // Success state
   themeWarning: string;         // Warning state
@@ -59,61 +62,64 @@ export const THEMES: ThemeDefinition[] = [
   {
     id: "nexus-dark",
     name: "NEXUS Dark",
-    description: "Technical, minimal & deep black with NEXUS cyan accents",
+    description: "Quiet, precise, professional engineering IDE theme with restrained cyan accents",
     category: "Default",
     colors: {
-      themeBackground: "#050505",
-      themeSurface: "#08080c",
-      themeSurfacePanel: "#0a0a0f",
-      themeSurfaceRaised: "#0e0e16",
-      themeSurfaceCard: "#101018",
-      themeSurfaceHover: "#161622",
-      themeSurfaceActive: "#1c1c2c",
-      themeSurfaceInput: "#08080e",
-      themeSurfaceBadge: "#082f49",
-      themeBorder: "#161620",
-      themeBorderSubtle: "#14141e",
-      themeBorderCard: "#1f1f2e",
-      themeBorderFocus: "#22d3ee",
-      themeText: "#f4f4f5",
-      themeTextMuted: "#a1a1aa",
-      themeTextSubtle: "#71717a",
-      themeTextAccent: "#22d3ee",
-      themeAccent: "#22d3ee",
-      themeAccentHover: "#06b6d4",
-      themeAccentDim: "rgba(34, 211, 238, 0.15)",
-      themeAccentSecondary: "#a855f7",
-      themeSuccess: "#34d399",
-      themeWarning: "#fbbf24",
-      themeError: "#f87171",
-      themeInfo: "#38bdf8",
-      themeEditorBackground: "#050505",
-      themeEditorForeground: "#e4e4e7",
-      themeSelection: "#083344",
-      swatches: ["#050505", "#22d3ee", "#a855f7", "#34d399"],
+      themeBackground: "#0A0B0D",
+      themeSurface: "#0E1013",
+      themeSurfacePanel: "#0E1013",
+      themeSurfaceRaised: "#1A1C22",
+      themeSurfaceCard: "#111318",
+      themeSurfaceHover: "#1A1C22",
+      themeSurfaceActive: "#22252B",
+      themeSurfaceInput: "#14161B",
+      themeSurfaceBadge: "#1A1C22",
+      themeBorder: "#22252B",
+      themeBorderSubtle: "#22252B",
+      themeBorderCard: "#22252B",
+      themeBorderStrong: "#2E323B",
+      themeBorderFocus: "#4CC2DE",
+      themeText: "#E6E8EB",
+      themeTextMuted: "#9AA1AC",
+      themeTextSubtle: "#6B7280",
+      themeTextDisabled: "#4B5058",
+      themeTextAccent: "#4CC2DE",
+      themeAccent: "#4CC2DE",
+      themeAccentHover: "#6ED4EA",
+      themeAccentActive: "#2FA3C0",
+      themeAccentDim: "rgba(76, 194, 222, 0.12)",
+      themeAccentSecondary: "#2FA3C0",
+      themeSuccess: "#3EAE79",
+      themeWarning: "#D9A441",
+      themeError: "#DC5B5B",
+      themeInfo: "#5A8FD6",
+      themeEditorBackground: "#0B0C0F",
+      themeEditorForeground: "#E6E8EB",
+      themeSelection: "#173747",
+      swatches: ["#0A0B0D", "#4CC2DE", "#2E323B", "#3EAE79"],
     },
     monacoThemeId: "nexus-dark",
     monacoThemeData: {
       base: "vs-dark",
       inherit: true,
       rules: [
-        { token: "", foreground: "e4e4e7", background: "050505" },
-        { token: "keyword", foreground: "22d3ee", fontStyle: "bold" },
-        { token: "string", foreground: "34d399" },
-        { token: "number", foreground: "fbbf24" },
-        { token: "comment", foreground: "71717a", fontStyle: "italic" },
-        { token: "type", foreground: "a855f7" },
-        { token: "function", foreground: "38bdf8" },
-        { token: "variable", foreground: "f4f4f5" },
+        { token: "", foreground: "E6E8EB", background: "0B0C0F" },
+        { token: "keyword", foreground: "4CC2DE", fontStyle: "bold" },
+        { token: "string", foreground: "3EAE79" },
+        { token: "number", foreground: "D9A441" },
+        { token: "comment", foreground: "6B7280", fontStyle: "italic" },
+        { token: "type", foreground: "5A8FD6" },
+        { token: "function", foreground: "6ED4EA" },
+        { token: "variable", foreground: "E6E8EB" },
       ],
       colors: {
-        "editor.background": "#050505",
-        "editor.foreground": "#e4e4e7",
-        "editorCursor.foreground": "#22d3ee",
-        "editor.lineHighlightBackground": "#0c0c14",
-        "editorLineNumber.foreground": "#52525b",
-        "editorLineNumber.activeForeground": "#22d3ee",
-        "editor.selectionBackground": "#083344",
+        "editor.background": "#0B0C0F",
+        "editor.foreground": "#E6E8EB",
+        "editorCursor.foreground": "#4CC2DE",
+        "editor.lineHighlightBackground": "#14161B",
+        "editorLineNumber.foreground": "#4B5058",
+        "editorLineNumber.activeForeground": "#4CC2DE",
+        "editor.selectionBackground": "#173747",
       },
     },
   },
@@ -491,15 +497,18 @@ export function applyThemeToDocument(theme: ThemeDefinition, monaco?: any): void
   root.style.setProperty("--theme-border-subtle", c.themeBorderSubtle);
   root.style.setProperty("--theme-border-card", c.themeBorderCard);
   root.style.setProperty("--theme-border-focus", c.themeBorderFocus);
+  root.style.setProperty("--theme-border-strong", c.themeBorderStrong || "#2E323B");
 
   root.style.setProperty("--theme-text", c.themeText);
   root.style.setProperty("--theme-text-muted", c.themeTextMuted);
   root.style.setProperty("--theme-text-subtle", c.themeTextSubtle);
+  root.style.setProperty("--theme-text-disabled", c.themeTextDisabled || "#4B5058");
   root.style.setProperty("--theme-text-accent", c.themeTextAccent);
 
   root.style.setProperty("--theme-accent", c.themeAccent);
   root.style.setProperty("--theme-accent-hover", c.themeAccentHover);
   root.style.setProperty("--theme-accent-dim", c.themeAccentDim);
+  root.style.setProperty("--theme-accent-active", c.themeAccentActive || "#2FA3C0");
   root.style.setProperty("--theme-accent-secondary", c.themeAccentSecondary);
   root.style.setProperty("--theme-success", c.themeSuccess);
   root.style.setProperty("--theme-warning", c.themeWarning);

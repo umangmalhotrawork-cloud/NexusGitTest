@@ -684,7 +684,7 @@ export default function SearchPanel({
                   type="button"
                   onClick={onClosePreview}
                   disabled={isApplying}
-                  className="px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold cursor-pointer disabled:opacity-40"
+                  className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] font-medium text-xs cursor-pointer disabled:opacity-40 transition-colors"
                 >
                   Cancel
                 </button>
@@ -693,7 +693,7 @@ export default function SearchPanel({
                   type="button"
                   disabled={isApplying || previewModel.totalReplacements === 0}
                   onClick={onApplyReplacementChangeSet}
-                  className="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-40 shadow-lg shadow-cyan-900/30"
+                  className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 transition-colors"
                 >
                   {isApplying ? (
                     <>

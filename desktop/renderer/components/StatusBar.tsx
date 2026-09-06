@@ -176,34 +176,34 @@ export default function StatusBar({
   return (
     <footer 
       style={{
-        backgroundColor: "var(--theme-surface, #060609)",
-        borderColor: "var(--theme-border, #161620)",
-        color: "var(--theme-text-muted, #a1a1aa)",
+        backgroundColor: "var(--theme-surface, #0E1013)",
+        borderColor: "var(--theme-border, #22252B)",
+        color: "var(--theme-text-muted, #9AA1AC)",
       }}
-      className="h-6 border-t px-3 flex items-center justify-between text-[11px] font-mono select-none shrink-0 z-40 relative"
+      className="h-6 border-t px-3 flex items-center justify-between text-[11px] font-sans select-none shrink-0 z-40 relative"
     >
       {/* Left Items */}
       <div className="flex items-center gap-2.5">
         {/* Git Branch */}
         <button
           onClick={onSelectSourceControl}
-          className="flex items-center gap-1 text-zinc-300 hover:text-cyan-300 font-medium cursor-pointer transition-colors"
+          className="flex items-center gap-1 text-[#9AA1AC] hover:text-[#E6E8EB] font-medium cursor-pointer transition-colors"
           title={`Active Branch: ${gitBranch} (Click to open Source Control)`}
         >
-          <GitBranch className="w-3 h-3 text-cyan-400" />
+          <GitBranch className="w-3 h-3 text-[#9AA1AC]" />
           <span>{gitBranch}</span>
         </button>
 
-        <span className="text-[#1a1a24]">|</span>
+        <span className="text-[#22252B]">|</span>
 
         {/* Verification Status */}
         <button
           onClick={onSelectVerificationTab}
-          className="flex items-center gap-1.5 hover:text-cyan-300 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer"
           title="Open Verification Panel"
         >
-          <ShieldCheck className={`w-3.5 h-3.5 ${verificationActive ? "text-emerald-400" : "text-amber-400"}`} />
-          <span className="text-zinc-300">
+          <ShieldCheck className={`w-3.5 h-3.5 ${verificationActive ? "text-[#3EAE79]" : "text-[#D9A441]"}`} />
+          <span>
             {verificationActive ? "AST Verified" : "Verification Pending"}
           </span>
         </button>
@@ -211,9 +211,9 @@ export default function StatusBar({
         {/* Error / Diagnostics Count */}
         {errorCount > 0 && (
           <>
-            <span className="text-[#1a1a24]">|</span>
-            <div className="flex items-center gap-1 text-rose-400 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+            <span className="text-[#22252B]">|</span>
+            <div className="flex items-center gap-1 text-[#DC5B5B] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#DC5B5B]" />
               <span>{errorCount} {errorCount === 1 ? "Error" : "Errors"}</span>
             </div>
           </>
@@ -222,13 +222,13 @@ export default function StatusBar({
         {/* Active Task / Agent Status */}
         {activeTask && (
           <>
-            <span className="text-[#1a1a24]">|</span>
+            <span className="text-[#22252B]">|</span>
             <button
               onClick={onSelectAgentPanel}
-              className="flex items-center gap-1.5 text-cyan-300 hover:text-cyan-200 transition-colors truncate max-w-xs cursor-pointer"
+              className="flex items-center gap-1.5 text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors truncate max-w-xs cursor-pointer"
               title={`Active Task: ${activeTask}`}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE]" />
               <span className="truncate">{activeTask}</span>
             </button>
           </>
@@ -237,53 +237,37 @@ export default function StatusBar({
 
       {/* Right Items */}
       <div className="flex items-center gap-2.5">
-        {/* Diagnostic Metadata Indicator */}
-        <div 
-          className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded bg-[#09090f] border border-[#1b1b26] text-[9.5px] text-zinc-400"
-          title={`Active Slot: ${activeProviderObj?.name || 'NEXUS 1'}\nProvider: ${activeProviderObj?.secondaryName || 'Gemini'}\nStatus: ${isConfigured ? 'Configured' : 'Not Configured'}\nLast Request: ${activeDiagnostics?.lastRequestAt ? new Date(activeDiagnostics.lastRequestAt).toLocaleTimeString() : 'Never'}\nLast Status: ${activeDiagnostics?.status || 'IDLE'}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-emerald-400" : "bg-zinc-600"}`} />
-          <span className="font-bold text-zinc-200">{activeProviderObj?.name || "NEXUS 1"}</span>
-          <span className="text-zinc-500">({activeProviderObj?.secondaryName || "Gemini"})</span>
-          <span className="text-zinc-600">•</span>
-          <span className={isConfigured ? "text-emerald-400 font-semibold" : "text-zinc-500"}>
-            {isConfigured ? "Configured" : "No Key"}
-          </span>
-          {activeDiagnostics?.lastStatus && activeDiagnostics.lastStatus !== "IDLE" && (
-            <>
-              <span className="text-zinc-600">•</span>
-              <span className={activeDiagnostics.lastStatus === "SUCCESS" ? "text-emerald-400" : activeDiagnostics.lastStatus.includes("429") ? "text-amber-400" : "text-rose-400"}>
-                {activeDiagnostics.lastStatus}
-              </span>
-            </>
-          )}
-        </div>
-
-        <span className="text-[#1a1a24]">|</span>
-
-        {/* Global Multi-Model AI Selector */}
+        {/* Global Multi-Model AI Status & Selector */}
         <div className="relative">
           <button
             ref={statusModelTriggerRef}
             onClick={() => setShowModelDropdown(!showModelDropdown)}
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#0f0f16] hover:bg-cyan-950/60 border border-[#20202e] hover:border-cyan-500/40 text-cyan-300 transition-colors cursor-pointer font-bold text-[10.5px]"
-            title="Global AI Model & Provider Selector"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-[#E6E8EB] transition-colors cursor-pointer font-medium text-[11px]"
+            title={`Global AI Model & Provider Selector\nActive Slot: ${activeProviderObj?.name || 'NEXUS 1'}\nProvider: ${activeProviderObj?.secondaryName || 'Gemini'}\nStatus: ${isConfigured ? 'Configured' : 'Not Configured'}\nLast Request: ${activeDiagnostics?.lastRequestAt ? new Date(activeDiagnostics.lastRequestAt).toLocaleTimeString() : 'Never'}\nLast Status: ${activeDiagnostics?.status || 'IDLE'}`}
           >
-            <Bot className="w-3 h-3 text-cyan-400" />
-            <span className="truncate max-w-[140px]">AI: {displayModelName}</span>
-            <ChevronDown className="w-3 h-3 text-cyan-400 shrink-0" />
+            <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[#3EAE79]" : "bg-[#6B7280]"}`} />
+            <Bot className="w-3 h-3 text-[#9AA1AC]" />
+            <span className="truncate max-w-[130px]">AI: {displayModelName}</span>
+            <span className="text-[#5A6072]">•</span>
+            <span className="hidden sm:inline text-[#8C92A4] font-normal text-[10px]">
+              {activeProviderObj?.name || "NEXUS 1"}
+              <span className={isConfigured ? "text-[#3EAE79] ml-1 font-medium" : "text-[#6B7280] ml-1"}>
+                ({isConfigured ? "Configured" : "No Key"})
+              </span>
+            </span>
+            <ChevronDown className="w-3 h-3 text-[#6B7280] shrink-0" />
           </button>
 
           {/* Model Selector Dropdown */}
           {showModelDropdown && (
             <div 
               ref={statusModelDropdownRef}
-              className="absolute right-0 bottom-7 w-84 bg-[#0c0c14] border border-[#262636] rounded-xl shadow-2xl z-50 p-2.5 space-y-2 text-xs font-mono text-zinc-200"
+              className="absolute right-0 bottom-7 w-84 bg-[#1A1C22] border border-[#22252B] rounded-lg shadow-popover z-50 p-2 space-y-1.5 text-xs font-sans text-[#E6E8EB]"
             >
-              <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-1 border-b border-[#1c1c2a] pb-1.5 flex items-center justify-between">
+              <div className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider px-1 border-b border-[#22252B] pb-1.5 flex items-center justify-between">
                 <span>Select AI Slot & Provider</span>
-                <button onClick={() => setShowModelDropdown(false)} className="text-zinc-500 hover:text-white">
-                  <X className="w-3 h-3" />
+                <button onClick={() => setShowModelDropdown(false)} className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer">
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -303,10 +287,10 @@ export default function StatusBar({
                   return (
                     <div
                       key={provider.id}
-                      className={`p-2 rounded-lg border transition-all ${
+                      className={`p-2 rounded-md border transition-colors ${
                         isSelected
-                          ? "bg-[#121826] border-cyan-500/50"
-                          : "bg-[#08080d] border-[#181824] hover:bg-[#101018]"
+                          ? "bg-[#111318] border-[#2E323B]"
+                          : "bg-[#14161B] border-[#22252B] hover:bg-[#1A1C22]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -317,42 +301,38 @@ export default function StatusBar({
                               handleOpenKeyModal(provider.id);
                             }
                           }}
-                          className="flex items-center gap-1.5 font-bold text-[11px] hover:text-cyan-300 cursor-pointer flex-1 text-left"
+                          className="flex items-center gap-1.5 font-medium text-xs hover:text-[#4CC2DE] cursor-pointer flex-1 text-left"
                         >
-                          <span className={isSelected ? "text-cyan-400 font-bold" : "text-zinc-300"}>
+                          <span className={isSelected ? "text-[#4CC2DE]" : "text-[#E6E8EB]"}>
                             {isSelected ? "✓ " : "  "}{provider.name}
                           </span>
-                          <span className="text-[9.5px] text-zinc-500 font-normal">
+                          <span className="text-[10px] text-[#6B7280]">
                             ({provider.secondaryName || "Gemini"})
                           </span>
                         </button>
 
                         <div className="flex items-center gap-2">
-                          <span className={`inline-block w-2 h-2 rounded-full ${isConnected ? "bg-emerald-400" : "bg-zinc-600"}`} />
-                          <span className={`text-[9.5px] ${isConnected ? "text-emerald-400 font-bold" : "text-zinc-500"}`}>
+                          <span className={`inline-block w-2 h-2 rounded-full ${isConnected ? "bg-[#3EAE79]" : "bg-[#6B7280]"}`} />
+                          <span className={`text-[10px] ${isConnected ? "text-[#3EAE79] font-medium" : "text-[#6B7280]"}`}>
                             {isConnected ? "Connected" : "No Key"}
                           </span>
                           <button
                             onClick={() => handleOpenKeyModal(provider.id)}
-                            className={`px-2 py-0.5 rounded border text-[9px] font-bold flex items-center gap-1 cursor-pointer transition-colors ${
-                              isConnected
-                                ? "bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700 text-zinc-300"
-                                : "bg-cyan-950/90 hover:bg-cyan-900 border-cyan-500/50 text-cyan-300"
-                            }`}
+                            className="px-2 py-0.5 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#22252B] text-[10px] text-[#9AA1AC] hover:text-[#E6E8EB] flex items-center gap-1 cursor-pointer transition-colors"
                           >
                             <Key className="w-2.5 h-2.5" />
-                            <span>{isConnected ? "Key" : "Configure Key"}</span>
+                            <span>{isConnected ? "Key" : "Configure"}</span>
                           </button>
                         </div>
                       </div>
 
                       {/* Unconfigured Slot Action Banner */}
                       {!isConnected && isSelected && (
-                        <div className="mt-1.5 p-1.5 rounded bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between">
-                          <span className="text-[9.5px] text-cyan-300">Slot has no API key</span>
+                        <div className="mt-1.5 p-1.5 rounded-md bg-[#14161B] border border-[#22252B] flex items-center justify-between">
+                          <span className="text-[10px] text-[#D9A441]">Slot has no API key</span>
                           <button
                             onClick={() => handleOpenKeyModal(provider.id)}
-                            className="px-2 py-0.5 rounded bg-cyan-900 hover:bg-cyan-800 text-white text-[9.5px] font-bold cursor-pointer"
+                            className="px-2 py-0.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] text-[10px] font-medium cursor-pointer transition-colors"
                           >
                             Configure API Key
                           </button>
@@ -360,17 +340,17 @@ export default function StatusBar({
                       )}
 
                       {/* Diagnostic Status Row */}
-                      <div className="mt-1 pt-1 border-t border-[#141420] flex items-center justify-between text-[9px] text-zinc-500">
+                      <div className="mt-1 pt-1 border-t border-[#22252B] flex items-center justify-between text-[10px] text-[#6B7280]">
                         <span>Last: {pDiag?.lastRequestAt ? new Date(pDiag.lastRequestAt).toLocaleTimeString() : "Never"}</span>
-                        <span className={pDiag?.status === "SUCCESS" ? "text-emerald-400" : pDiag?.status?.includes("429") ? "text-amber-400" : "text-zinc-500"}>
+                        <span className={pDiag?.status === "SUCCESS" ? "text-[#3EAE79]" : pDiag?.status?.includes("429") ? "text-[#D9A441]" : "text-[#6B7280]"}>
                           Status: {pDiag?.status || (isConnected ? "IDLE" : "NOT_CONFIGURED")}
                         </span>
                       </div>
 
                       {/* Provider Models */}
                       {Array.isArray(provider.models) && provider.models.length > 0 && isSelected && (
-                        <div className="mt-1.5 pt-1.5 border-t border-[#181824] space-y-1">
-                          <div className="text-[9px] text-zinc-500 font-bold uppercase">Active Model:</div>
+                        <div className="mt-1.5 pt-1.5 border-t border-[#22252B] space-y-1">
+                          <div className="text-[10px] text-[#6B7280] font-semibold uppercase">Active Model:</div>
                           <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto pr-0.5">
                             {provider.models.map((m: any) => {
                               const isMSelected = (aiConfig?.activeModel || "gemini-2.5-flash") === m.id;
@@ -378,14 +358,14 @@ export default function StatusBar({
                                 <button
                                   key={m.id}
                                   onClick={() => handleSelectModel(provider.id, m.id)}
-                                  className={`px-2 py-1 rounded text-[10px] text-left flex items-center justify-between border cursor-pointer ${
+                                  className={`px-2 py-1 rounded-md text-[11px] text-left flex items-center justify-between border cursor-pointer transition-colors ${
                                     isMSelected
-                                      ? "bg-cyan-950/70 border-cyan-500/60 text-cyan-200 font-bold"
-                                      : "bg-[#0c0c14] border-[#1a1a28] text-zinc-400 hover:text-zinc-200"
+                                      ? "bg-[#111318] border-[#2E323B] text-[#4CC2DE] font-medium"
+                                      : "bg-[#14161B] border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
                                   }`}
                                 >
                                   <span className="truncate">{m.name || m.id}</span>
-                                  {isMSelected && <Check className="w-3 h-3 text-cyan-400 shrink-0" />}
+                                  {isMSelected && <Check className="w-3 h-3 text-[#4CC2DE] shrink-0" />}
                                 </button>
                               );
                             })}
@@ -400,16 +380,16 @@ export default function StatusBar({
           )}
         </div>
 
-        <span className="text-[#1a1a24]">|</span>
+        <span className="text-[#22252B]">|</span>
 
         {/* GitHub Status Button */}
         <button
           onClick={onOpenGithub}
-          className="flex items-center gap-1.5 text-[10.5px] text-zinc-400 hover:text-cyan-300 transition-colors cursor-pointer py-0.5 px-1.5 rounded hover:bg-white/5"
+          className="flex items-center gap-1.5 text-[11px] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer py-0.5 px-1.5 rounded-md hover:bg-[#1A1C22]"
           title="GitHub Account Connection & Repository Association"
         >
-          <Github className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-          <span className="font-mono">GitHub</span>
+          <Github className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
+          <span>GitHub</span>
         </button>
       </div>
 
@@ -417,36 +397,36 @@ export default function StatusBar({
       {showKeyModal && (
         <div 
           ref={statusKeyModalRef}
-          className="fixed bottom-8 right-3 w-84 p-3.5 bg-[#0c0c14] border border-cyan-500/40 rounded-xl space-y-2.5 text-xs font-mono shadow-2xl z-50"
+          className="fixed bottom-8 right-3 w-84 p-3.5 bg-[#111318] border border-[#22252B] rounded-xl space-y-2.5 text-xs font-sans shadow-modal z-50"
         >
-          <div className="flex items-center justify-between border-b border-[#1f1f2a] pb-1.5">
-            <div className="font-bold text-cyan-300 flex items-center gap-1.5 text-[11px]">
-              <Key className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="flex items-center justify-between border-b border-[#22252B] pb-1.5">
+            <div className="font-medium text-[#E6E8EB] flex items-center gap-1.5 text-xs">
+              <Key className="w-3.5 h-3.5 text-[#4CC2DE]" />
               <span>{targetKeyProvider.name} Key Configuration</span>
             </div>
-            <button onClick={() => setShowKeyModal(false)} className="text-zinc-500 hover:text-white">
+            <button onClick={() => setShowKeyModal(false)} className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="space-y-2">
-            <div className="text-[10px] text-zinc-400">
-              Active Key: <span className="text-cyan-300 font-bold select-all">{targetKeyProvider.maskedKey || "Not set (Session fallback active)"}</span>
+            <div className="text-[11px] text-[#6B7280]">
+              Active Key: <span className="text-[#E6E8EB] font-mono select-all">{targetKeyProvider.maskedKey || "Not set (Session fallback active)"}</span>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[9.5px] text-zinc-500 font-bold uppercase">{targetKeyProvider.name} API Key</label>
+              <label className="text-[10px] text-[#6B7280] font-semibold uppercase">{targetKeyProvider.name} API Key</label>
               <input
                 type="password"
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
                 placeholder={targetKeyProvider.keyPlaceholder || "Enter API key..."}
-                className="w-full bg-[#141418] border border-[#27272a] focus:border-cyan-500/60 rounded-lg px-2.5 py-1.5 text-zinc-100 placeholder:text-zinc-600 outline-none text-[11px] font-mono"
+                className="w-full bg-[#14161B] border border-[#22252B] focus:border-[#4CC2DE] rounded-md px-2.5 py-1.5 text-[#E6E8EB] placeholder-[#6B7280] outline-none text-xs font-sans"
               />
             </div>
 
             {keyValidationMsg && (
-              <div className={`text-[10px] font-bold ${keyValidationMsg.includes("Connected") ? "text-emerald-400" : "text-rose-400"}`}>
+              <div className={`text-[11px] font-medium ${keyValidationMsg.includes("Connected") ? "text-[#3EAE79]" : "text-[#DC5B5B]"}`}>
                 {keyValidationMsg}
               </div>
             )}
@@ -454,7 +434,7 @@ export default function StatusBar({
             <div className="flex items-center justify-between pt-1">
               <button
                 onClick={handleRemoveApiKey}
-                className="px-2 py-1 rounded bg-rose-950/80 border border-rose-500/30 text-rose-300 hover:bg-rose-900 text-[10px] font-bold cursor-pointer"
+                className="px-2.5 py-1 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] hover:bg-[#DC5B5B]/20 text-[11px] font-medium cursor-pointer transition-colors"
               >
                 Remove
               </button>
@@ -462,11 +442,11 @@ export default function StatusBar({
               <button
                 onClick={handleSaveApiKey}
                 disabled={validatingKey || !apiKeyInput.trim()}
-                className="px-3 py-1 rounded bg-cyan-950 border border-cyan-500/50 text-cyan-300 hover:bg-cyan-900 text-[10px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-40"
+                className="px-3 py-1 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] text-[11px] font-medium flex items-center gap-1 cursor-pointer disabled:opacity-40 transition-colors"
               >
                 {validatingKey ? (
                   <>
-                    <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                    <Loader2 className="w-3 h-3 animate-spin text-[#0A0B0D]" />
                     <span>Validating...</span>
                   </>
                 ) : (

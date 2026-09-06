@@ -54,18 +54,18 @@ export default function WorkspaceDashboard({
 }: WorkspaceDashboardProps) {
   if (!summary && !luminanceReport && !loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#050505] text-zinc-400 font-mono">
-        <Layers className="w-12 h-12 text-cyan-400/40 mb-4 animate-pulse" />
-        <h3 className="text-lg font-bold text-white mb-2">No Workspace Scan Data</h3>
-        <p className="text-xs text-zinc-500 max-w-md mb-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#0A0B0D] text-[#9AA1AC] font-sans">
+        <Layers className="w-10 h-10 text-[#4CC2DE] mb-4" />
+        <h3 className="text-base font-semibold text-[#E6E8EB] mb-2">No Workspace Scan Data</h3>
+        <p className="text-xs text-[#6B7280] max-w-md mb-6">
           Trigger a workspace-wide AST tomography scan to detect and rank vacuous ghost lines across your entire project repository.
         </p>
         <button
           onClick={onRescan}
           disabled={loading}
-          className="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold text-xs shadow-cyan-glow flex items-center gap-2 transition-all"
+          className="px-4 py-2 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs flex items-center gap-2 transition-colors"
         >
-          <Play className="w-4 h-4 fill-black" />
+          <Play className="w-3.5 h-3.5 fill-current" />
           <span>Run Full Workspace Scan</span>
         </button>
       </div>
@@ -84,35 +84,35 @@ export default function WorkspaceDashboard({
   const scanDuration = summary?.scan_duration_ms ?? 14.5;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#050505] text-zinc-100 font-mono overflow-y-auto select-none p-6 space-y-6">
+    <div className="flex-1 flex flex-col h-full bg-[#0A0B0D] text-[#E6E8EB] font-sans overflow-y-auto select-none p-6 space-y-6">
       
       {/* Header Bar */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#1f1f1f]">
+      <div className="flex items-center justify-between pb-4 border-b border-[#22252B]">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <h2 className="font-heading text-lg font-bold text-white tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#4CC2DE]" />
+            <h2 className="text-base font-semibold text-[#E6E8EB] tracking-tight">
               Workspace Tomography & Causal Luminance Dashboard
             </h2>
-            <span className="px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-500/30 text-purple-300 text-[10px] font-bold">
+            <span className="px-2 py-0.5 rounded bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] text-[10px] font-medium">
               QUANTITATIVE AST SCORING
             </span>
           </div>
-          <p className="text-xs text-zinc-500 mt-1 font-sans">
+          <p className="text-xs text-[#9AA1AC] mt-1 font-sans">
             Project-level causality metrics, Shannon causal entropy, luminance histograms, and vacuity ranking.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={onRescan}
             disabled={loading}
-            className="px-4 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-xs font-bold flex items-center gap-2 transition-all shadow-cyan-glow disabled:opacity-50"
+            className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] text-xs font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
           >
             {loading ? (
-              <Activity className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+              <Activity className="w-3.5 h-3.5 animate-spin text-[#4CC2DE]" />
             ) : (
-              <Layers className="w-3.5 h-3.5 text-cyan-400" />
+              <Layers className="w-3.5 h-3.5 text-[#9AA1AC]" />
             )}
             <span>{loading ? "Scanning Project..." : "Rescan Workspace"}</span>
           </button>
@@ -120,7 +120,7 @@ export default function WorkspaceDashboard({
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 rounded-xl border border-[#262626] text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
+              className="p-1.5 rounded-md border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] transition-colors"
               title="Return to Code Editor"
             >
               <X className="w-4 h-4" />
@@ -133,85 +133,85 @@ export default function WorkspaceDashboard({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         
         {/* 1. Files Analyzed */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-[#1f1f1f] space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Files Analyzed</span>
-            <FileText className="w-3.5 h-3.5 text-cyan-400" />
+            <FileText className="w-3.5 h-3.5 text-[#9AA1AC]" />
           </div>
-          <div className="text-xl font-bold text-white font-heading">
+          <div className="text-lg font-semibold text-[#E6E8EB]">
             {filesAnalyzed}
           </div>
-          <div className="text-[10px] text-zinc-500 font-sans">
-            {summary?.total_lines ?? (luminanceReport?.total_statements ?? 32)} total statements
+          <div className="text-[10px] text-[#6B7280]">
+            {summary?.total_lines ?? (luminanceReport?.total_statements ?? 32)} statements
           </div>
         </div>
 
         {/* 2. Mean Luminance */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-cyan-500/30 bg-cyan-950/10 space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Mean Luminance</span>
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
           </div>
-          <div className="text-xl font-bold text-cyan-300 font-heading">
+          <div className="text-lg font-semibold text-[#4CC2DE]">
             {(avgLuminance * 100).toFixed(1)}%
           </div>
-          <div className="text-[10px] text-cyan-400/80 font-sans">
+          <div className="text-[10px] text-[#9AA1AC]">
             Median: {(medianLuminance * 100).toFixed(1)}%
           </div>
         </div>
 
         {/* 3. Dark Code Ratio */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-rose-500/30 bg-rose-950/10 space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Dark Code Ratio</span>
-            <Moon className="w-3.5 h-3.5 text-rose-400" />
+            <Moon className="w-3.5 h-3.5 text-[#DC5B5B]" />
           </div>
-          <div className="text-xl font-bold text-rose-400 font-heading">
+          <div className="text-lg font-semibold text-[#DC5B5B]">
             {(darkRatio * 100).toFixed(1)}%
           </div>
-          <div className="text-[10px] text-rose-400/80 font-sans">
+          <div className="text-[10px] text-[#9AA1AC]">
             Luminance &lt; 0.25
           </div>
         </div>
 
         {/* 4. Bright Code Ratio */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-emerald-500/30 bg-emerald-950/10 space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Bright Code Ratio</span>
-            <Sun className="w-3.5 h-3.5 text-emerald-400" />
+            <Sun className="w-3.5 h-3.5 text-[#3EAE79]" />
           </div>
-          <div className="text-xl font-bold text-emerald-400 font-heading">
+          <div className="text-lg font-semibold text-[#3EAE79]">
             {(brightRatio * 100).toFixed(1)}%
           </div>
-          <div className="text-[10px] text-emerald-400/80 font-sans">
+          <div className="text-[10px] text-[#9AA1AC]">
             Luminance &ge; 0.70
           </div>
         </div>
 
         {/* 5. Causal Entropy Index */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-purple-500/30 bg-purple-950/10 space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Causal Entropy</span>
-            <Cpu className="w-3.5 h-3.5 text-purple-400" />
+            <Cpu className="w-3.5 h-3.5 text-[#9AA1AC]" />
           </div>
-          <div className="text-xl font-bold text-purple-300 font-heading">
+          <div className="text-lg font-semibold text-[#E6E8EB]">
             {causalEntropy.toFixed(2)}
           </div>
-          <div className="text-[10px] text-purple-400/80 font-sans">
+          <div className="text-[10px] text-[#6B7280]">
             Shannon disorder metric
           </div>
         </div>
 
         {/* 6. Scan Duration */}
-        <div className="p-3.5 bg-[#0a0a0a] rounded-xl border border-[#1f1f1f] space-y-1 shadow-inner">
-          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+        <div className="p-3.5 bg-[#111318] rounded-lg border border-[#22252B] space-y-1">
+          <div className="flex items-center justify-between text-[#9AA1AC] text-[11px]">
             <span>Scan Duration</span>
-            <Clock className="w-3.5 h-3.5 text-zinc-400" />
+            <Clock className="w-3.5 h-3.5 text-[#9AA1AC]" />
           </div>
-          <div className="text-xl font-bold text-zinc-200 font-heading">
+          <div className="text-lg font-semibold text-[#E6E8EB]">
             {scanDuration}ms
           </div>
-          <div className="text-[10px] text-zinc-500 font-sans">
+          <div className="text-[10px] text-[#6B7280]">
             Multi-file AST analyzer
           </div>
         </div>
@@ -220,15 +220,15 @@ export default function WorkspaceDashboard({
 
       {/* Causal Luminance Distribution Histogram */}
       {luminanceReport && luminanceReport.histogram && luminanceReport.histogram.length > 0 && (
-        <div className="p-5 bg-[#0a0a0a] rounded-2xl border border-[#1f1f1f] shadow-lg space-y-4">
+        <div className="p-4 bg-[#111318] rounded-lg border border-[#22252B] space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4 text-cyan-400" />
-              <h3 className="font-heading font-bold text-sm text-white">
+              <Flame className="w-4 h-4 text-[#4CC2DE]" />
+              <h3 className="font-semibold text-sm text-[#E6E8EB]">
                 Causal Luminance Distribution Histogram
               </h3>
             </div>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-[#9AA1AC]">
               Total statements evaluated: {luminanceReport.total_statements}
             </span>
           </div>
@@ -237,17 +237,17 @@ export default function WorkspaceDashboard({
             {luminanceReport.histogram.map((bin, i) => (
               <div key={i} className="space-y-1">
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-zinc-300">{bin.range}</span>
-                  <span className="text-zinc-400 font-bold">
+                  <span className="text-[#9AA1AC]">{bin.range}</span>
+                  <span className="text-[#E6E8EB] font-medium">
                     {bin.count} statements ({bin.percentage}%)
                   </span>
                 </div>
-                <div className="h-3 w-full bg-[#141414] rounded-full overflow-hidden border border-[#222]">
+                <div className="h-2 w-full bg-[#14161B] rounded-full overflow-hidden border border-[#22252B]">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${Math.max(2, bin.percentage)}%`,
-                      backgroundColor: bin.color || "#06b6d4",
+                      backgroundColor: bin.color || "#4CC2DE",
                     }}
                   />
                 </div>
@@ -262,52 +262,52 @@ export default function WorkspaceDashboard({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Moon className="w-4 h-4 text-rose-400" />
-              <h3 className="font-heading font-bold text-sm text-white">
+              <Moon className="w-4 h-4 text-[#DC5B5B]" />
+              <h3 className="font-semibold text-sm text-[#E6E8EB]">
                 Darkest Statements (Lowest Causal Luminance)
               </h3>
             </div>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-[#9AA1AC]">
               Ranked prime targets for Safe Remove Surgery
             </span>
           </div>
 
-          <div className="border border-[#1f1f1f] rounded-xl overflow-hidden bg-[#0a0a0a]">
-            <table className="w-full text-left text-xs border-collapse font-mono">
+          <div className="border border-[#22252B] rounded-lg overflow-hidden bg-[#111318]">
+            <table className="w-full text-left text-xs border-collapse font-sans">
               <thead>
-                <tr className="border-b border-[#1f1f1f] bg-[#050505] text-zinc-400 text-[11px]">
-                  <th className="py-3 px-4 font-bold">File</th>
-                  <th className="py-3 px-4 font-bold">Line</th>
-                  <th className="py-3 px-4 font-bold">Code Statement</th>
-                  <th className="py-3 px-4 font-bold">Causal Diagnosis</th>
-                  <th className="py-3 px-4 font-bold text-center">Score</th>
-                  <th className="py-3 px-4 font-bold text-right">Action</th>
+                <tr className="border-b border-[#22252B] bg-[#0E1013] text-[#9AA1AC] text-[11px]">
+                  <th className="py-2.5 px-3.5 font-medium">File</th>
+                  <th className="py-2.5 px-3.5 font-medium">Line</th>
+                  <th className="py-2.5 px-3.5 font-medium">Code Statement</th>
+                  <th className="py-2.5 px-3.5 font-medium">Causal Diagnosis</th>
+                  <th className="py-2.5 px-3.5 font-medium text-center">Score</th>
+                  <th className="py-2.5 px-3.5 font-medium text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#171717]">
+              <tbody className="divide-y divide-[#22252B]">
                 {luminanceReport.darkest_statements.map((s, idx) => (
-                  <tr key={idx} className="hover:bg-[#121212] transition-colors group">
-                    <td className="py-3 px-4 font-bold text-cyan-300">{s.file}</td>
-                    <td className="py-3 px-4 text-zinc-400">L{s.line}</td>
-                    <td className="py-3 px-4 font-mono text-zinc-200">
-                      <code className="bg-[#141414] px-2 py-0.5 rounded border border-[#262626] text-rose-300">
+                  <tr key={idx} className="hover:bg-[#14161B] transition-colors group">
+                    <td className="py-2.5 px-3.5 font-mono text-[#4CC2DE]">{s.file}</td>
+                    <td className="py-2.5 px-3.5 text-[#9AA1AC] font-mono">L{s.line}</td>
+                    <td className="py-2.5 px-3.5 font-mono text-[#E6E8EB]">
+                      <code className="bg-[#14161B] px-1.5 py-0.5 rounded border border-[#22252B] text-[#DC5B5B]">
                         {s.code}
                       </code>
                     </td>
-                    <td className="py-3 px-4 text-zinc-400">{s.reason}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-500/40 text-[10px] font-bold">
+                    <td className="py-2.5 px-3.5 text-[#9AA1AC]">{s.reason}</td>
+                    <td className="py-2.5 px-3.5 text-center">
+                      <span className="px-2 py-0.5 rounded bg-[#DC5B5B]/10 text-[#DC5B5B] border border-[#DC5B5B]/30 text-[10px] font-medium font-mono">
                         {s.luminance.toFixed(2)}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-2.5 px-3.5 text-right">
                       <button
                         onClick={() => {
                           if (onJumpToStatement) {
                             onJumpToStatement(s.file, s.line);
                           }
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-300 text-[10px] font-bold transition-all inline-flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#DC5B5B] text-[11px] font-medium transition-colors inline-flex items-center gap-1"
                       >
                         <span>Jump</span>
                         <ExternalLink className="w-3 h-3" />
@@ -325,30 +325,30 @@ export default function WorkspaceDashboard({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileSearch className="w-4 h-4 text-cyan-400" />
-            <h3 className="font-heading font-bold text-sm text-white">
+            <FileSearch className="w-4 h-4 text-[#4CC2DE]" />
+            <h3 className="font-semibold text-sm text-[#E6E8EB]">
               Files Ranked by Causal Tomography
             </h3>
           </div>
-          <span className="text-xs text-zinc-500">
-            Click any row to open in Monaco editor and jump to finding
+          <span className="text-xs text-[#9AA1AC]">
+            Click any row to open in editor and inspect
           </span>
         </div>
 
         {/* Table Container */}
-        <div className="border border-[#1f1f1f] rounded-xl overflow-hidden bg-[#0a0a0a]">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="border border-[#22252B] rounded-lg overflow-hidden bg-[#111318]">
+          <table className="w-full text-left text-xs border-collapse font-sans">
             <thead>
-              <tr className="border-b border-[#1f1f1f] bg-[#050505] text-zinc-400 text-[11px]">
-                <th className="py-3 px-4 font-bold">File Path</th>
-                <th className="py-3 px-4 font-bold">Ghost Lines</th>
-                <th className="py-3 px-4 font-bold">Total LOC</th>
-                <th className="py-3 px-4 font-bold">Ghost Ratio</th>
-                <th className="py-3 px-4 font-bold">Luminance</th>
-                <th className="py-3 px-4 font-bold text-right">Action</th>
+              <tr className="border-b border-[#22252B] bg-[#0E1013] text-[#9AA1AC] text-[11px]">
+                <th className="py-2.5 px-3.5 font-medium">File Path</th>
+                <th className="py-2.5 px-3.5 font-medium">Ghost Lines</th>
+                <th className="py-2.5 px-3.5 font-medium">Total LOC</th>
+                <th className="py-2.5 px-3.5 font-medium">Ghost Ratio</th>
+                <th className="py-2.5 px-3.5 font-medium">Luminance</th>
+                <th className="py-2.5 px-3.5 font-medium text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#171717]">
+            <tbody className="divide-y divide-[#22252B]">
               {summary && summary.files.length > 0 ? (
                 summary.files.map((file, idx) => {
                   const hasGhosts = file.ghost_lines > 0;
@@ -356,21 +356,21 @@ export default function WorkspaceDashboard({
                     <tr
                       key={idx}
                       onClick={() => onOpenFile(file)}
-                      className="hover:bg-[#121212] transition-colors cursor-pointer group"
+                      className="hover:bg-[#14161B] transition-colors cursor-pointer group"
                     >
                       {/* File Path */}
-                      <td className="py-3 px-4 font-bold text-zinc-200 group-hover:text-cyan-300 flex items-center gap-2">
-                        <FileText className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <td className="py-2.5 px-3.5 font-mono text-[#E6E8EB] group-hover:text-[#4CC2DE] flex items-center gap-2">
+                        <FileText className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
                         <span className="truncate max-w-xs">{file.path}</span>
                       </td>
 
                       {/* Ghost Lines */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         <span
-                          className={`px-2 py-0.5 rounded-full border text-[11px] font-bold ${
+                          className={`px-2 py-0.5 rounded border text-[10px] font-medium font-mono ${
                             hasGhosts
-                              ? "bg-amber-950/80 text-amber-300 border-amber-500/40"
-                              : "bg-emerald-950/80 text-emerald-300 border-emerald-500/40"
+                              ? "bg-[#D9A441]/10 text-[#D9A441] border-[#D9A441]/30"
+                              : "bg-[#3EAE79]/10 text-[#3EAE79] border-[#3EAE79]/30"
                           }`}
                         >
                           {file.ghost_lines} {file.ghost_lines === 1 ? "Ghost" : "Ghosts"}
@@ -378,35 +378,35 @@ export default function WorkspaceDashboard({
                       </td>
 
                       {/* Total LOC */}
-                      <td className="py-3 px-4 text-zinc-400">
+                      <td className="py-2.5 px-3.5 text-[#9AA1AC] font-mono">
                         {file.total_lines}
                       </td>
 
                       {/* Ghost Ratio */}
-                      <td className="py-3 px-4">
-                        <span className={hasGhosts ? "text-cyan-300 font-bold" : "text-zinc-500"}>
+                      <td className="py-2.5 px-3.5 font-mono">
+                        <span className={hasGhosts ? "text-[#D9A441] font-medium" : "text-[#6B7280]"}>
                           {(file.ghost_ratio * 100).toFixed(1)}%
                         </span>
                       </td>
 
                       {/* Luminance */}
-                      <td className="py-3 px-4">
-                        <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 text-[10px]">
+                      <td className="py-2.5 px-3.5 font-mono">
+                        <span className="px-1.5 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-[#9AA1AC] text-[10px]">
                           {(file.causal_luminance ?? (hasGhosts ? 0.61 : 0.90)).toFixed(2)}
                         </span>
                       </td>
 
                       {/* Action */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-2.5 px-3.5 text-right">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onOpenFile(file);
                           }}
-                          className="px-3 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[11px] font-bold transition-all flex items-center gap-1.5 ml-auto"
+                          className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] text-[11px] font-medium transition-colors flex items-center gap-1.5 ml-auto"
                         >
                           <span>Inspect</span>
-                          <ArrowRight className="w-3 h-3 text-cyan-400" />
+                          <ArrowRight className="w-3 h-3 text-[#9AA1AC]" />
                         </button>
                       </td>
                     </tr>
@@ -414,7 +414,7 @@ export default function WorkspaceDashboard({
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-zinc-500">
+                  <td colSpan={6} className="py-8 text-center text-[#6B7280]">
                     No files found in workspace.
                   </td>
                 </tr>

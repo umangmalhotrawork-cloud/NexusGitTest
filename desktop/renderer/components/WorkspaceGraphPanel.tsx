@@ -268,32 +268,32 @@ export default function WorkspaceGraphPanel({
   }, [filteredNodes]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#050505] text-zinc-100 font-mono select-none overflow-hidden relative">
+    <div className="flex-1 flex flex-col h-full bg-[#0A0B0D] text-[#E6E8EB] font-sans select-none overflow-hidden relative">
       
       {/* 1. Header Toolbar */}
-      <div className="p-3 bg-[#0a0a0a] border-b border-[#1f1f1f] flex items-center justify-between gap-3 shrink-0 z-10">
+      <div className="p-3 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between gap-3 shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Network className="w-4 h-4 text-cyan-400" />
-            <h2 className="font-heading font-bold text-sm text-white">
+            <Network className="w-4 h-4 text-[#4CC2DE]" />
+            <h2 className="font-semibold text-sm text-[#E6E8EB]">
               Cross-File Provenance Graph
             </h2>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141414] rounded-xl border border-[#262626] text-xs text-zinc-400">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#14161B] rounded-md border border-[#22252B] text-xs text-[#9AA1AC]">
             <span>{filteredNodes.length} nodes</span>
             <span>•</span>
             <span>{filteredEdges.length} edges</span>
             {cloneCount > 0 && (
               <>
                 <span>•</span>
-                <span className="text-purple-400 font-bold">{cloneCount} clones</span>
+                <span className="text-[#E6E8EB] font-medium">{cloneCount} clones</span>
               </>
             )}
             {semanticCloneCount > 0 && (
               <>
                 <span>•</span>
-                <span className="text-amber-400 font-bold">{semanticCloneCount} semantic clones</span>
+                <span className="text-[#D9A441] font-medium">{semanticCloneCount} semantic clones</span>
               </>
             )}
           </div>
@@ -303,17 +303,17 @@ export default function WorkspaceGraphPanel({
         <div className="flex items-center gap-2">
           
           {/* Search Box */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#121212] border border-[#262626] text-xs">
-            <Search className="w-3.5 h-3.5 text-zinc-500" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#14161B] border border-[#22252B] text-xs">
+            <Search className="w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
               placeholder="Search symbol / code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-zinc-200 text-xs w-36 placeholder:text-zinc-600"
+              className="bg-transparent border-none outline-none text-[#E6E8EB] text-xs w-36 placeholder:text-[#6B7280]"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="text-zinc-500 hover:text-white">
+              <button onClick={() => setSearchQuery("")} className="text-[#9AA1AC] hover:text-[#E6E8EB]">
                 <X className="w-3 h-3" />
               </button>
             )}
@@ -323,7 +323,7 @@ export default function WorkspaceGraphPanel({
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            className="px-2.5 py-1 rounded-xl bg-[#121212] border border-[#262626] text-xs text-zinc-300 outline-none hover:border-cyan-500/40 transition-colors"
+            className="px-2.5 py-1 rounded-md bg-[#14161B] border border-[#22252B] text-xs text-[#E6E8EB] outline-none hover:border-[#2E323B] transition-colors"
           >
             <option value="ALL">All Files ({files.length})</option>
             {files.map((f) => (
@@ -334,23 +334,23 @@ export default function WorkspaceGraphPanel({
           </select>
 
           {/* Kind Filter Buttons */}
-          <div className="flex items-center gap-1 p-0.5 bg-[#121212] rounded-xl border border-[#262626] text-[11px]">
+          <div className="flex items-center gap-0.5 p-0.5 bg-[#14161B] rounded-md border border-[#22252B] text-[11px]">
             {[
               { id: "ALL", label: "All" },
-              { id: "definition", label: "Defs", color: "text-cyan-400" },
-              { id: "ghost_operation", label: "Ghosts", color: "text-amber-400" },
-              { id: "use", label: "Uses", color: "text-purple-400" },
-              { id: "return_sink", label: "Sinks", color: "text-emerald-400" },
-              { id: "clone", label: "Clones", color: "text-pink-400" },
-              { id: "semantic_clone", label: "Semantic", color: "text-cyan-400" },
+              { id: "definition", label: "Defs", color: "text-[#4CC2DE]" },
+              { id: "ghost_operation", label: "Ghosts", color: "text-[#D9A441]" },
+              { id: "use", label: "Uses", color: "text-[#E6E8EB]" },
+              { id: "return_sink", label: "Sinks", color: "text-[#3EAE79]" },
+              { id: "clone", label: "Clones", color: "text-[#9AA1AC]" },
+              { id: "semantic_clone", label: "Semantic", color: "text-[#D9A441]" },
             ].map((k) => (
               <button
                 key={k.id}
                 onClick={() => setSelectedKind(k.id)}
-                className={`px-2 py-0.5 rounded-lg transition-all ${
+                className={`px-2 py-0.5 rounded transition-colors ${
                   selectedKind === k.id
-                    ? "bg-[#202020] text-white font-bold shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-[#1A1C22] text-[#E6E8EB] font-medium"
+                    : "text-[#9AA1AC] hover:text-[#E6E8EB]"
                 } ${k.color || ""}`}
               >
                 {k.label}
@@ -359,24 +359,24 @@ export default function WorkspaceGraphPanel({
           </div>
 
           {/* Zoom & Rescan Tools */}
-          <div className="flex items-center gap-1 border-l border-[#262626] pl-2">
+          <div className="flex items-center gap-1 border-l border-[#22252B] pl-2">
             <button
               onClick={() => setTransform((p) => ({ ...p, scale: Math.min(2.5, p.scale * 1.15) }))}
-              className="p-1.5 rounded-lg bg-[#141414] hover:bg-[#202020] text-zinc-400 hover:text-white"
+              className="p-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setTransform((p) => ({ ...p, scale: Math.max(0.3, p.scale * 0.85) }))}
-              className="p-1.5 rounded-lg bg-[#141414] hover:bg-[#202020] text-zinc-400 hover:text-white"
+              className="p-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={resetView}
-              className="p-1.5 rounded-lg bg-[#141414] hover:bg-[#202020] text-zinc-400 hover:text-white"
+              className="p-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors"
               title="Reset View"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -384,12 +384,12 @@ export default function WorkspaceGraphPanel({
             <button
               onClick={onRefresh}
               disabled={loading}
-              className="px-3 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-cyan-glow"
+              className="px-3 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               {loading ? (
-                <Activity className="w-3.5 h-3.5 animate-spin" />
+                <Activity className="w-3.5 h-3.5 animate-spin text-[#4CC2DE]" />
               ) : (
-                <Network className="w-3.5 h-3.5" />
+                <Network className="w-3.5 h-3.5 text-[#9AA1AC]" />
               )}
               <span>Re-graph</span>
             </button>
@@ -397,7 +397,7 @@ export default function WorkspaceGraphPanel({
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg border border-[#262626] text-zinc-400 hover:text-white hover:bg-zinc-900"
+                className="p-1.5 rounded-md border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] transition-colors"
                 title="Close Graph"
               >
                 <X className="w-3.5 h-3.5" />
@@ -667,24 +667,24 @@ export default function WorkspaceGraphPanel({
 
         {/* 3. Floating Hover Tooltip */}
         {hoveredNode && (
-          <div className="absolute bottom-4 left-4 p-4 bg-[#0d0d0d] border border-cyan-500/40 rounded-xl shadow-2xl z-20 max-w-md pointer-events-none font-mono space-y-2 animate-fade-in">
-            <div className="flex items-center justify-between gap-2 border-b border-[#222] pb-2">
+          <div className="absolute bottom-4 left-4 p-3 bg-[#111318] border border-[#22252B] rounded-lg shadow-popover z-20 max-w-md pointer-events-none font-sans space-y-2">
+            <div className="flex items-center justify-between gap-2 border-b border-[#22252B] pb-2">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="font-bold text-xs text-white">{hoveredNode.symbol}</span>
+                <span className="w-2 h-2 rounded-full bg-[#4CC2DE]" />
+                <span className="font-medium text-xs text-[#E6E8EB] font-mono">{hoveredNode.symbol}</span>
               </div>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getNodeColors(hoveredNode.kind).badgeBg}`}>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${getNodeColors(hoveredNode.kind).badgeBg}`}>
                 {hoveredNode.kind.replace("_", " ")}
               </span>
             </div>
 
-            <div className="text-[11px] text-zinc-400 flex items-center justify-between">
+            <div className="text-[11px] text-[#9AA1AC] flex items-center justify-between font-mono">
               <span>{hoveredNode.file}:{hoveredNode.line}</span>
-              <span className="text-[10px] text-cyan-400">Click node to inspect line</span>
+              <span className="text-[10px] text-[#4CC2DE] font-sans">Click node to inspect line</span>
             </div>
 
             {hoveredNode.code && (
-              <div className="p-2 bg-[#050505] rounded border border-zinc-800 text-[11px] text-zinc-200 overflow-x-auto">
+              <div className="p-2 bg-[#0B0C0F] rounded border border-[#22252B] text-[11px] text-[#E6E8EB] font-mono overflow-x-auto">
                 <code>{hoveredNode.code}</code>
               </div>
             )}

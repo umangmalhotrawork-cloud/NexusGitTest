@@ -127,14 +127,14 @@ export default function RepositoryPatchFirewallPanel({
   const RecIcon = currentRec.icon;
 
   return (
-    <div className="h-full flex flex-col bg-[#050507] text-zinc-200 font-sans overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0E1013] text-zinc-200 font-sans overflow-hidden">
       {/* Header Bar */}
-      <div className="h-12 bg-[#09090c] border-b border-[#18181c] px-4 flex items-center justify-between shrink-0">
+      <div className="h-10 bg-[#0E1013] border-b border-[#22252B] px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
-          <GitPullRequest className="w-5 h-5 text-rose-400" />
-          <h2 className="text-sm font-bold tracking-wide text-white">Repository-Scale Patch Firewall</h2>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-500/30 uppercase">
-            Milestone 24 PR Defense
+          <GitPullRequest className="w-4 h-4 text-[#4CC2DE]" />
+          <h2 className="text-sm font-medium text-[#E6E8EB]">Repository-Scale Patch Firewall</h2>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#14161B] text-[#8C92A4] border border-[#22252B]">
+            PR Defense
           </span>
         </div>
 
@@ -142,15 +142,15 @@ export default function RepositoryPatchFirewallPanel({
           {report && (
             <button
               onClick={handleExportJSON}
-              className="px-2.5 py-1 rounded-md bg-[#121215] hover:bg-[#18181c] border border-[#222226] text-xs font-bold text-zinc-300 flex items-center gap-1.5 transition-all"
+              className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-xs font-medium text-zinc-300 flex items-center gap-1.5 transition-colors"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-[#8C92A4]" />
               <span>Export PR Report</span>
             </button>
           )}
 
           {onClose && (
-            <button onClick={onClose} className="p-1 rounded hover:bg-[#1f1f24] text-zinc-400 hover:text-white">
+            <button onClick={onClose} className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-white transition-colors">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -160,15 +160,15 @@ export default function RepositoryPatchFirewallPanel({
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Input Box */}
-        <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-4 space-y-3">
+        <div className="bg-[#111318] border border-[#22252B] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-              <FileCode className="w-4 h-4 text-cyan-400" />
+            <label className="text-xs font-medium text-[#E6E8EB] flex items-center gap-1.5">
+              <FileCode className="w-4 h-4 text-[#4CC2DE]" />
               <span>Full Repository Unified Git Diff / Pull Request Payload</span>
             </label>
             <button
               onClick={() => setPatchText(DEFAULT_REPO_DIFF)}
-              className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold"
+              className="text-[11px] text-[#4CC2DE] hover:underline"
             >
               Load Multi-Hunk PR Sample Diff
             </button>
@@ -179,15 +179,15 @@ export default function RepositoryPatchFirewallPanel({
             value={patchText}
             onChange={(e) => setPatchText(e.target.value)}
             placeholder="Paste multi-file repository unified diff or git patch..."
-            className="w-full bg-[#040406] border border-[#1f1f24] rounded-lg p-3 text-xs text-emerald-300 font-mono focus:outline-none focus:border-rose-500/50 resize-y"
+            className="w-full bg-[#0E1013] border border-[#22252B] rounded-md p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-[#4CC2DE] resize-y"
           />
 
           <button
             onClick={() => onRunAnalysis(patchText)}
             disabled={loading || !patchText.trim()}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 transition-all disabled:opacity-50"
+            className="w-full py-2 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] font-medium text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
-            <GitPullRequest className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <GitPullRequest className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>{loading ? "Evaluating Full Pull Request Across Engine Suite..." : "Analyze Repository Patch Safety"}</span>
           </button>
         </div>
@@ -196,11 +196,11 @@ export default function RepositoryPatchFirewallPanel({
         {report && (
           <div className="space-y-4">
             {/* Recommendation Banner */}
-            <div className={`p-4 rounded-xl border flex items-center justify-between ${currentRec.bg} ${currentRec.border}`}>
+            <div className={`p-4 rounded-lg border flex items-center justify-between ${currentRec.bg} ${currentRec.border}`}>
               <div className="flex items-center gap-3">
-                <RecIcon className={`w-6 h-6 ${currentRec.text}`} />
+                <RecIcon className={`w-5 h-5 ${currentRec.text}`} />
                 <div>
-                  <h3 className={`text-sm font-bold tracking-wide ${currentRec.text}`}>{currentRec.label}</h3>
+                  <h3 className={`text-sm font-semibold tracking-wide ${currentRec.text}`}>{currentRec.label}</h3>
                   <p className="text-xs text-zinc-300 mt-0.5">{currentRec.subtext}</p>
                 </div>
               </div>
@@ -215,22 +215,22 @@ export default function RepositoryPatchFirewallPanel({
 
             {/* Executive KPI Cards */}
             <div className="grid grid-cols-4 gap-3">
-              <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-3 text-center">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase">Files Analyzed</p>
-                <p className="text-xl font-bold text-cyan-400 font-mono mt-0.5">{report.files_analyzed}</p>
+              <div className="bg-[#14161B] border border-[#22252B] rounded-md p-3 text-center">
+                <p className="text-[10px] font-medium text-[#8C92A4] uppercase">Files Analyzed</p>
+                <p className="text-xl font-bold text-[#4CC2DE] font-mono mt-0.5">{report.files_analyzed}</p>
               </div>
-              <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-3 text-center">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase">Hunks Evaluated</p>
+              <div className="bg-[#14161B] border border-[#22252B] rounded-md p-3 text-center">
+                <p className="text-[10px] font-medium text-[#8C92A4] uppercase">Hunks Evaluated</p>
                 <p className="text-xl font-bold text-zinc-300 font-mono mt-0.5">
-                  {report.hunks_analyzed} ({report.safe_hunks} Safe / {report.risky_hunks} Risky)
+                  {report.hunks_analyzed} <span className="text-xs font-normal text-[#8C92A4]">({report.safe_hunks} Safe / {report.risky_hunks} Risky)</span>
                 </p>
               </div>
-              <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-3 text-center">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase">Max Blast Radius</p>
+              <div className="bg-[#14161B] border border-[#22252B] rounded-md p-3 text-center">
+                <p className="text-[10px] font-medium text-[#8C92A4] uppercase">Max Blast Radius</p>
                 <p className="text-xl font-bold text-amber-400 font-mono mt-0.5">{report.max_blast_radius_score}</p>
               </div>
-              <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-3 text-center">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase">Global Risk Score</p>
+              <div className="bg-[#14161B] border border-[#22252B] rounded-md p-3 text-center">
+                <p className="text-[10px] font-medium text-[#8C92A4] uppercase">Global Risk Score</p>
                 <p className={`text-xl font-bold font-mono mt-0.5 ${report.risk_score === 0 ? "text-emerald-400" : report.risk_score < 60 ? "text-amber-400" : "text-red-400"}`}>
                   {report.risk_score} / 100
                 </p>
@@ -239,24 +239,24 @@ export default function RepositoryPatchFirewallPanel({
 
             {/* Top Risky Hunks Ranked Table */}
             {report.top_risky_hunks && report.top_risky_hunks.length > 0 && (
-              <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-4 space-y-3">
-                <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="bg-[#111318] border border-[#22252B] rounded-lg p-4 space-y-3">
+                <h4 className="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4 text-amber-400" />
                   <span>Top Risky Hunks Ranked by Impact</span>
                 </h4>
 
-                <div className="border border-[#18181c] rounded-lg overflow-hidden divide-y divide-[#18181c] bg-[#040406]">
+                <div className="border border-[#22252B] rounded-md overflow-hidden divide-y divide-[#22252B] bg-[#0E1013]">
                   {report.top_risky_hunks.map((hunk, idx) => (
                     <div key={idx} className="p-3 flex items-center justify-between text-xs font-mono">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-zinc-500 font-bold">#{idx + 1}</span>
-                        <span className="text-white font-bold">{hunk.file_path}</span>
-                        <span className="text-zinc-400 text-[11px]">Lines {hunk.start_line}–{hunk.end_line}</span>
+                        <span className="text-[#8C92A4] font-medium">#{idx + 1}</span>
+                        <span className="text-white font-medium">{hunk.file_path}</span>
+                        <span className="text-[#8C92A4] text-[11px]">Lines {hunk.start_line}–{hunk.end_line}</span>
                       </div>
 
                       <div className="flex items-center gap-3">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
                             hunk.safe_to_remove
                               ? "bg-emerald-950 text-emerald-300 border-emerald-500/30"
                               : "bg-red-950 text-red-300 border-red-500/30"
@@ -264,7 +264,7 @@ export default function RepositoryPatchFirewallPanel({
                         >
                           {hunk.risk_level}
                         </span>
-                        <span className="text-cyan-400">Equivalence: {Math.round((hunk.equivalence_score || 0) * 100)}%</span>
+                        <span className="text-[#4CC2DE]">Equivalence: {Math.round((hunk.equivalence_score || 0) * 100)}%</span>
                         <span className="text-amber-400">Blast: {hunk.blast_radius_score}</span>
                       </div>
                     </div>
@@ -278,18 +278,18 @@ export default function RepositoryPatchFirewallPanel({
               const isExp = expandedFiles[fileObj.file_path] !== false; // expanded by default
 
               return (
-                <div key={fileIdx} className="bg-[#09090c] border border-[#18181c] rounded-xl p-4 space-y-3">
+                <div key={fileIdx} className="bg-[#111318] border border-[#22252B] rounded-lg p-4 space-y-3">
                   <div
                     onClick={() => toggleFile(fileObj.file_path)}
-                    className="flex items-center justify-between cursor-pointer border-b border-[#18181c] pb-2"
+                    className="flex items-center justify-between cursor-pointer border-b border-[#22252B] pb-2"
                   >
-                    <div className="flex items-center gap-2 text-xs font-bold text-white font-mono">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-white font-mono">
                       {isExp ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                      <FileCode className="w-4 h-4 text-cyan-400" />
+                      <FileCode className="w-4 h-4 text-[#4CC2DE]" />
                       <span>{fileObj.file_path}</span>
                     </div>
 
-                    <span className="text-xs font-mono text-zinc-400">
+                    <span className="text-xs font-mono text-[#8C92A4]">
                       {fileObj.hunks_count} Hunks ({fileObj.safe_hunks_count} Safe / {fileObj.risky_hunks_count} Risky)
                     </span>
                   </div>
@@ -297,21 +297,21 @@ export default function RepositoryPatchFirewallPanel({
                   {isExp && (
                     <div className="space-y-2 pt-1">
                       {fileObj.hunks.map((hunk, hIdx) => (
-                        <div key={hIdx} className="p-3 bg-[#040406] border border-[#18181c] rounded-lg text-xs space-y-2">
+                        <div key={hIdx} className="p-3 bg-[#0E1013] border border-[#22252B] rounded-md text-xs space-y-2">
                           <div className="flex items-center justify-between font-mono">
-                            <span className="font-bold text-zinc-300">Hunk #{hunk.hunk_index} (Lines {hunk.start_line}–{hunk.end_line})</span>
-                            <span className={hunk.safe_to_remove ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
+                            <span className="font-medium text-zinc-300">Hunk #{hunk.hunk_index} (Lines {hunk.start_line}–{hunk.end_line})</span>
+                            <span className={hunk.safe_to_remove ? "text-emerald-400 font-medium" : "text-red-400 font-medium"}>
                               {hunk.safe_to_remove ? "SAFE REMOVE" : "BEHAVIOR DIFF"}
                             </span>
                           </div>
 
                           <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
-                            <div className="bg-[#020204] p-2 rounded border border-[#151518]">
-                              <p className="text-red-400 font-bold mb-0.5">- Removed Original:</p>
+                            <div className="bg-[#14161B] p-2 rounded border border-[#22252B]">
+                              <p className="text-red-400 font-medium mb-0.5">- Removed Original:</p>
                               <pre className="whitespace-pre-wrap text-zinc-300">{hunk.original_code || "(None)"}</pre>
                             </div>
-                            <div className="bg-[#020204] p-2 rounded border border-[#151518]">
-                              <p className="text-emerald-400 font-bold mb-0.5">+ Added Edited:</p>
+                            <div className="bg-[#14161B] p-2 rounded border border-[#22252B]">
+                              <p className="text-emerald-400 font-medium mb-0.5">+ Added Edited:</p>
                               <pre className="whitespace-pre-wrap text-emerald-300">{hunk.edited_code || "(Removed)"}</pre>
                             </div>
                           </div>

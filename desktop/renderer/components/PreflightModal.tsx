@@ -129,38 +129,36 @@ export default function PreflightModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fadeIn font-mono">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fadeIn font-sans">
       <div 
-        className="w-full max-w-xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col transition-all transform scale-100"
-        style={{
-          backgroundColor: "var(--theme-surface-raised, #0e0e16)",
-          borderColor: "var(--theme-border, #1e1e2c)",
-          color: "var(--theme-text, #f4f4f5)",
-        }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Token and Cost Preflight Estimate"
+        className="w-full max-w-xl rounded-xl border border-[#22252B] bg-[#111318] shadow-modal overflow-hidden flex flex-col font-sans text-xs text-[#E6E8EB]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e1e2c] bg-[#12121c]">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#22252B] bg-[#0E1013]">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-cyan-950/70 border border-cyan-500/40 text-cyan-400">
+            <div className="p-1.5 rounded-md bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE]">
               <Coins className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-zinc-100 tracking-wide font-sans">
+                <h3 className="text-sm font-semibold text-[#E6E8EB] tracking-normal">
                   TOKEN / COST PREFLIGHT
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
+                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC]">
                   ADVISORY
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+              <p className="text-xs text-[#9AA1AC] mt-0.5">
                 Deterministic pre-execution estimate for task scope
               </p>
             </div>
           </div>
           <button
             onClick={onCancel}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors cursor-pointer"
+            className="p-1.5 rounded-md text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] transition-colors cursor-pointer"
             title="Cancel (Esc)"
           >
             <X className="w-4 h-4" />
@@ -168,9 +166,9 @@ export default function PreflightModal({
         </div>
 
         {/* Prompt Preview */}
-        <div className="px-5 py-3 bg-[#0a0a10] border-b border-[#1a1a26] text-[11px]">
-          <span className="text-zinc-500 font-semibold uppercase tracking-wider text-[10px]">Task Intent:</span>
-          <div className="text-zinc-200 font-mono mt-1 line-clamp-2 bg-[#12121c] p-2 rounded-lg border border-[#202030]">
+        <div className="px-5 py-2.5 bg-[#0B0C0F] border-b border-[#22252B] text-xs">
+          <span className="text-[#9AA1AC] font-medium uppercase tracking-wider text-[10px]">Task Intent:</span>
+          <div className="text-[#E6E8EB] font-mono text-xs mt-1 line-clamp-2 bg-[#14161B] p-2 rounded-md border border-[#22252B]">
             "{taskPrompt}"
           </div>
         </div>
@@ -179,39 +177,39 @@ export default function PreflightModal({
         <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
           {/* 1. Token Metrics Card */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="p-3 rounded-xl bg-[#12121c] border border-[#202030] flex flex-col">
-              <span className="text-[10px] uppercase font-bold text-zinc-500">Estimated Context</span>
-              <span className="text-base font-bold text-cyan-400 mt-1">
-                {formatTokens(estimate.estimatedInputTokens)} <span className="text-[10px] font-normal text-zinc-400">tokens</span>
+            <div className="p-3 rounded-lg bg-[#14161B] border border-[#22252B] flex flex-col">
+              <span className="text-[10px] uppercase font-medium text-[#9AA1AC]">Estimated Context</span>
+              <span className="text-base font-semibold text-[#E6E8EB] mt-1 font-mono">
+                {formatTokens(estimate.estimatedInputTokens)} <span className="text-[10px] font-normal text-[#6B7280]">tokens</span>
               </span>
-              <span className="text-[9.5px] text-zinc-500 mt-0.5">Input & active files</span>
+              <span className="text-[10px] text-[#6B7280] mt-0.5">Input & active files</span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#12121c] border border-[#202030] flex flex-col">
-              <span className="text-[10px] uppercase font-bold text-zinc-500">Agent Output</span>
-              <span className="text-base font-bold text-indigo-400 mt-1">
-                {formatTokens(estimate.estimatedMaxOutputTokens)} <span className="text-[10px] font-normal text-zinc-400">tokens</span>
+            <div className="p-3 rounded-lg bg-[#14161B] border border-[#22252B] flex flex-col">
+              <span className="text-[10px] uppercase font-medium text-[#9AA1AC]">Agent Output</span>
+              <span className="text-base font-semibold text-[#E6E8EB] mt-1 font-mono">
+                {formatTokens(estimate.estimatedMaxOutputTokens)} <span className="text-[10px] font-normal text-[#6B7280]">tokens</span>
               </span>
-              <span className="text-[9.5px] text-zinc-500 mt-0.5">Generated response</span>
+              <span className="text-[10px] text-[#6B7280] mt-0.5">Generated response</span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#141422] border border-cyan-500/30 flex flex-col">
-              <span className="text-[10px] uppercase font-bold text-cyan-400">Estimated Total</span>
-              <span className="text-base font-bold text-zinc-100 mt-1">
-                ~{formatTokens(estimate.estimatedTotalTokens)} <span className="text-[10px] font-normal text-zinc-400">tokens</span>
+            <div className="p-3 rounded-lg bg-[#14161B] border border-[#22252B] flex flex-col">
+              <span className="text-[10px] uppercase font-medium text-[#4CC2DE]">Estimated Total</span>
+              <span className="text-base font-semibold text-[#4CC2DE] mt-1 font-mono">
+                ~{formatTokens(estimate.estimatedTotalTokens)} <span className="text-[10px] font-normal text-[#6B7280]">tokens</span>
               </span>
-              <span className="text-[9.5px] text-cyan-400/70 mt-0.5">Turn token ceiling</span>
+              <span className="text-[10px] text-[#9AA1AC] mt-0.5">Turn token ceiling</span>
             </div>
           </div>
 
           {/* 2. Execution Scope & Tools Card */}
-          <div className="p-3.5 rounded-xl bg-[#12121c] border border-[#202030] space-y-2.5">
+          <div className="p-3.5 rounded-lg bg-[#14161B] border border-[#22252B] space-y-2.5">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-zinc-300">
-                <FileCode className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-2 text-[#9AA1AC]">
+                <FileCode className="w-3.5 h-3.5 text-[#9AA1AC]" />
                 <span>Estimated files likely touched:</span>
               </div>
-              <span className="font-bold text-zinc-100">
+              <span className="font-semibold text-[#E6E8EB]">
                 {estimate.estimatedFiles?.count ?? 1} file(s)
               </span>
             </div>
@@ -221,7 +219,7 @@ export default function PreflightModal({
                 {estimate.estimatedFiles.targetFiles.map((file, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-0.5 rounded-md bg-[#1a1a2a] border border-[#2a2a3e] text-[10px] text-cyan-300 font-mono truncate max-w-[240px]"
+                    className="px-2 py-0.5 rounded bg-[#1A1C22] border border-[#22252B] text-[10px] text-[#4CC2DE] font-mono truncate max-w-[240px]"
                     title={file}
                   >
                     {file}
@@ -230,24 +228,24 @@ export default function PreflightModal({
               </div>
             )}
 
-            <div className="flex items-center justify-between text-xs pt-1 border-t border-[#1e1e2c]">
-              <div className="flex items-center gap-2 text-zinc-300">
-                <Wrench className="w-3.5 h-3.5 text-amber-400" />
+            <div className="flex items-center justify-between text-xs pt-2 border-t border-[#22252B]">
+              <div className="flex items-center gap-2 text-[#9AA1AC]">
+                <Wrench className="w-3.5 h-3.5 text-[#D9A441]" />
                 <span>Estimated tool operations / steps:</span>
               </div>
-              <span className="font-bold text-zinc-100">
+              <span className="font-semibold text-[#E6E8EB]">
                 ~{estimate.estimatedToolCalls?.approximate ?? estimate.estimatedToolCalls?.min ?? 3} operations
               </span>
             </div>
           </div>
 
           {/* 3. Provider Cost Card */}
-          <div className="p-3.5 rounded-xl bg-[#12121c] border border-[#202030] space-y-2">
+          <div className="p-3.5 rounded-lg bg-[#14161B] border border-[#22252B] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">
+              <span className="text-[11px] font-medium text-[#9AA1AC]">
                 Estimated Provider Cost:
               </span>
-              <span className="text-xs font-bold text-emerald-400">
+              <span className="text-xs font-semibold text-[#3EAE79] font-mono">
                 {estimate.primaryCostFormatted || "Cost unavailable"}
               </span>
             </div>
@@ -255,14 +253,14 @@ export default function PreflightModal({
             {estimate.providerCosts && Object.keys(estimate.providerCosts).length > 0 ? (
               <div className="grid grid-cols-3 gap-2 pt-1">
                 {Object.entries(estimate.providerCosts).map(([provName, costStr]) => (
-                  <div key={provName} className="px-2.5 py-1.5 rounded-lg bg-[#181824] border border-[#262638] text-[10px] flex items-center justify-between">
-                    <span className="text-zinc-400">{provName}:</span>
-                    <span className="font-bold text-zinc-200">{costStr}</span>
+                  <div key={provName} className="px-2.5 py-1.5 rounded-md bg-[#0E1013] border border-[#22252B] text-[10px] flex items-center justify-between">
+                    <span className="text-[#9AA1AC]">{provName}:</span>
+                    <span className="font-medium text-[#E6E8EB] font-mono">{costStr}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-[10px] text-zinc-500 italic">
+              <div className="text-[10px] text-[#6B7280] italic">
                 Cost data is unavailable for the selected custom model.
               </div>
             )}
@@ -270,33 +268,33 @@ export default function PreflightModal({
 
           {/* 4. Risk & Confidence Indicators */}
           <div className="flex items-center justify-between gap-3 pt-1">
-            <div className={`flex-1 px-3 py-2 rounded-xl border flex items-center justify-between text-xs ${getRiskColor(risk)}`}>
-              <span className="font-semibold text-[11px]">Risk Level:</span>
-              <span className="font-bold tracking-wider">{risk}</span>
+            <div className={`flex-1 px-3 py-2 rounded-md border flex items-center justify-between text-xs ${getRiskColor(risk)}`}>
+              <span className="font-medium text-[11px]">Risk Level:</span>
+              <span className="font-semibold tracking-wide">{risk}</span>
             </div>
 
-            <div className={`flex-1 px-3 py-2 rounded-xl border flex items-center justify-between text-xs ${getConfidenceColor(String(confidence))}`}>
-              <span className="font-semibold text-[11px]">Estimate Confidence:</span>
-              <span className="font-bold tracking-wider">{confidence}</span>
+            <div className={`flex-1 px-3 py-2 rounded-md border flex items-center justify-between text-xs ${getConfidenceColor(String(confidence))}`}>
+              <span className="font-medium text-[11px]">Estimate Confidence:</span>
+              <span className="font-semibold tracking-wide">{confidence}</span>
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#1e1e2c] bg-[#12121c]">
-          <span className="text-[10.5px] text-zinc-500">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-[#22252B] bg-[#0E1013]">
+          <span className="text-xs text-[#6B7280]">
             Advisory preflight • Normal execution pipeline preserved
           </span>
           <div className="flex items-center gap-2.5">
             <button
               onClick={onCancel}
-              className="px-3.5 py-1.5 rounded-xl border border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer transition-colors"
+              className="px-3.5 py-1.5 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={onContinue}
-              className="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 border border-cyan-400/40 text-black font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-950/50 cursor-pointer transition-all"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
               autoFocus
             >
               <span>Continue</span>

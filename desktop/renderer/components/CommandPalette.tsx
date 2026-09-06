@@ -567,7 +567,7 @@ export default function CommandPalette({
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-20 p-4"
+      className="fixed inset-0 z-50 bg-black/70 flex items-start justify-center pt-20 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -576,27 +576,30 @@ export default function CommandPalette({
     >
       <div 
         ref={paletteRef}
-        className="w-full max-w-xl bg-[#0a0a0a] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden font-sans"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command Palette"
+        className="w-full max-w-xl bg-[#111318] border border-[#22252B] rounded-xl shadow-modal overflow-hidden font-sans"
       >
         
         {/* Search Header */}
-        <div className="p-4 border-b border-[#1f1f1f] flex items-center gap-3 bg-[#050505]">
-          <Search className="w-4 h-4 text-cyan-400" />
+        <div className="p-3.5 border-b border-[#22252B] flex items-center gap-3 bg-[#0E1013]">
+          <Search className="w-4 h-4 text-[#9AA1AC]" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command or file name..."
             autoFocus
-            className="flex-1 bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none font-mono"
+            className="flex-1 bg-transparent text-sm text-[#E6E8EB] placeholder-[#6B7280] focus:outline-none font-sans"
           />
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+          <button onClick={onClose} className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Command List */}
-        <div className="max-h-80 overflow-y-auto p-2 space-y-1 font-mono text-xs">
+        <div className="max-h-80 overflow-y-auto p-2 space-y-0.5 font-sans text-xs">
           {filtered.length > 0 ? (
             filtered.map((item) => {
               const Icon = item.icon;
@@ -604,20 +607,20 @@ export default function CommandPalette({
                 <button
                   key={item.id}
                   onClick={item.action}
-                  className="w-full p-2.5 rounded-xl flex items-center justify-between hover:bg-cyan-950/40 hover:text-cyan-300 transition-all text-left group"
+                  className="w-full p-2 rounded-md flex items-center justify-between hover:bg-[#1A1C22] transition-colors text-left group cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 text-cyan-400 group-hover:text-cyan-300" />
-                    <div>
-                      <div className="text-zinc-200 font-semibold group-hover:text-cyan-200">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0 transition-colors" />
+                    <div className="min-w-0">
+                      <div className="text-[#E6E8EB] font-medium text-xs truncate">
                         {item.title}
                       </div>
-                      <div className="text-[10px] text-zinc-500">{item.category}</div>
+                      <div className="text-[11px] text-[#6B7280] truncate">{item.category}</div>
                     </div>
                   </div>
 
                   {item.shortcut && (
-                    <span className="px-2 py-0.5 rounded bg-[#141414] border border-[#262626] text-zinc-400 text-[10px]">
+                    <span className="px-1.5 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-[#9AA1AC] text-[10px] font-mono shrink-0 ml-2">
                       {item.shortcut}
                     </span>
                   )}
@@ -625,14 +628,14 @@ export default function CommandPalette({
               );
             })
           ) : (
-            <div className="p-6 text-center text-zinc-500 text-xs">
+            <div className="p-6 text-center text-[#6B7280] text-xs font-sans">
               No matching commands found.
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-[#050505] border-t border-[#1f1f1f] text-[10px] text-zinc-500 flex justify-between font-mono">
+        <div className="p-2.5 bg-[#0E1013] border-t border-[#22252B] text-[11px] text-[#6B7280] flex justify-between font-sans">
           <span>Navigate with ↑ ↓ · Press Enter to execute</span>
           <span>ESC to close</span>
         </div>

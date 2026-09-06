@@ -101,50 +101,50 @@ export default function BottomPanel({
   return (
     <div
       style={{ height: `${height}px` }}
-      className="bg-[#09090d] border-t border-[#181820] flex flex-col shrink-0 relative font-mono text-xs z-30 select-none"
+      className="bg-[#0E1013] border-t border-[#22252B] flex flex-col shrink-0 relative font-sans text-xs z-30 select-none"
     >
       {/* Resizer handle */}
       <div
         onMouseDown={onResizeStart}
-        className="h-1 w-full bg-[#181820] hover:bg-cyan-500/50 cursor-ns-resize transition-colors"
+        className="h-1 w-full bg-[#22252B] hover:bg-[#4CC2DE] cursor-ns-resize transition-colors"
       />
 
       {/* Header Tab Bar */}
-      <div className="h-8 bg-[#0c0c12] border-b border-[#181820] px-2 flex items-center justify-between shrink-0">
+      <div className="h-8 bg-[#0E1013] border-b border-[#22252B] px-2 flex items-center justify-between shrink-0 font-sans">
         <div className="flex items-center gap-1 overflow-x-auto">
           {/* Terminal Tab */}
           <button
             onClick={() => onSelectTab("terminal")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "terminal"
-                ? "bg-[#09090d] text-cyan-400 border-t-2 border-cyan-400"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <TerminalIcon className="w-3.5 h-3.5" />
+            <TerminalIcon className={`w-3.5 h-3.5 ${activeTab === "terminal" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span>Terminal</span>
           </button>
 
           {/* Problems Tab */}
           <button
             onClick={() => onSelectTab("problems")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "problems"
-                ? "bg-[#09090d] text-cyan-400 border-t-2 border-cyan-400"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <AlertTriangle className={`w-3.5 h-3.5 ${errorCount > 0 ? "text-rose-400" : warningCount > 0 ? "text-amber-400" : "text-zinc-400"}`} />
+            <AlertTriangle className={`w-3.5 h-3.5 ${errorCount > 0 ? "text-[#DC5B5B]" : warningCount > 0 ? "text-[#D9A441]" : "text-[#9AA1AC]"}`} />
             <span>Problems</span>
             {problems.length > 0 && (
               <span className="flex items-center gap-1 ml-0.5">
                 {errorCount > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-[#DC5B5B]/20 text-[#DC5B5B] font-medium border border-[#DC5B5B]/30 font-mono">
                     {errorCount}
                   </span>
                 )}
                 {warningCount > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-[#D9A441]/20 text-[#D9A441] font-medium border border-[#D9A441]/30 font-mono">
                     {warningCount}
                   </span>
                 )}
@@ -155,52 +155,52 @@ export default function BottomPanel({
           {/* Output Tab */}
           <button
             onClick={() => onSelectTab("output")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "output"
-                ? "bg-[#09090d] text-cyan-400 border-t-2 border-cyan-400"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <FileCode className="w-3.5 h-3.5 text-emerald-400" />
+            <FileCode className={`w-3.5 h-3.5 ${activeTab === "output" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span>Output</span>
           </button>
 
           {/* Verification Tab */}
           <button
             onClick={() => onSelectTab("verification")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "verification"
-                ? "bg-[#09090d] text-emerald-400 border-t-2 border-emerald-400"
-                : "text-zinc-400 hover:text-emerald-300 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === "verification" ? "text-[#3EAE79]" : "text-[#9AA1AC]"}`} />
             <span>Verification</span>
           </button>
 
           {/* Git Tab */}
           <button
             onClick={() => onSelectTab("git")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "git"
-                ? "bg-[#09090d] text-cyan-400 border-t-2 border-cyan-400"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
+            <GitBranch className={`w-3.5 h-3.5 ${activeTab === "git" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span>Git</span>
           </button>
 
           {/* Agent Logs Tab */}
           <button
             onClick={() => onSelectTab("agent_logs")}
-            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-all text-[11px] font-bold cursor-pointer ${
+            className={`px-2.5 py-1 rounded-t-md flex items-center gap-1.5 transition-colors text-[11px] cursor-pointer ${
               activeTab === "agent_logs"
-                ? "bg-[#09090d] text-cyan-400 border-t-2 border-cyan-400"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121a]"
+                ? "bg-[#0A0B0D] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] font-medium"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]"
             }`}
           >
-            <Bot className="w-3.5 h-3.5 text-cyan-400" />
+            <Bot className={`w-3.5 h-3.5 ${activeTab === "agent_logs" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span>Agent Logs</span>
           </button>
         </div>
@@ -209,14 +209,14 @@ export default function BottomPanel({
         <div className="flex items-center gap-1">
           <button
             onClick={onClose}
-            className="p-1 rounded text-zinc-500 hover:text-white hover:bg-[#181820] cursor-pointer"
+            className="p-1 rounded-md text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22] cursor-pointer transition-colors"
             title="Minimize Panel"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onClose}
-            className="p-1 rounded text-zinc-500 hover:text-rose-400 hover:bg-[#181820] cursor-pointer"
+            className="p-1 rounded-md text-[#9AA1AC] hover:text-[#DC5B5B] hover:bg-[#1A1C22] cursor-pointer transition-colors"
             title="Close Panel"
           >
             <X className="w-3.5 h-3.5" />
@@ -225,7 +225,7 @@ export default function BottomPanel({
       </div>
 
       {/* Panel Content Body */}
-      <div className="flex-1 min-h-0 overflow-hidden relative">
+      <div className="flex-1 min-h-0 overflow-hidden relative font-sans">
         {activeTab === "terminal" && (
           <TerminalPanel
             tabs={terminalProps.tabs}
@@ -258,20 +258,20 @@ export default function BottomPanel({
         )}
 
         {activeTab === "problems" && (
-          <div className="flex flex-col h-full bg-[#07070a] font-mono text-xs">
+          <div className="flex flex-col h-full bg-[#0B0C0F] font-sans text-xs">
             {/* Header summary bar */}
-            <div className="px-3 py-1.5 bg-[#0d0d14] border-b border-[#181822] flex items-center justify-between text-[11px] shrink-0">
-              <div className="flex items-center gap-3 text-zinc-400">
-                <span className="flex items-center gap-1.5 font-bold text-zinc-300">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+            <div className="px-3 py-1.5 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between text-[11px] shrink-0">
+              <div className="flex items-center gap-3 text-[#9AA1AC]">
+                <span className="flex items-center gap-1.5 font-medium text-[#E6E8EB]">
+                  <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B]" />
                   <span>{errorCount} {errorCount === 1 ? "Error" : "Errors"}</span>
                 </span>
-                <span className="flex items-center gap-1.5 font-bold text-zinc-300">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                <span className="flex items-center gap-1.5 font-medium text-[#E6E8EB]">
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#D9A441]" />
                   <span>{warningCount} {warningCount === 1 ? "Warning" : "Warnings"}</span>
                 </span>
               </div>
-              <span className="text-[10px] text-zinc-500 font-mono">
+              <span className="text-[10px] text-[#6B7280] font-mono">
                 {problems.length} total {problems.length === 1 ? "issue" : "issues"}
               </span>
             </div>
@@ -279,8 +279,8 @@ export default function BottomPanel({
             {/* List grouped by file */}
             <div className="p-2 overflow-y-auto flex-1 space-y-2">
               {problems.length === 0 ? (
-                <div className="text-zinc-500 italic text-[11px] py-8 text-center flex flex-col items-center gap-1.5">
-                  <ShieldCheck className="w-6 h-6 text-emerald-500/40" />
+                <div className="text-[#6B7280] italic text-xs py-8 text-center flex flex-col items-center gap-1.5">
+                  <ShieldCheck className="w-6 h-6 text-[#3EAE79]/40" />
                   <span>No syntax, type, or runtime errors detected in active workspace.</span>
                 </div>
               ) : (
@@ -292,17 +292,17 @@ export default function BottomPanel({
                     groups[f].push(p);
                   }
                   return Object.entries(groups).map(([fileName, items]) => (
-                    <div key={fileName} className="rounded border border-[#1b1b26] bg-[#0c0c12] overflow-hidden">
-                      <div className="px-2.5 py-1 bg-[#12121a] border-b border-[#1b1b26] flex items-center justify-between text-[11px] font-bold text-zinc-300">
+                    <div key={fileName} className="rounded-md border border-[#22252B] bg-[#111318] overflow-hidden">
+                      <div className="px-2.5 py-1 bg-[#14161B] border-b border-[#22252B] flex items-center justify-between text-[11px] font-medium text-[#E6E8EB]">
                         <div className="flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                          <FileText className="w-3.5 h-3.5 text-[#9AA1AC]" />
                           <span className="truncate">{fileName}</span>
                         </div>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#1a1a26] text-zinc-400 font-mono">
+                        <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#1A1C22] text-[#9AA1AC] font-mono border border-[#22252B]">
                           {items.length}
                         </span>
                       </div>
-                      <div className="divide-y divide-[#161622]">
+                      <div className="divide-y divide-[#22252B]">
                         {items.map((prob: any, idx: number) => {
                           const isErr = prob.severity === "error";
                           const isWarn = prob.severity === "warning";
@@ -314,28 +314,28 @@ export default function BottomPanel({
                                   terminalProps.onOpenLocation(fileName, prob.line, prob.column);
                                 }
                               }}
-                              className="p-2 hover:bg-[#151520] transition-colors cursor-pointer flex items-start justify-between gap-3 text-[11px]"
+                              className="p-2 hover:bg-[#1A1C22] transition-colors cursor-pointer flex items-start justify-between gap-3 text-xs"
                             >
                               <div className="flex items-start gap-2 min-w-0">
                                 {isErr ? (
-                                  <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                                  <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0 mt-0.5" />
                                 ) : isWarn ? (
-                                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                  <AlertTriangle className="w-3.5 h-3.5 text-[#D9A441] shrink-0 mt-0.5" />
                                 ) : (
-                                  <Info className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                                  <Info className="w-3.5 h-3.5 text-[#5A8FD6] shrink-0 mt-0.5" />
                                 )}
                                 <div className="min-w-0 space-y-0.5">
-                                  <div className="text-zinc-200 leading-tight">
+                                  <div className="text-[#E6E8EB] leading-tight font-sans">
                                     {prob.message}
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-[10px] text-zinc-500">
+                                  <div className="flex items-center gap-1.5 text-[10px] text-[#6B7280]">
                                     {prob.code && (
-                                      <span className="px-1 py-0.2 rounded bg-[#181824] text-cyan-300 font-mono">
+                                      <span className="px-1 py-0.2 rounded bg-[#14161B] text-[#4CC2DE] font-mono border border-[#22252B]">
                                         {prob.code}
                                       </span>
                                     )}
                                     {prob.source && (
-                                      <span className="text-zinc-400">[{prob.source}]</span>
+                                      <span className="text-[#6B7280]">[{prob.source}]</span>
                                     )}
                                   </div>
                                 </div>
@@ -344,14 +344,14 @@ export default function BottomPanel({
                                 {isErr && (
                                   <button
                                     onClick={(e) => handleWhyDidThisBreakProblem(e, prob, fileName)}
-                                    className="px-1.5 py-0.5 rounded bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[9.5px] font-bold flex items-center gap-1 cursor-pointer transition-all shadow hover:brightness-110"
+                                    className="px-2 py-0.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#4CC2DE] text-[10px] font-sans flex items-center gap-1 cursor-pointer transition-colors"
                                     title="Explain why this problem occurred using read-only causal analysis"
                                   >
-                                    <HelpCircle className="w-2.5 h-2.5 text-cyan-400" />
+                                    <HelpCircle className="w-3 h-3 text-[#4CC2DE]" />
                                     <span>Why Did This Break?</span>
                                   </button>
                                 )}
-                                <span className="text-zinc-500 text-[10px] font-mono">
+                                <span className="text-[#6B7280] text-[10px] font-mono">
                                   {prob.line ? `line ${prob.line}${prob.column ? `:${prob.column}` : ""}` : ""}
                                 </span>
                               </div>
@@ -368,11 +368,11 @@ export default function BottomPanel({
         )}
 
         {activeTab === "output" && (
-          <div className="p-3 overflow-y-auto h-full font-mono text-[11px] text-zinc-300 space-y-1 bg-[#060608]">
+          <div className="p-3 overflow-y-auto h-full font-mono text-[11px] text-[#E6E8EB] space-y-1 bg-[#0B0C0F]">
             {terminalProps.pythonOutput ? (
               <pre className="whitespace-pre-wrap select-all">{terminalProps.pythonOutput}</pre>
             ) : (
-              <div className="text-zinc-500 italic text-[11px] py-4 text-center">
+              <div className="text-[#6B7280] italic text-xs py-4 text-center">
                 No application output stream recorded yet. Click &quot;Run Code&quot; to execute.
               </div>
             )}
@@ -380,34 +380,33 @@ export default function BottomPanel({
         )}
 
         {activeTab === "verification" && (
-          <div className="p-3 overflow-y-auto h-full font-mono text-xs text-zinc-300 space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-[11px]">
+          <div className="p-3 overflow-y-auto h-full font-sans text-xs text-[#E6E8EB] space-y-2 bg-[#0B0C0F]">
+            <div className="flex items-center gap-2 text-[#3EAE79] font-medium text-xs">
               <ShieldCheck className="w-4 h-4" />
               <span>Patch Safety & Intent Verification Active</span>
             </div>
-            <div className="grid grid-cols-3 gap-2 text-[10px]">
-              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
-                <div className="text-zinc-500">Firewall</div>
-                <div className="text-emerald-400 font-bold mt-0.5">{verificationSummary?.firewallStatus || "ACTIVE (ENFORCED)"}</div>
+            <div className="grid grid-cols-3 gap-2 text-[11px]">
+              <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B]">
+                <div className="text-[#6B7280]">Firewall</div>
+                <div className="text-[#3EAE79] font-medium mt-0.5">{verificationSummary?.firewallStatus || "ACTIVE (ENFORCED)"}</div>
               </div>
-              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
-                <div className="text-zinc-500">Intent Drift</div>
-                <div className="text-cyan-400 font-bold mt-0.5">{verificationSummary?.driftStatus || "ZERO_DRIFT"}</div>
+              <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B]">
+                <div className="text-[#6B7280]">Intent Drift</div>
+                <div className="text-[#4CC2DE] font-medium mt-0.5">{verificationSummary?.driftStatus || "ZERO_DRIFT"}</div>
               </div>
-              <div className="p-2 rounded bg-[#101018] border border-[#1b1b26]">
-                <div className="text-zinc-500">Risk Assessment</div>
-                <div className="text-emerald-400 font-bold mt-0.5">{verificationSummary?.riskLevel || "LOW_RISK"}</div>
+              <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B]">
+                <div className="text-[#6B7280]">Risk Assessment</div>
+                <div className="text-[#3EAE79] font-medium mt-0.5">{verificationSummary?.riskLevel || "LOW_RISK"}</div>
               </div>
             </div>
           </div>
         )}
 
-
         {activeTab === "git" && (
-          <div className="p-3 overflow-y-auto h-full font-mono text-xs text-zinc-300 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-zinc-400">Branch: <span className="text-cyan-300 font-bold">{gitSummary?.branch || "main"}</span></span>
-              <span className="text-zinc-500">Staged: {gitSummary?.stagedCount || 0} | Unstaged: {gitSummary?.unstagedCount || 0}</span>
+          <div className="p-3 overflow-y-auto h-full font-sans text-xs text-[#E6E8EB] space-y-1.5 bg-[#0B0C0F]">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[#9AA1AC]">Branch: <span className="text-[#4CC2DE] font-medium">{gitSummary?.branch || "main"}</span></span>
+              <span className="text-[#6B7280]">Staged: {gitSummary?.stagedCount || 0} | Unstaged: {gitSummary?.unstagedCount || 0}</span>
             </div>
           </div>
         )}

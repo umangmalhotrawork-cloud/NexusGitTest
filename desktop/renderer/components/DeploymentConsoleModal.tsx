@@ -401,14 +401,14 @@ export default function DeploymentConsoleModal({
     switch (status) {
       case "SUCCESS":
         return (
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>✓ SUCCESS</span>
           </span>
         );
       case "PARTIAL_SUCCESS":
         return (
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-950/80 text-amber-300 border border-amber-500/40">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-amber-950/80 text-amber-300 border border-amber-500/40">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>PARTIAL SUCCESS</span>
           </span>
@@ -418,21 +418,21 @@ export default function DeploymentConsoleModal({
       case "UPLOADING":
       case "DEPLOYING":
         return (
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 animate-pulse">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/40">
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             <span>● RUNNING ({formatTime(elapsedSeconds)})</span>
           </span>
         );
       case "FAILED":
         return (
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-300 border border-rose-500/40">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-rose-950/80 text-rose-300 border border-rose-500/40">
             <XCircle className="w-3.5 h-3.5" />
             <span>✗ FAILED</span>
           </span>
         );
       case "CANCELLED":
         return (
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-400 border border-zinc-700">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-zinc-800 text-zinc-400 border border-zinc-700">
             <Ban className="w-3.5 h-3.5" />
             <span>⊘ CANCELLED</span>
           </span>
@@ -454,12 +454,12 @@ export default function DeploymentConsoleModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="flex flex-col w-full max-w-4xl max-h-[92vh] bg-[#0c0d12] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
+      <div className="flex flex-col w-full max-w-4xl max-h-[92vh] bg-[#111318] border border-[#22252B] rounded-xl shadow-modal overflow-hidden font-sans">
         
         {/* Header */}
-        <header className="px-5 py-4 border-b border-zinc-800 bg-[#0e1017] flex items-center justify-between gap-4 shrink-0">
+        <header className="px-5 py-4 border-b border-[#22252B] bg-[#0E1013] flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2 rounded-lg bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 shrink-0">
+            <div className="p-2 rounded-lg bg-[#14161B] border border-[#22252B] text-[#4CC2DE] shrink-0">
               <Rocket className="w-5 h-5" />
             </div>
             <div className="min-w-0">
@@ -505,9 +505,9 @@ export default function DeploymentConsoleModal({
                   return (
                     <div
                       key={stage.nodeId}
-                      className={`p-3.5 rounded-xl border transition-colors ${
+                      className={`p-3.5 rounded-lg border transition-colors ${
                         stage.status === "RUNNING"
-                          ? "bg-cyan-950/20 border-cyan-500/50 shadow-sm shadow-cyan-950"
+                          ? "bg-[#14161B] border-[#4CC2DE]"
                           : stage.status === "SUCCESS"
                           ? "bg-emerald-950/15 border-emerald-500/30"
                           : stage.status === "FAILED"
@@ -787,7 +787,7 @@ export default function DeploymentConsoleModal({
         </div>
 
         {/* Footer Actions */}
-        <footer className="px-5 py-3.5 border-t border-zinc-800 bg-[#0e1017] flex items-center justify-between gap-3 shrink-0">
+        <footer className="px-5 py-3.5 border-t border-[#22252B] bg-[#0E1013] flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             <span>Secret filter active • 0 plaintext tokens on wire</span>
@@ -798,7 +798,7 @@ export default function DeploymentConsoleModal({
               <button
                 onClick={handleCancel}
                 disabled={cancelling}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-500/40 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-500/40 transition-colors cursor-pointer"
               >
                 <Ban className="w-3.5 h-3.5" />
                 <span>{cancelling ? "Cancelling…" : "Cancel Deployment"}</span>
@@ -808,7 +808,7 @@ export default function DeploymentConsoleModal({
             {overallStatus !== "RUNNING" && (
               <button
                 onClick={onClose}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors cursor-pointer"
+                className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#1A1C22] hover:bg-[#22252B] text-[#CCCCCC] border border-[#22252B] transition-colors cursor-pointer"
               >
                 Close
               </button>

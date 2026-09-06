@@ -225,32 +225,27 @@ export default function CodexSidebar({
   return (
     <aside 
       style={{
-        backgroundColor: "var(--theme-surface, #08080c)",
-        borderColor: "var(--theme-border, #161620)",
-        color: "var(--theme-text, #f4f4f5)",
+        backgroundColor: "var(--theme-surface, #0E1013)",
+        borderColor: "var(--theme-border, #22252B)",
+        color: "var(--theme-text, #E6E8EB)",
       }}
-      className="w-64 border-r flex flex-col h-full shrink-0 select-none font-mono text-xs"
+      className="w-64 border-r flex flex-col h-full shrink-0 select-none font-sans text-xs"
     >
       {/* Top Branding & New Chat & Search */}
       <div 
         style={{
-          backgroundColor: "var(--theme-surface-panel, #0a0a0f)",
-          borderColor: "var(--theme-border, #161620)",
+          backgroundColor: "var(--theme-surface-panel, #0E1013)",
+          borderColor: "var(--theme-border, #22252B)",
         }}
-        className="p-3 border-b space-y-2.5"
+        className="p-2.5 border-b space-y-2"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: "var(--theme-accent, #22d3ee)" }} />
-            <span className="font-bold text-sm tracking-tight" style={{ color: "var(--theme-text, #ffffff)" }}>NEXUS</span>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: "var(--theme-accent, #4CC2DE)" }} />
+            <span className="font-semibold text-sm tracking-tight text-[#E6E8EB]">NEXUS</span>
           </div>
           <span 
-            className="text-[9.5px] px-1.5 py-0.5 rounded font-mono border"
-            style={{
-              backgroundColor: "var(--theme-surface-raised, #161622)",
-              borderColor: "var(--theme-border-card, #222234)",
-              color: "var(--theme-accent, #22d3ee)",
-            }}
+            className="text-[9.5px] px-1.5 py-0.5 rounded font-mono border border-[#22252B] bg-[#14161B] text-[#9AA1AC]"
           >
             IDE v1.0
           </span>
@@ -259,36 +254,26 @@ export default function CodexSidebar({
         {/* New Task / Chat Button */}
         <button
           onClick={onNewTask}
-          style={{
-            backgroundColor: "var(--theme-accent-dim, rgba(34,211,238,0.15))",
-            borderColor: "var(--theme-border-focus, rgba(34,211,238,0.4))",
-            color: "var(--theme-accent, #22d3ee)",
-          }}
-          className="w-full py-2 px-3 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md hover:brightness-125"
+          className="w-full h-7 px-2.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
         >
-          <Plus className="w-4 h-4" style={{ color: "var(--theme-accent, #22d3ee)" }} />
+          <Plus className="w-3.5 h-3.5 text-[#0A0B0D]" />
           <span>New Task / Chat</span>
         </button>
 
         {/* Search Chats Input */}
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-[#9AA1AC] absolute left-2 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search chats & tasks..."
-            style={{
-              backgroundColor: "var(--theme-surface-raised, #101018)",
-              borderColor: "var(--theme-border-card, #20202e)",
-              color: "var(--theme-text, #f4f4f5)",
-            }}
-            className="w-full pl-8 pr-7 py-1.5 rounded-lg border text-[11px] placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 font-mono transition-colors"
+            className="w-full h-7 pl-7 pr-7 py-1 rounded-md border border-[#22252B] bg-[#14161B] text-[#E6E8EB] text-[11px] placeholder-[#6B7280] focus:outline-none focus:border-[#4CC2DE] font-sans transition-colors"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9AA1AC] hover:text-[#E6E8EB]"
             >
               <X className="w-3 h-3" />
             </button>
@@ -297,104 +282,104 @@ export default function CodexSidebar({
       </div>
 
       {/* Main Scrollable Sidebar Area */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-4">
+      <div className="flex-1 overflow-y-auto p-1.5 space-y-3">
         {/* Navigation Section */}
         <div className="space-y-0.5">
-          <div className="px-2 text-[9.5px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--theme-text-subtle, #71717a)" }}>
+          <div className="px-2 text-[10px] font-semibold uppercase tracking-wider mb-1 text-[#6B7280]">
             Navigation
           </div>
 
           <button
             onClick={() => onSelectItem("explorer")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
               activeItem === "explorer"
-                ? "bg-cyan-950/60 text-cyan-300 font-bold border border-cyan-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <FolderTree className="w-4 h-4 text-cyan-400 shrink-0" />
+            <FolderTree className={`w-3.5 h-3.5 shrink-0 ${activeItem === "explorer" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span className="truncate">Files & Workspace</span>
           </button>
 
           <button
             onClick={() => onSelectItem("sessions")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
               activeItem === "sessions"
-                ? "bg-[#121624] text-cyan-300 font-bold border border-cyan-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <Layers className="w-4 h-4 text-emerald-400 shrink-0" />
+            <Layers className={`w-3.5 h-3.5 shrink-0 ${activeItem === "sessions" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span className="truncate">Continuum Lineage</span>
           </button>
 
           <button
             onClick={() => onSelectItem("verification")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
               activeItem === "verification"
-                ? "bg-[#121624] text-emerald-400 font-bold border border-emerald-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+            <ShieldCheck className={`w-3.5 h-3.5 shrink-0 ${activeItem === "verification" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span className="truncate">Patch Safety Firewall</span>
           </button>
 
           <button
             onClick={() => onSelectItem("capabilities")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
               activeItem === "capabilities"
-                ? "bg-[#161224] text-purple-300 font-bold border border-purple-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <Plug className="w-4 h-4 text-purple-400 shrink-0" />
+            <Plug className={`w-3.5 h-3.5 shrink-0 ${activeItem === "capabilities" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span className="truncate">MCP & Skills Center</span>
           </button>
 
           <button
             onClick={() => onSelectItem("decisions")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center justify-between transition-colors cursor-pointer text-xs ${
               activeItem === "decisions"
-                ? "bg-[#121624] text-cyan-300 font-bold border border-cyan-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <div className="flex items-center gap-2.5 min-w-0 truncate">
-              <BookmarkCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-2 min-w-0 truncate">
+              <BookmarkCheck className={`w-3.5 h-3.5 shrink-0 ${activeItem === "decisions" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
               <span className="truncate">Decision Replay</span>
             </div>
-            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘7</span>
+            <span className="text-[9px] px-1 py-0.5 rounded bg-[#14161B] text-[#6B7280] font-mono border border-[#22252B]">⌘7</span>
           </button>
 
           <button
             onClick={() => onSelectItem("simulator")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center justify-between transition-colors cursor-pointer text-xs ${
               activeItem === "simulator"
-                ? "bg-[#241a12] text-amber-300 font-bold border border-amber-500/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <div className="flex items-center gap-2.5 min-w-0 truncate">
-              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+            <div className="flex items-center gap-2 min-w-0 truncate">
+              <ShieldAlert className={`w-3.5 h-3.5 shrink-0 ${activeItem === "simulator" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
               <span className="truncate">Future Bug Simulator</span>
             </div>
-            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘8</span>
+            <span className="text-[9px] px-1 py-0.5 rounded bg-[#14161B] text-[#6B7280] font-mono border border-[#22252B]">⌘8</span>
           </button>
 
           <button
             onClick={() => onSelectItem("deploy")}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+            className={`w-full h-7 text-left px-2 rounded flex items-center justify-between transition-colors cursor-pointer text-xs ${
               activeItem === "deploy"
-                ? "bg-[#0f1d2e] text-cyan-300 font-bold border border-cyan-500/40"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-[#101016]"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
             }`}
           >
-            <div className="flex items-center gap-2.5 min-w-0 truncate">
-              <Rocket className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-2 min-w-0 truncate">
+              <Rocket className={`w-3.5 h-3.5 shrink-0 ${activeItem === "deploy" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
               <span className="truncate">Deployment Inspector</span>
             </div>
-            <span className="text-[9px] px-1 rounded bg-[#1c1c28] text-zinc-400 font-mono">⌘9</span>
+            <span className="text-[9px] px-1 py-0.5 rounded bg-[#14161B] text-[#6B7280] font-mono border border-[#22252B]">⌘9</span>
           </button>
         </div>
 
@@ -415,9 +400,9 @@ export default function CodexSidebar({
 
         {/* PROJECTS SECTION */}
         <div className="space-y-2">
-          <div className="px-2 flex items-center justify-between text-[9.5px] font-bold text-zinc-500 uppercase tracking-wider">
+          <div className="px-2 flex items-center justify-between text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider">
             <span>Projects & Workspaces</span>
-            <button onClick={onOpenFolder} className="text-cyan-400 hover:underline cursor-pointer">Open</button>
+            <button onClick={onOpenFolder} className="text-[#4CC2DE] hover:text-[#6ED4EA] cursor-pointer">Open</button>
           </div>
 
           <div className="space-y-1">
@@ -427,29 +412,29 @@ export default function CodexSidebar({
                 <div key={proj.name} className="space-y-1">
                   <button
                     onClick={() => toggleProject(proj.name)}
-                    className="w-full text-left px-2 py-1 rounded-lg hover:bg-[#101018] flex items-center justify-between text-zinc-300 font-bold text-[11px] cursor-pointer"
+                    className="w-full text-left px-2 py-1 rounded-md hover:bg-[#1A1C22] flex items-center justify-between text-[#9AA1AC] hover:text-[#E6E8EB] font-medium text-xs cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {isCollapsed ? (
-                        <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
                       ) : (
-                        <ChevronDown className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        <ChevronDown className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
                       )}
-                      <Folder className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <Folder className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
                       <span className="truncate">{proj.name}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="text-[9px] px-1 rounded bg-zinc-800 text-zinc-400">{proj.threads.length}</span>
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-[#14161B] text-[#6B7280] border border-[#22252B] font-mono">{proj.threads.length}</span>
                       {proj.isCurrent && (
-                        <span className="text-[9px] px-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30">Active</span>
+                        <span className="text-[9px] px-1 py-0.5 rounded bg-[#14161B] text-[#4CC2DE] border border-[#22252B] font-mono">Active</span>
                       )}
                     </div>
                   </button>
 
                   {!isCollapsed && (
-                    <div className="pl-3 space-y-0.5 border-l border-[#181824] ml-2.5">
+                    <div className="pl-3 space-y-0.5 border-l border-[#22252B] ml-2.5">
                       {proj.threads.length === 0 ? (
-                        <div className="text-[10px] text-zinc-600 italic px-2 py-1">No active threads</div>
+                        <div className="text-[11px] text-[#6B7280] italic px-2 py-1">No active threads</div>
                       ) : (
                         proj.threads.map((t) => renderThreadItem(t))
                       )}
@@ -464,10 +449,10 @@ export default function CodexSidebar({
         {/* RECENTS SECTION */}
         {recentThreads.length > 0 && (
           <div className="space-y-1">
-            <div className="px-2 flex items-center gap-1.5 text-[9.5px] font-bold text-zinc-500 uppercase tracking-wider">
-              <Clock className="w-3 h-3 text-zinc-500 shrink-0" />
+            <div className="px-2 flex items-center gap-1.5 text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider">
+              <Clock className="w-3 h-3 text-[#6B7280] shrink-0" />
               <span>Recent Chats</span>
-              <span className="ml-auto text-[9px] font-mono text-zinc-600">{recentThreads.length}</span>
+              <span className="ml-auto text-[9px] font-mono text-[#6B7280]">{recentThreads.length}</span>
             </div>
 
             <div className="space-y-0.5">
@@ -477,21 +462,21 @@ export default function CodexSidebar({
         )}
 
         {filteredThreads.length === 0 && (
-          <div className="px-3 py-6 text-center text-zinc-600 text-xs">
+          <div className="px-3 py-6 text-center text-[#6B7280] text-xs">
             {searchQuery ? "No matching chats found." : "No conversation history yet."}
           </div>
         )}
       </div>
 
       {/* Footer Profile / Local Status */}
-      <div className="p-2.5 border-t border-[#161620] bg-[#0a0a0f] flex items-center justify-between text-[10px] text-zinc-500">
+      <div className="p-2.5 border-t border-[#22252B] bg-[#0E1013] flex items-center justify-between text-[11px] text-[#9AA1AC]">
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span className="font-bold text-zinc-400">Local Sandbox</span>
+          <span className="w-2 h-2 rounded-full bg-[#3EAE79]" />
+          <span className="font-medium text-[#9AA1AC]">Local Sandbox</span>
         </div>
         <button
           onClick={() => onSelectItem("settings")}
-          className="text-zinc-500 hover:text-white cursor-pointer"
+          className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer transition-colors"
           title="Settings"
         >
           <Settings className="w-3.5 h-3.5" />
@@ -509,7 +494,7 @@ export default function CodexSidebar({
       return (
         <div
           key={thread.threadId}
-          className="px-2 py-1 rounded-lg bg-[#141422] border border-cyan-500/50 flex items-center gap-1.5"
+          className="px-2 py-1 rounded-md bg-[#14161B] border border-[#4CC2DE] flex items-center gap-1.5"
           onClick={(e) => e.stopPropagation()}
         >
           <input
@@ -521,18 +506,18 @@ export default function CodexSidebar({
               if (e.key === "Enter") handleSaveRename(thread.threadId);
               if (e.key === "Escape") handleCancelRename();
             }}
-            className="flex-1 bg-transparent text-[11px] text-cyan-200 focus:outline-none font-mono"
+            className="flex-1 bg-transparent text-[11px] text-[#E6E8EB] focus:outline-none font-sans"
           />
           <button
             onClick={() => handleSaveRename(thread.threadId)}
-            className="text-emerald-400 hover:text-emerald-300 p-0.5 cursor-pointer"
+            className="text-[#3EAE79] hover:text-[#52c991] p-0.5 cursor-pointer"
             title="Save title"
           >
             <Check className="w-3 h-3" />
           </button>
           <button
             onClick={handleCancelRename}
-            className="text-zinc-500 hover:text-zinc-300 p-0.5 cursor-pointer"
+            className="text-[#6B7280] hover:text-[#9AA1AC] p-0.5 cursor-pointer"
             title="Cancel"
           >
             <X className="w-3 h-3" />
@@ -544,24 +529,24 @@ export default function CodexSidebar({
     return (
       <div
         key={thread.threadId}
-        className={`group relative w-full text-left px-2 py-1.5 rounded-lg text-[10.5px] transition-all flex items-center justify-between cursor-pointer ${
+        className={`group relative w-full h-7 text-left px-2 rounded text-[11px] transition-colors flex items-center justify-between cursor-pointer border-y-transparent border-r-transparent border-l-2 ${
           isActive
-            ? "bg-cyan-950/60 text-cyan-200 font-bold border border-cyan-500/40 shadow-sm"
-            : "text-zinc-400 hover:text-zinc-200 hover:bg-[#12121e]"
+            ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-[#4CC2DE]"
+            : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-transparent"
         }`}
         onClick={() => handleSelect(thread.threadId, thread.title)}
       >
         <div className="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
           {thread.pinned ? (
-            <Pin className="w-3 h-3 text-amber-400 rotate-45 shrink-0" />
+            <Pin className="w-3 h-3 text-[#D9A441] rotate-45 shrink-0" />
           ) : (
-            <MessageSquare className={`w-3 h-3 shrink-0 ${isActive ? "text-cyan-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
+            <MessageSquare className={`w-3 h-3 shrink-0 ${isActive ? "text-[#4CC2DE]" : "text-[#6B7280] group-hover:text-[#9AA1AC]"}`} />
           )}
           <span className="truncate flex-1">{thread.title || "Untitled Task"}</span>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-[8.5px] text-zinc-600 group-hover:hidden font-mono">
+          <span className="text-[9px] text-[#6B7280] group-hover:hidden font-mono">
             {formatTimeAgo(thread.timestamp)}
           </span>
 
@@ -572,8 +557,8 @@ export default function CodexSidebar({
               e.stopPropagation();
               setActiveMenuThreadId(isMenuOpen ? null : thread.threadId);
             }}
-            className={`p-1 rounded hover:bg-white/10 text-zinc-500 hover:text-zinc-200 transition-opacity ${
-              isMenuOpen ? "opacity-100 text-cyan-300" : "opacity-0 group-hover:opacity-100"
+            className={`p-1 rounded hover:bg-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors ${
+              isMenuOpen ? "opacity-100 text-[#4CC2DE]" : "opacity-0 group-hover:opacity-100"
             }`}
             title="Chat actions"
           >
@@ -586,24 +571,20 @@ export default function CodexSidebar({
           <div
             ref={menuRef}
             onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: "var(--theme-surface-card, #0c0c16)",
-              borderColor: "var(--theme-border-card, #222236)",
-            }}
-            className="absolute right-1 top-8 w-36 border rounded-xl shadow-2xl z-50 p-1 space-y-0.5 text-xs font-mono animate-in fade-in zoom-in-95 duration-100"
+            className="absolute right-1 top-8 w-36 border border-[#22252B] rounded-lg shadow-popover z-50 p-1 space-y-0.5 text-xs font-sans bg-[#1A1C22]"
           >
             <button
               onClick={(e) => handleTogglePin(thread, e)}
-              className="w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 hover:bg-white/5 text-zinc-300 hover:text-amber-300 cursor-pointer text-[11px]"
+              className="w-full text-left px-2 py-1.5 rounded-md flex items-center gap-2 hover:bg-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer text-xs transition-colors"
             >
               {thread.pinned ? (
                 <>
-                  <PinOff className="w-3 h-3 text-amber-400" />
+                  <PinOff className="w-3.5 h-3.5 text-[#D9A441]" />
                   <span>Unpin chat</span>
                 </>
               ) : (
                 <>
-                  <Pin className="w-3 h-3 text-amber-400 rotate-45" />
+                  <Pin className="w-3.5 h-3.5 text-[#D9A441] rotate-45" />
                   <span>Pin chat</span>
                 </>
               )}
@@ -611,19 +592,19 @@ export default function CodexSidebar({
 
             <button
               onClick={(e) => handleStartRename(thread, e)}
-              className="w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 hover:bg-white/5 text-zinc-300 hover:text-cyan-300 cursor-pointer text-[11px]"
+              className="w-full text-left px-2 py-1.5 rounded-md flex items-center gap-2 hover:bg-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer text-xs transition-colors"
             >
-              <Edit2 className="w-3 h-3 text-cyan-400" />
+              <Edit2 className="w-3.5 h-3.5 text-[#4CC2DE]" />
               <span>Rename</span>
             </button>
 
-            <div className="h-px bg-[#1e1e2e] my-0.5" />
+            <div className="h-px bg-[#22252B] my-0.5" />
 
             <button
               onClick={(e) => handleDelete(thread, e)}
-              className="w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 hover:bg-red-500/10 text-red-400 hover:text-red-300 cursor-pointer text-[11px]"
+              className="w-full text-left px-2 py-1.5 rounded-md flex items-center gap-2 hover:bg-[#DC5B5B]/10 text-[#DC5B5B] cursor-pointer text-xs transition-colors"
             >
-              <Trash2 className="w-3 h-3 text-red-400" />
+              <Trash2 className="w-3.5 h-3.5 text-[#DC5B5B]" />
               <span>Delete</span>
             </button>
           </div>

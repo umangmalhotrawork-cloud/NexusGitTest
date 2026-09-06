@@ -85,14 +85,14 @@ export default function SemanticIntentRadarPanel({
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#050507] text-zinc-200 font-sans overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0E1013] text-[#E6E8EB] font-sans overflow-hidden">
       {/* Header Bar */}
-      <div className="h-12 bg-[#09090c] border-b border-[#18181c] px-4 flex items-center justify-between shrink-0">
+      <div className="h-10 bg-[#0E1013] border-b border-[#22252B] px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
-          <Compass className="w-5 h-5 text-amber-400 animate-spin-slow" />
-          <h2 className="text-sm font-bold tracking-wide text-white">Semantic Intent Drift Radar</h2>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30 uppercase">
-            Milestone 25 Flagship
+          <Compass className="w-4 h-4 text-[#4CC2DE]" />
+          <h2 className="text-xs font-semibold text-zinc-100">Semantic Intent Drift Radar</h2>
+          <span className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] uppercase">
+            Analysis
           </span>
         </div>
 
@@ -100,7 +100,7 @@ export default function SemanticIntentRadarPanel({
           {report && (
             <button
               onClick={handleExportJSON}
-              className="px-2.5 py-1 rounded-md bg-[#121215] hover:bg-[#18181c] border border-[#222226] text-xs font-bold text-zinc-300 flex items-center gap-1.5 transition-all"
+              className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-xs font-medium text-zinc-300 flex items-center gap-1.5 transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Report</span>
@@ -108,7 +108,7 @@ export default function SemanticIntentRadarPanel({
           )}
 
           {onClose && (
-            <button onClick={onClose} className="p-1 rounded hover:bg-[#1f1f24] text-zinc-400 hover:text-white">
+            <button onClick={onClose} className="p-1 rounded text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -118,10 +118,10 @@ export default function SemanticIntentRadarPanel({
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Code Input Comparison textareas */}
-        <div className="bg-[#09090c] border border-[#18181c] rounded-xl p-4 space-y-3">
+        <div className="bg-[#111318] border border-[#22252B] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-              <FileCode className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+              <FileCode className="w-4 h-4 text-[#4CC2DE]" />
               <span>Original vs AI-Edited Function Code Comparison</span>
             </span>
             <button
@@ -129,7 +129,7 @@ export default function SemanticIntentRadarPanel({
                 setOrigCode(SAMPLE_ORIG_CODE);
                 setEditCode(SAMPLE_EDIT_CODE);
               }}
-              className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold"
+              className="text-[11px] text-[#4CC2DE] hover:text-[#6ED4EA] font-medium"
             >
               Load Sample Reordered Business Rule Patch
             </button>
@@ -137,23 +137,23 @@ export default function SemanticIntentRadarPanel({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-zinc-400 font-mono">Original Function Source</label>
+              <label className="text-[11px] font-medium text-zinc-400 font-sans">Original Function Source</label>
               <textarea
                 rows={6}
                 value={origCode}
                 onChange={(e) => setOrigCode(e.target.value)}
                 placeholder="Original source code..."
-                className="w-full bg-[#040406] border border-[#1f1f24] rounded-lg p-3 text-xs text-cyan-300 font-mono focus:outline-none focus:border-amber-500/50 resize-y"
+                className="w-full bg-[#14161B] border border-[#22252B] rounded-md p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-[#4CC2DE] resize-y"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-zinc-400 font-mono">AI-Edited Function Source</label>
+              <label className="text-[11px] font-medium text-zinc-400 font-sans">AI-Edited Function Source</label>
               <textarea
                 rows={6}
                 value={editCode}
                 onChange={(e) => setEditCode(e.target.value)}
                 placeholder="Edited source code..."
-                className="w-full bg-[#040406] border border-[#1f1f24] rounded-lg p-3 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-500/50 resize-y"
+                className="w-full bg-[#14161B] border border-[#22252B] rounded-md p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-[#4CC2DE] resize-y"
               />
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function SemanticIntentRadarPanel({
           <button
             onClick={() => onRunAnalysis(origCode, editCode)}
             disabled={loading || !origCode.trim() || !editCode.trim()}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-950/40 transition-all disabled:opacity-50"
+            className="w-full py-2 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Compass className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             <span>{loading ? "Analyzing Business Logic & Rule Order..." : "Run Intent Drift Radar Scan"}</span>

@@ -373,17 +373,11 @@ export default function TaskHome({
       onCapsuleDropped={handleCapsuleDropped}
       className={`flex-1 w-full h-full flex flex-col items-center justify-between ${isSplitOpen ? "p-4" : "p-6"} overflow-y-auto font-sans select-none relative`}
       style={{
-        backgroundColor: "var(--theme-background, #050505)",
-        color: "var(--theme-text, #f4f4f5)",
+        backgroundColor: "var(--theme-background, #0A0B0D)",
+        color: "var(--theme-text, #E6E8EB)",
       }}
     >
       
-      {/* Background Aura */}
-      <div 
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] blur-[140px] rounded-full pointer-events-none opacity-20" 
-        style={{ backgroundColor: "var(--theme-accent, #22d3ee)" }}
-      />
-
       {/* Attached Imported Context Capsule Banner (if present on new chat) */}
       {importedCapsule && (
         <div className={`w-full ${isSplitOpen ? "max-w-lg" : "max-w-3xl"} z-20 pt-2`}>
@@ -396,111 +390,81 @@ export default function TaskHome({
 
       {/* Main Empty State Prompt Section (Always visible on Task Home) */}
       <div className={`w-full ${isSplitOpen ? "max-w-lg" : "max-w-3xl"} my-auto flex flex-col items-center z-10 space-y-4 pt-4`}>
-        <div className="text-center space-y-2.5">
+        <div className="text-center space-y-2">
           <div 
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono border"
-            style={{
-              backgroundColor: "var(--theme-accent-dim, rgba(34,211,238,0.15))",
-              borderColor: "var(--theme-border-card, rgba(34,211,238,0.3))",
-              color: "var(--theme-accent, #22d3ee)",
-            }}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-sans border border-[#22252B] bg-[#14161B] text-[#9AA1AC]"
           >
-            <Sparkles className="w-3.5 h-3.5" style={{ color: "var(--theme-accent, #22d3ee)" }} />
+            <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
             <span>NEXUS Coding Agent Engine</span>
           </div>
 
-          <h1 className={`${isSplitOpen ? "text-2xl" : "text-4xl"} font-heading font-extrabold tracking-tight transition-all`} style={{ color: "var(--theme-text, #ffffff)" }}>
+          <h1 className={`${isSplitOpen ? "text-xl" : "text-3xl"} font-sans font-semibold tracking-tight text-[#E6E8EB]`}>
             What should we build in NEXUS?
           </h1>
 
-          <p className={`${isSplitOpen ? "text-xs max-w-sm" : "text-sm max-w-lg"} mx-auto font-mono text-[12px] transition-all`} style={{ color: "var(--theme-text-muted, #a1a1aa)" }}>
+          <p className={`${isSplitOpen ? "text-xs max-w-sm" : "text-sm max-w-lg"} mx-auto font-sans text-[#9AA1AC]`}>
             Describe a goal, bug, or refactoring. NEXUS will inspect dependencies, plan execution, and verify behavior safely.
           </p>
         </div>
 
         {/* Quick Task Presets */}
         <div className={`w-full ${isSplitOpen ? "max-w-lg" : "max-w-xl"} space-y-2`}>
-          <div className={`grid ${isSplitOpen ? "grid-cols-1 md:grid-cols-2" : "grid-cols-2"} gap-2 font-mono text-xs`}>
+          <div className={`grid ${isSplitOpen ? "grid-cols-1 md:grid-cols-2" : "grid-cols-2"} gap-2 font-sans text-xs`}>
             <button
               onClick={() => handlePresetClick("Find redundant code in this project and safely remove it.")}
-              style={{
-                backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-                borderColor: "var(--theme-border, #1e1e2a)",
-                color: "var(--theme-text, #f4f4f5)",
-              }}
-              className="p-2.5 rounded-xl border hover:border-cyan-500/40 text-left transition-all flex items-center gap-2.5 group cursor-pointer hover:brightness-110"
+              className="p-2.5 rounded-lg border border-[#22252B] bg-[#111318] hover:bg-[#1A1C22] hover:border-[#2E323B] text-left transition-colors flex items-center gap-2.5 group cursor-pointer"
             >
-              <Trash2 className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
+              <Trash2 className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0" />
               <div className="min-w-0">
-                <div className="font-bold text-[11px]">Find Redundant Code</div>
-                <div className="text-[10px] text-zinc-500 truncate">Detect & remove unused code</div>
+                <div className="font-medium text-xs text-[#E6E8EB]">Find Redundant Code</div>
+                <div className="text-[11px] text-[#6B7280] truncate">Detect & remove unused code</div>
               </div>
             </button>
 
             <button
               onClick={() => handlePresetClick("Explain the workspace architecture and core dependency flow.")}
-              style={{
-                backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-                borderColor: "var(--theme-border, #1e1e2a)",
-                color: "var(--theme-text, #f4f4f5)",
-              }}
-              className="p-2.5 rounded-xl border hover:border-cyan-500/40 text-left transition-all flex items-center gap-2.5 group cursor-pointer hover:brightness-110"
+              className="p-2.5 rounded-lg border border-[#22252B] bg-[#111318] hover:bg-[#1A1C22] hover:border-[#2E323B] text-left transition-colors flex items-center gap-2.5 group cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform shrink-0" />
+              <Sparkles className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0" />
               <div className="min-w-0">
-                <div className="font-bold text-[11px]">Analyze Architecture</div>
-                <div className="text-[10px] text-zinc-500 truncate">Explain BDG graph & flow</div>
+                <div className="font-medium text-xs text-[#E6E8EB]">Analyze Architecture</div>
+                <div className="text-[11px] text-[#6B7280] truncate">Explain BDG graph & flow</div>
               </div>
             </button>
 
             <button
               onClick={() => handlePresetClick("Audit security vulnerabilities and hardcoded credentials.")}
-              style={{
-                backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-                borderColor: "var(--theme-border, #1e1e2a)",
-                color: "var(--theme-text, #f4f4f5)",
-              }}
-              className="p-2.5 rounded-xl border hover:border-cyan-500/40 text-left transition-all flex items-center gap-2.5 group cursor-pointer hover:brightness-110"
+              className="p-2.5 rounded-lg border border-[#22252B] bg-[#111318] hover:bg-[#1A1C22] hover:border-[#2E323B] text-left transition-colors flex items-center gap-2.5 group cursor-pointer"
             >
-              <ShieldAlert className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform shrink-0" />
+              <ShieldAlert className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0" />
               <div className="min-w-0">
-                <div className="font-bold text-[11px]">Security Audit</div>
-                <div className="text-[10px] text-zinc-500 truncate">Scan credentials & risks</div>
+                <div className="font-medium text-xs text-[#E6E8EB]">Security Audit</div>
+                <div className="text-[11px] text-[#6B7280] truncate">Scan credentials & risks</div>
               </div>
             </button>
 
             <button
               onClick={() => handlePresetClick("Fix all syntax, missing imports, and type errors.")}
-              style={{
-                backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-                borderColor: "var(--theme-border, #1e1e2a)",
-                color: "var(--theme-text, #f4f4f5)",
-              }}
-              className="p-2.5 rounded-xl border hover:border-cyan-500/40 text-left transition-all flex items-center gap-2.5 group cursor-pointer hover:brightness-110"
+              className="p-2.5 rounded-lg border border-[#22252B] bg-[#111318] hover:bg-[#1A1C22] hover:border-[#2E323B] text-left transition-colors flex items-center gap-2.5 group cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0" />
               <div className="min-w-0">
-                <div className="font-bold text-[11px]">Fix Type Errors</div>
-                <div className="text-[10px] text-zinc-500 truncate">Check & resolve lints</div>
+                <div className="font-medium text-xs text-[#E6E8EB]">Fix Type Errors</div>
+                <div className="text-[11px] text-[#6B7280] truncate">Check & resolve lints</div>
               </div>
             </button>
 
             {/* Quick Import Context Capsule Action */}
             <button
               onClick={handleOpenCapsuleDialog}
-              style={{
-                backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-                borderColor: "var(--theme-border, #1e1e2a)",
-                color: "var(--theme-text, #f4f4f5)",
-              }}
-              className={`p-2.5 rounded-xl border hover:border-cyan-500/40 text-left transition-all flex items-center gap-2.5 group cursor-pointer hover:brightness-110 ${
+              className={`p-2.5 rounded-lg border border-[#22252B] bg-[#111318] hover:bg-[#1A1C22] hover:border-[#2E323B] text-left transition-colors flex items-center gap-2.5 group cursor-pointer ${
                 isSplitOpen ? "col-span-1" : "col-span-2"
               }`}
             >
-              <Upload className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
+              <Upload className="w-4 h-4 text-[#9AA1AC] group-hover:text-[#4CC2DE] shrink-0" />
               <div className="min-w-0">
-                <div className="font-bold text-[11px]">Import Context Capsule</div>
-                <div className="text-[10px] text-zinc-500 truncate">Attach saved session context to this new conversation</div>
+                <div className="font-medium text-xs text-[#E6E8EB]">Import Context Capsule</div>
+                <div className="text-[11px] text-[#6B7280] truncate">Attach saved session context to this new conversation</div>
               </div>
             </button>
           </div>

@@ -320,12 +320,12 @@ export default function DeploymentAdvisorModal({
                     </span>
                   </div>
 
-                  <div className="p-5 rounded-xl bg-gradient-to-b from-[#101424] to-[#0d0f18] border-2 border-cyan-500/40 shadow-lg shadow-cyan-950/20 space-y-4">
+                  <div className="p-4 rounded-lg bg-[#111318] border border-[#22252B] space-y-3">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/50">
-                            🥇 TOP RECOMMENDATION
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B]">
+                            TOP RECOMMENDATION
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -419,7 +419,7 @@ export default function DeploymentAdvisorModal({
                     <div className="pt-2 flex items-center justify-end gap-3">
                       <button
                         onClick={() => handleApplyArchitecture(advice.recommendedArchitecture!)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-900/30 transition-all cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] transition-colors cursor-pointer"
                       >
                         <span>Use Recommended Architecture</span>
                         <ArrowRight className="w-4 h-4" />

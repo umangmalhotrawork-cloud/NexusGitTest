@@ -624,7 +624,7 @@ export default function TerminalPanel({
                     )}
                     {tab.unread && !isActive && (
                       <span
-                        className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.8)]"
+                        className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE]"
                         title="Unread terminal output"
                       />
                     )}

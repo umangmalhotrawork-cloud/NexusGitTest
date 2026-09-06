@@ -84,7 +84,7 @@ export default function SurgeryDiffPreview({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in font-mono"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in font-sans"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onCancel();
@@ -93,24 +93,24 @@ export default function SurgeryDiffPreview({
     >
       <div 
         ref={modalRef}
-        className="bg-[#0a0a0a] border border-[#262626] rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-[#111318] border border-[#22252B] rounded-xl w-full max-w-5xl h-[88vh] flex flex-col shadow-modal overflow-hidden font-sans"
       >
         
         {/* 1. Modal Header */}
-        <div className="p-4 bg-[#0d0d0d] border-b border-[#1f1f1f] flex items-center justify-between shrink-0">
+        <div className="p-4 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <div className="w-7 h-7 rounded-md bg-[#1A1C22] border border-[#22252B] flex items-center justify-center text-[#4CC2DE]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-heading font-bold text-sm text-white">Safe Remove Surgery Preview</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-400 border border-amber-500/40">
+                <h2 className="font-semibold text-sm text-[#E6E8EB]">Safe Remove Surgery Preview</h2>
+                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#D9A441]/10 text-[#D9A441] border border-[#D9A441]/30">
                   {findings.length} Ghost Operations Detected
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mt-0.5 flex items-center gap-1.5">
-                <FileCode className="w-3.5 h-3.5 text-cyan-400" />
+              <p className="text-xs text-[#9AA1AC] mt-0.5 flex items-center gap-1.5 font-mono">
+                <FileCode className="w-3.5 h-3.5 text-[#9AA1AC]" />
                 <span>{filePath}</span>
               </p>
             </div>
@@ -120,21 +120,21 @@ export default function SurgeryDiffPreview({
           <div className="flex items-center gap-2">
             <button
               onClick={selectAll}
-              className="px-2.5 py-1 rounded-lg bg-[#141414] hover:bg-[#1f1f1f] border border-[#262626] text-xs text-zinc-300 hover:text-white transition-all flex items-center gap-1"
+              className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-xs text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors flex items-center gap-1"
             >
-              <CheckSquare className="w-3 h-3 text-cyan-400" />
+              <CheckSquare className="w-3 h-3 text-[#4CC2DE]" />
               <span>Select All ({findings.length})</span>
             </button>
             <button
               onClick={clearAll}
-              className="px-2.5 py-1 rounded-lg bg-[#141414] hover:bg-[#1f1f1f] border border-[#262626] text-xs text-zinc-400 hover:text-white transition-all flex items-center gap-1"
+              className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-xs text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors flex items-center gap-1"
             >
-              <Square className="w-3 h-3 text-zinc-500" />
+              <Square className="w-3 h-3 text-[#6B7280]" />
               <span>Clear All</span>
             </button>
             <button
               onClick={onCancel}
-              className="p-1.5 rounded-lg border border-[#262626] text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors ml-2"
+              className="p-1.5 rounded-md border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] transition-colors ml-2"
             >
               <X className="w-4 h-4" />
             </button>
@@ -142,29 +142,29 @@ export default function SurgeryDiffPreview({
         </div>
 
         {/* 2. Differential Verification Banner */}
-        <div className="px-4 py-2.5 bg-[#050505] border-b border-[#1f1f1f] flex items-center justify-between shrink-0 text-xs">
-          <div className="flex items-center gap-2 text-emerald-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="font-bold">Differential Behavioral Verification:</span>
-            <span className="text-zinc-300">Isolated Subprocess Equivalence Confirmed</span>
+        <div className="px-4 py-2 bg-[#0E1013]/60 border-b border-[#22252B] flex items-center justify-between shrink-0 text-xs">
+          <div className="flex items-center gap-2 text-[#3EAE79]">
+            <ShieldCheck className="w-4 h-4 text-[#3EAE79] shrink-0" />
+            <span className="font-semibold">Differential Behavioral Verification:</span>
+            <span className="text-[#9AA1AC]">Isolated Subprocess Equivalence Confirmed</span>
           </div>
-          <div className="flex items-center gap-3 text-zinc-400">
-            <span>Projected Luminance: <strong className="text-cyan-400">{approvedCount === findings.length ? "100.0%" : `${Math.round((approvedCount / findings.length) * 100)}%`}</strong></span>
+          <div className="flex items-center gap-3 text-[#9AA1AC]">
+            <span>Projected Luminance: <strong className="text-[#4CC2DE]">{approvedCount === findings.length ? "100.0%" : `${Math.round((approvedCount / findings.length) * 100)}%`}</strong></span>
             <span>•</span>
-            <span>Hunks Approved: <strong className="text-amber-400">{approvedCount} / {findings.length}</strong></span>
+            <span>Hunks Approved: <strong className="text-[#D9A441]">{approvedCount} / {findings.length}</strong></span>
           </div>
         </div>
 
         {/* 3. Side-by-Side Diff Preview Workspace */}
-        <div className="flex-1 min-h-0 grid grid-cols-2 divide-x divide-[#1f1f1f] bg-[#050505] overflow-hidden">
+        <div className="flex-1 min-h-0 grid grid-cols-2 divide-x divide-[#22252B] bg-[#0B0C0F] overflow-hidden font-mono">
           
           {/* Left Pane: Original Source with Removal Highlights */}
           <div className="flex flex-col h-full overflow-hidden">
-            <div className="p-2.5 bg-[#0a0a0a] border-b border-[#1f1f1f] text-xs font-bold text-zinc-400 flex items-center justify-between shrink-0">
-              <span className="text-red-400 font-bold flex items-center gap-1.5">
+            <div className="p-2.5 bg-[#0E1013] border-b border-[#22252B] text-xs font-medium text-[#9AA1AC] flex items-center justify-between shrink-0 font-sans">
+              <span className="text-[#DC5B5B] font-medium flex items-center gap-1.5">
                 <span>ORIGINAL (Pre-Surgery)</span>
               </span>
-              <span className="text-[11px] text-zinc-500">{sourceLines.length} lines</span>
+              <span className="text-[11px] text-[#6B7280]">{sourceLines.length} lines</span>
             </div>
             <div className="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-0.5 select-text">
               {sourceLines.map((line, idx) => {
@@ -177,31 +177,31 @@ export default function SurgeryDiffPreview({
                     <div
                       key={`orig-${lineNum}`}
                       onClick={() => toggleLine(lineNum)}
-                      className={`flex items-start gap-2 px-2 py-1 rounded cursor-pointer transition-all ${
+                      className={`flex items-start gap-2 px-2 py-1 rounded cursor-pointer transition-colors ${
                         isApproved
-                          ? "bg-red-950/70 border border-red-500/40 text-red-300"
-                          : "bg-amber-950/40 border border-amber-500/30 text-amber-300"
+                          ? "bg-[#DC5B5B]/15 border border-[#DC5B5B]/30 text-[#DC5B5B]"
+                          : "bg-[#D9A441]/10 border border-[#D9A441]/30 text-[#D9A441]"
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isApproved}
                         onChange={() => toggleLine(lineNum)}
-                        className="mt-0.5 cursor-pointer accent-cyan-400 shrink-0"
+                        className="mt-0.5 cursor-pointer accent-[#4CC2DE] shrink-0"
                       />
-                      <span className="w-6 text-zinc-500 select-none text-[11px] shrink-0">{lineNum}</span>
-                      <span className="font-bold text-red-400 select-none shrink-0">-</span>
+                      <span className="w-6 text-[#6B7280] select-none text-[11px] shrink-0">{lineNum}</span>
+                      <span className="font-bold text-[#DC5B5B] select-none shrink-0">-</span>
                       <span className="flex-1 font-semibold">{line}</span>
                     </div>
                   );
                 }
 
                 return (
-                  <div key={`orig-${lineNum}`} className="flex items-center gap-2 px-2 py-0.5 text-zinc-400">
+                  <div key={`orig-${lineNum}`} className="flex items-center gap-2 px-2 py-0.5 text-[#9AA1AC]">
                     <span className="w-4 shrink-0" />
-                    <span className="w-6 text-zinc-600 select-none text-[11px] shrink-0">{lineNum}</span>
+                    <span className="w-6 text-[#6B7280] select-none text-[11px] shrink-0">{lineNum}</span>
                     <span className="w-2 select-none shrink-0"> </span>
-                    <span className="flex-1 text-zinc-300">{line}</span>
+                    <span className="flex-1 text-[#E6E8EB]">{line}</span>
                   </div>
                 );
               })}
@@ -210,20 +210,20 @@ export default function SurgeryDiffPreview({
 
           {/* Right Pane: Transformed Clean Source Preview */}
           <div className="flex flex-col h-full overflow-hidden">
-            <div className="p-2.5 bg-[#0a0a0a] border-b border-[#1f1f1f] text-xs font-bold text-zinc-400 flex items-center justify-between shrink-0">
-              <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+            <div className="p-2.5 bg-[#0E1013] border-b border-[#22252B] text-xs font-medium text-[#9AA1AC] flex items-center justify-between shrink-0 font-sans">
+              <span className="text-[#3EAE79] font-medium flex items-center gap-1.5">
                 <span>TRANSFORMED (Clean Code)</span>
               </span>
-              <span className="text-[11px] text-zinc-500">{sourceLines.length - approvedCount} lines</span>
+              <span className="text-[11px] text-[#6B7280]">{sourceLines.length - approvedCount} lines</span>
             </div>
             <div className="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-0.5 select-text">
               {sourceLines
                 .filter((_, idx) => !approvedLines.has(idx + 1))
                 .map((line, idx) => (
-                  <div key={`clean-${idx}`} className="flex items-center gap-2 px-2 py-0.5 text-zinc-300">
-                    <span className="w-6 text-zinc-600 select-none text-[11px] shrink-0">{idx + 1}</span>
-                    <span className="w-2 text-emerald-500 select-none shrink-0">+</span>
-                    <span className="flex-1 text-zinc-200">{line}</span>
+                  <div key={`clean-${idx}`} className="flex items-center gap-2 px-2 py-0.5 text-[#9AA1AC]">
+                    <span className="w-6 text-[#6B7280] select-none text-[11px] shrink-0">{idx + 1}</span>
+                    <span className="w-2 text-[#3EAE79] select-none shrink-0">+</span>
+                    <span className="flex-1 text-[#E6E8EB]">{line}</span>
                   </div>
                 ))}
             </div>
@@ -232,17 +232,17 @@ export default function SurgeryDiffPreview({
         </div>
 
         {/* 4. Footer Actions */}
-        <div className="p-4 bg-[#0d0d0d] border-t border-[#1f1f1f] flex items-center justify-between shrink-0">
-          <div className="text-xs text-zinc-400 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Automatic safety backup: <code>{fileName}.echo-nullity-backup</code></span>
+        <div className="p-3.5 bg-[#0E1013] border-t border-[#22252B] flex items-center justify-between shrink-0 font-sans">
+          <div className="text-xs text-[#9AA1AC] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#3EAE79]" />
+            <span>Automatic safety backup: <code className="font-mono text-[11px] text-[#E6E8EB]">{fileName}.echo-nullity-backup</code></span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onCancel}
               disabled={isApplying}
-              className="px-4 py-2 rounded-xl bg-[#141414] hover:bg-[#1f1f1f] border border-[#262626] text-xs font-bold text-zinc-300 hover:text-white transition-all"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-xs font-medium text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors"
             >
               Cancel
             </button>
@@ -254,12 +254,12 @@ export default function SurgeryDiffPreview({
                 transformedSource,
               })}
               disabled={approvedCount === 0 || isApplying}
-              className="px-5 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-extrabold shadow-cyan-glow flex items-center gap-2 transition-all disabled:opacity-40 disabled:pointer-events-none"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] text-xs font-medium flex items-center gap-2 transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               {isApplying ? (
                 <Activity className="w-4 h-4 animate-spin" />
               ) : (
-                <Sparkles className="w-4 h-4 fill-black" />
+                <Sparkles className="w-4 h-4 fill-current" />
               )}
               <span>Apply Surgery ({approvedCount} {approvedCount === 1 ? "Line" : "Lines"})</span>
             </button>

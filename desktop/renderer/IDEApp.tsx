@@ -5846,7 +5846,8 @@ export default function IDEApp() {
     const startW = explorerWidth;
 
     const onMouseMove = (moveEvt: MouseEvent) => {
-      const newW = Math.max(160, Math.min(400, startW + (moveEvt.clientX - startX)));
+      const maxAllowed = typeof window !== "undefined" ? Math.min(400, Math.max(160, window.innerWidth - 600)) : 400;
+      const newW = Math.max(160, Math.min(maxAllowed, startW + (moveEvt.clientX - startX)));
       setExplorerWidth(newW);
     };
 
@@ -5865,7 +5866,8 @@ export default function IDEApp() {
     const startW = agentChatWidth;
 
     const onMouseMove = (moveEvt: MouseEvent) => {
-      const newW = Math.max(340, Math.min(800, startW + (moveEvt.clientX - startX)));
+      const maxAllowed = typeof window !== "undefined" ? Math.min(800, Math.max(340, window.innerWidth - 500)) : 800;
+      const newW = Math.max(340, Math.min(maxAllowed, startW + (moveEvt.clientX - startX)));
       setAgentChatWidth(newW);
     };
 
@@ -5884,7 +5886,8 @@ export default function IDEApp() {
     const startW = analysisWidth;
 
     const onMouseMove = (moveEvt: MouseEvent) => {
-      const newW = Math.max(200, Math.min(450, startW - (moveEvt.clientX - startX)));
+      const maxAllowed = typeof window !== "undefined" ? Math.min(450, Math.max(200, window.innerWidth - 650)) : 450;
+      const newW = Math.max(200, Math.min(maxAllowed, startW - (moveEvt.clientX - startX)));
       setAnalysisWidth(newW);
     };
 
@@ -6115,7 +6118,7 @@ export default function IDEApp() {
                 }`}
               >
                 <Icon className={`w-3 h-3 ${color}`} />
-                <span>{crumb.label}</span>
+                <span className="truncate max-w-[130px]" title={crumb.label}>{crumb.label}</span>
               </button>
             </div>
           );
@@ -6133,11 +6136,11 @@ export default function IDEApp() {
         key={group.id}
         onClick={() => setActiveGroupId(group.id)}
         className={`flex-1 flex flex-col h-full min-w-0 min-h-0 relative ${
-          isFocused && editorGroups.length > 1 ? "ring-1 ring-cyan-500/40" : ""
+          isFocused && editorGroups.length > 1 ? "ring-1 ring-[#4CC2DE]/50" : ""
         }`}
       >
         {/* Tab Bar */}
-        <div className="h-9 bg-[#0a0a0a] border-b border-[#1f1f1f] flex items-center justify-between px-2 font-mono text-xs overflow-x-auto shrink-0 select-none">
+        <div className="h-9 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between px-2 font-sans text-xs overflow-x-auto shrink-0 select-none">
           <div className="flex items-center gap-1 overflow-x-auto min-w-0">
             {group.tabs.map((tab) => {
               const isActive = group.activeTabPath === tab.path;
@@ -6159,17 +6162,17 @@ export default function IDEApp() {
                     restoreTabCursor(tab.path);
                     runAnalysis(tab);
                   }}
-                  className={`group px-3 py-1 rounded-t-lg flex items-center gap-2 cursor-pointer transition-all ${
+                  className={`group px-3 py-1.5 rounded-t flex items-center gap-2 cursor-pointer transition-colors ${
                     isActive
-                      ? "bg-[#050505] text-cyan-400 border-t border-x border-cyan-500/40 font-bold shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-zinc-900/40"
+                      ? "bg-[#0B0C0F] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] border-x border-[#22252B] font-medium"
+                      : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]/50 border-t-2 border-transparent border-x border-transparent"
                   }`}
                 >
-                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                  <FileText className={`w-3.5 h-3.5 ${isActive ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
                   <span className="truncate max-w-[120px]">{tab.name}</span>
 
                   {tab.isDirty && (
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" title="Unsaved changes ●" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE]" title="Unsaved changes ●" />
                   )}
 
                   <span
@@ -6183,7 +6186,7 @@ export default function IDEApp() {
                         executeCloseTab(tab.path, group.id);
                       }
                     }}
-                    className="opacity-60 hover:opacity-100 p-0.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-opacity inline-block cursor-pointer"
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-opacity inline-block cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </span>
@@ -6320,82 +6323,79 @@ return (
       className="flex flex-col h-screen w-screen bg-[#050505] text-white font-sans overflow-hidden select-none relative"
     >
 
-      {/* Animated Top Edge Cyan Scanline */}
-      <div className="top-scanline" />
-
       {/* 1. Header Navigation Bar */}
       <header
         style={{
-          backgroundColor: "var(--bg-header, #08080c)",
-          borderColor: "var(--border-app, #161620)",
+          backgroundColor: "var(--theme-surface, #0E1013)",
+          borderColor: "var(--theme-border, #22252B)",
         }}
-        className="h-10 bg-[#08080c] border-b border-[#161620] flex items-center justify-between px-3 text-xs font-mono shrink-0 z-20 shadow-sm min-w-0 w-full select-none gap-2"
+        className="h-10 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between px-3 text-xs font-sans shrink-0 z-20 min-w-0 w-full select-none gap-2"
       >
         {/* Left Zone: Branding + Project Switcher + Home Launcher */}
         <div className="flex-none shrink-0 flex items-center gap-2">
-          <div className="flex items-center gap-2 pr-2 border-r border-[#1a1a24]">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
-            <span className="font-heading font-bold text-xs text-white tracking-tight whitespace-nowrap">
+          <div className="flex items-center gap-2 pr-2 border-r border-[#22252B]">
+            <span className="w-2 h-2 rounded-full bg-[#4CC2DE] shrink-0" />
+            <span className="font-heading font-bold text-xs text-[#E6E8EB] tracking-tight whitespace-nowrap">
               NEXUS
             </span>
-            <span className="px-2 py-0.5 rounded bg-[#12121c] border border-[#20202e] text-zinc-300 text-[10.5px] font-mono">
+            <span className="px-2 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-300 text-[10.5px] font-mono">
               {folderPath ? folderPath.split('/').pop() : "NEXUS"}
             </span>
           </div>
 
           <button
             onClick={() => setWorkspaceMode(workspaceMode === "home" ? "workbench" : "home")}
-            className={`px-2 py-0.5 rounded border text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md border text-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
               workspaceMode === "home"
-                ? "bg-cyan-950 text-cyan-300 border-cyan-500/40 font-bold"
-                : "bg-[#101016] hover:bg-[#181822] border-[#20202d] text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
+                : "bg-transparent hover:bg-[#1A1C22] border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
             }`}
             title="Task Home / Workspace"
           >
-            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
             <span>{workspaceMode === "home" ? "Task Home" : "Workspace"}</span>
           </button>
         </div>
 
         {/* Center Zone: Active File / Active Task Goal */}
         <div className="flex-1 min-w-0 flex items-center justify-center gap-2 py-0.5">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[#0c0c12] border border-[#1a1a24] text-xs max-w-xl truncate">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-            <span className="text-zinc-300 font-medium truncate">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111318] border border-[#22252B] text-xs max-w-xl truncate">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE] shrink-0" />
+            <span className="text-[#E6E8EB] font-medium truncate">
               {activeTab ? activeTab.name : "NEXUS Workbench"}
             </span>
             {activeTaskPrompt && (
-              <span className="text-zinc-500 text-[10.5px] truncate">
+              <span className="text-[#6B7280] text-[11px] truncate">
                 • {activeTaskPrompt}
               </span>
             )}
           </div>
         </div>
 
-        {/* Right Zone: Command Palette, AI Dock Toggle, More Options */}
-        <div className="flex-none shrink-0 ml-auto flex items-center gap-1.5">
+        {/* Right Zone: Utility Controls (Quiet Supporting Role) */}
+        <div className="flex-none shrink-0 ml-auto flex items-center gap-1">
           {/* Command Palette (⌘K) */}
           <button
             onClick={() => setCmdPaletteOpen(true)}
-            className="px-2.5 py-1 rounded-lg bg-[#101016] hover:bg-[#181822] border border-[#20202d] text-cyan-300 transition-all flex items-center gap-1.5 cursor-pointer text-[11px] font-mono"
+            className="px-2 py-1 rounded-md hover:bg-[#14161B] text-[#8C92A4] hover:text-[#E6E8EB] border border-transparent hover:border-[#22252B] transition-colors flex items-center gap-1.5 cursor-pointer text-xs font-sans"
             title="Command Palette (⌘K)"
           >
-            <Command className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <Command className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
             <span>Command</span>
-            <kbd className="hidden lg:inline text-[9.5px] bg-[#161620] px-1 rounded text-zinc-400">⌘K</kbd>
+            <kbd className="hidden lg:inline text-[10px] bg-[#14161B] border border-[#22252B] px-1 rounded text-[#8C92A4]">⌘K</kbd>
           </button>
 
           {/* AI Agent Dock Toggle */}
           <button
             onClick={() => setShowDockedAgentPanel((prev) => !prev)}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
               showDockedAgentPanel
-                ? "bg-cyan-950 text-cyan-300 border-cyan-500/50 font-bold shadow-[0_0_8px_rgba(6,182,212,0.2)]"
-                : "bg-[#101016] hover:bg-[#181822] border-[#20202d] text-cyan-300"
+                ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
+                : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
             }`}
             title="Toggle AI Agent Dock (⌘I)"
           >
-            <Bot className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <Bot className="w-3.5 h-3.5 shrink-0" />
             <span>AI Dock</span>
           </button>
 
@@ -6404,14 +6404,14 @@ return (
             <button
               ref={themesTriggerRef}
               onClick={() => setShowThemesPicker((prev) => !prev)}
-              className={`px-2.5 py-1 rounded-lg border text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
                 showThemesPicker
-                  ? "bg-cyan-950 text-cyan-300 border-cyan-500/50 font-bold shadow-[0_0_8px_rgba(6,182,212,0.25)]"
-                  : "bg-[#101016] hover:bg-[#181822] border-[#20202d] text-cyan-300"
+                  ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
+                  : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
               title="Global NEXUS Themes"
             >
-              <Palette className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <Palette className="w-3.5 h-3.5 shrink-0" />
               <span>Themes ▾</span>
             </button>
 
@@ -6429,14 +6429,14 @@ return (
             <button
               ref={sourceControlTriggerRef}
               onClick={() => setShowSourceControlPopover((prev) => !prev)}
-              className={`px-2.5 py-1 rounded-lg border text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
                 showSourceControlPopover
-                  ? "bg-cyan-950 text-cyan-300 border-cyan-500/50 font-bold shadow-[0_0_8px_rgba(6,182,212,0.25)]"
-                  : "bg-[#101016] hover:bg-[#181822] border-[#20202d] text-cyan-300"
+                  ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
+                  : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
               title="Source Control (Quick Access)"
             >
-              <GitBranch className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <GitBranch className="w-3.5 h-3.5 shrink-0" />
               <span>Source Control</span>
             </button>
 
@@ -6507,7 +6507,7 @@ return (
             <button
               ref={moreMenuTriggerRef}
               onClick={() => setMoreMenuOpen((prev) => !prev)}
-              className="min-h-[28px] px-2 py-1 rounded-lg bg-[#121216] hover:bg-[#1c1c24] border border-[#24242e] text-zinc-300 text-xs font-mono flex items-center gap-1 cursor-pointer"
+              className="px-2 py-1 rounded-md border border-transparent hover:border-[#22252B] hover:bg-[#14161B] text-[#8C92A4] hover:text-[#E6E8EB] text-xs font-mono flex items-center cursor-pointer transition-colors"
               title="More Options"
             >
               <span>⋯</span>
@@ -6815,7 +6815,7 @@ return (
       />
 
       {/* 2. Main Resizable Workspace Grid */}
-      <div ref={contentRowRef} style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", overflow: "hidden" }} className="flex flex-1 min-w-0 min-h-0 overflow-hidden">
+      <div ref={contentRowRef} style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", overflow: "hidden" }} className="flex flex-1 min-w-0 min-h-0 overflow-x-auto overflow-y-hidden">
 
         {/* Persistent Codex Left Sidebar */}
         <CodexSidebar
@@ -7134,21 +7134,15 @@ return (
                       onApplyReplacementChangeSet={search.applyReplacementChangeSet}
                     />
                   ) : activeActivityItem === "sessions" ? (
-                    <CodexSidebar
-                      currentProjectName={folderPath ? folderPath.split("/").pop() || "NEXUS" : "NEXUS"}
-                      workspacePath={folderPath || "demo-workspaces/ai_cart_project"}
-                      activeThreadId={activeSessionId}
-                      threads={sidebarThreads}
-                      recentSessions={snapshotHook.snapshots || []}
-                      onNewTask={handleNewTaskThread}
-                      onSelectThread={handleSelectThread}
-                      onSelectSession={(sessId, userGoal) => handleSelectThread(sessId, userGoal)}
-                      onPinThread={handlePinThread}
-                      onRenameThread={handleRenameThread}
-                      onDeleteThread={handleDeleteThread}
-                      onOpenFolder={handleOpenFolder}
-                      activeItem={activeActivityItem}
-                      onSelectItem={handleOpenActivityItem}
+                    <SnapshotPanel
+                      snapshotHook={snapshotHook}
+                      onOpenFile={handleOpenTestFile}
+                      openTabs={openTabs}
+                      activeTabPath={activeTabPath}
+                      workspacePath={folderPath || ""}
+                      activeSessionId={activeSessionId}
+                      onResumeSession={handleResumeSession}
+                      onCreateSession={handleCreateNewSession}
                     />
                   ) : activeActivityItem === "verification" ? (
                     <EngineeringTimeline
@@ -7293,7 +7287,7 @@ return (
           ref={editorPaneRef}
           style={{
             flex: 1,
-            minWidth: 0,
+            minWidth: "440px",
             minHeight: 0,
             display: "flex",
             flexDirection: "column",
@@ -7301,7 +7295,7 @@ return (
             backgroundColor: "var(--theme-background, #050505)",
             color: "var(--theme-text, #ffffff)",
           }}
-          className="flex-1 min-w-0 flex flex-col overflow-hidden"
+          className="flex-1 min-w-[440px] lg:min-w-[560px] flex flex-col overflow-hidden"
         >
 
           {mainView === "dashboard" || mainView === "luminance" ? (
@@ -7446,27 +7440,27 @@ return (
                   conflictsCount={activeConflicts.length}
                 />
               </div>
-              <div className="flex-1 h-full flex flex-col bg-[#08080a] border-l border-[#1f1f1f]">
+              <div className="flex-1 h-full flex flex-col bg-[#0E1013] border-l border-[#22252B]">
                 {gitDiffModalFile && gitDiffData ? (
                   <div className="h-full flex flex-col">
-                    <div className="h-9 bg-[#0d0d10] border-b border-[#1f1f1f] px-3 flex items-center justify-between text-xs text-zinc-300">
+                    <div className="h-9 bg-[#111318] border-b border-[#22252B] px-3 flex items-center justify-between text-xs text-[#E6E8EB]">
                       <div className="flex items-center gap-2">
-                        <FileCode className="w-4 h-4 text-cyan-400" />
-                        <span className="font-bold text-zinc-100">{gitDiffModalFile.path}</span>
-                        <span className="text-zinc-500">({gitDiffModalFile.staged ? "Staged Diff vs HEAD" : "Working Tree Diff"})</span>
+                        <FileCode className="w-4 h-4 text-[#4CC2DE]" />
+                        <span className="font-semibold text-zinc-100">{gitDiffModalFile.path}</span>
+                        <span className="text-[#9AA1AC]">({gitDiffModalFile.staged ? "Staged Diff vs HEAD" : "Working Tree Diff"})</span>
                       </div>
                       <button
                         onClick={() => {
                           setGitDiffModalFile(null);
                           setGitDiffData(null);
                         }}
-                        className="p-1 rounded text-zinc-500 hover:text-zinc-200 cursor-pointer"
+                        className="p-1 rounded text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer transition-colors"
                         title="Close Diff"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="flex-1 overflow-auto p-4 font-mono text-xs text-zinc-300 whitespace-pre-wrap bg-[#050507]">
+                    <div className="flex-1 overflow-auto p-4 font-mono text-xs text-zinc-300 whitespace-pre-wrap bg-[#0A0B0D]">
                       {gitDiffData.diff ? (
                         gitDiffData.diff.split("\n").map((line, idx) => {
                           let colorClass = "text-zinc-400";
@@ -7478,8 +7472,8 @@ return (
                             colorClass = "text-rose-300";
                             bgClass = "bg-rose-950/30";
                           } else if (line.startsWith("@@")) {
-                            colorClass = "text-cyan-400 font-bold";
-                            bgClass = "bg-cyan-950/20";
+                            colorClass = "text-[#4CC2DE] font-semibold";
+                            bgClass = "bg-[#14161B]";
                           }
                           return (
                             <div key={idx} className={`px-2 py-0.5 ${colorClass} ${bgClass}`}>
@@ -7488,13 +7482,13 @@ return (
                           );
                         })
                       ) : (
-                        <div className="text-zinc-600 italic">No textual diff detected for this file.</div>
+                        <div className="text-[#6B7280] italic">No textual diff detected for this file.</div>
                       )}
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-zinc-600 font-mono text-xs">
-                    <GitBranch className="w-8 h-8 mb-2 text-zinc-700" />
+                  <div className="h-full flex flex-col items-center justify-center text-[#6B7280] font-sans text-xs">
+                    <GitBranch className="w-8 h-8 mb-2 text-[#4B5058]" />
                     <div>Select a changed file from the sidebar to inspect diff</div>
                   </div>
                 )}
@@ -7549,14 +7543,14 @@ return (
                   onApplyReplacementChangeSet={search.applyReplacementChangeSet}
                 />
               </div>
-              <div className="flex-1 h-full flex flex-col" style={{ backgroundColor: "var(--theme-background, #050507)" }}>
+              <div className="flex-1 h-full flex flex-col" style={{ backgroundColor: "var(--theme-background, #0A0B0D)" }}>
                 {/* Multi-Tab Bar */}
                 <div
                   style={{
-                    backgroundColor: "var(--theme-surface, #0a0a0a)",
-                    borderColor: "var(--theme-border, #1f1f1f)",
+                    backgroundColor: "var(--theme-surface, #0E1013)",
+                    borderColor: "var(--theme-border, #22252B)",
                   }}
-                  className="h-9 border-b flex items-center px-2 gap-1 font-mono text-xs overflow-x-auto shrink-0"
+                  className="h-9 border-b flex items-center px-2 gap-1 font-sans text-xs overflow-x-auto shrink-0 select-none"
                 >
                   {openTabs.map((tab) => (
                     <div
@@ -7569,26 +7563,27 @@ return (
                       style={
                         activeTabPath === tab.path
                           ? {
-                              backgroundColor: "var(--theme-background, #050505)",
-                              color: "var(--theme-accent, #22d3ee)",
-                              borderColor: "var(--theme-border-focus, #22d3ee)",
+                              backgroundColor: "var(--theme-editor-background, #0B0C0F)",
+                              color: "var(--theme-text, #E6E8EB)",
+                              borderColor: "var(--theme-border, #22252B)",
+                              borderTopColor: "var(--theme-accent, #4CC2DE)",
                             }
                           : undefined
                       }
-                      className={`group px-3 py-1 rounded-t-lg flex items-center gap-2 cursor-pointer transition-all ${
+                      className={`group px-3 py-1.5 rounded-t flex items-center gap-2 cursor-pointer transition-colors ${
                         activeTabPath === tab.path
-                          ? "border-t border-x font-bold shadow-sm"
-                          : "text-zinc-400 hover:text-white hover:bg-white/5"
+                          ? "border-t-2 border-x font-medium"
+                          : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]/50 border-t-2 border-transparent border-x border-transparent"
                       }`}
                     >
-                      <FileText className="w-3.5 h-3.5" style={{ color: activeTabPath === tab.path ? "var(--theme-accent, #22d3ee)" : undefined }} />
+                      <FileText className={`w-3.5 h-3.5 ${activeTabPath === tab.path ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
                       <span>{tab.name}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCloseTab(tab.path);
                         }}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-opacity cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-opacity cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -7596,7 +7591,7 @@ return (
                   ))}
                 </div>
                 {/* Editor Surface */}
-                <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "var(--theme-editor-background, #050505)" }}>
+                <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "var(--theme-editor-background, #0B0C0F)" }}>
                   {activeTab ? (
                     <MonacoEditor
                       key={activeTab.path}
@@ -7645,9 +7640,15 @@ return (
                 />
 
               </div>
-              <div className="flex-1 h-full flex flex-col bg-[#050507]">
+              <div className="flex-1 h-full flex flex-col" style={{ backgroundColor: "var(--theme-background, #0A0B0D)" }}>
                 {/* Multi-Tab Bar */}
-                <div className="h-9 bg-[#0a0a0a] border-b border-[#1f1f1f] flex items-center px-2 gap-1 font-mono text-xs overflow-x-auto shrink-0">
+                <div
+                  style={{
+                    backgroundColor: "var(--theme-surface, #0E1013)",
+                    borderColor: "var(--theme-border, #22252B)",
+                  }}
+                  className="h-9 border-b flex items-center px-2 gap-1 font-sans text-xs overflow-x-auto shrink-0 select-none"
+                >
                   {openTabs.map((tab) => (
                     <div
                       key={tab.path}
@@ -7656,20 +7657,30 @@ return (
                         restoreTabCursor(tab.path);
                         runAnalysis(tab);
                       }}
-                      className={`group px-3 py-1 rounded-t-lg flex items-center gap-2 cursor-pointer transition-all ${
+                      style={
                         activeTabPath === tab.path
-                          ? "bg-[#050505] text-cyan-400 border-t border-x border-cyan-500/40 font-bold shadow-sm"
-                          : "text-zinc-400 hover:text-white hover:bg-zinc-900/40"
+                          ? {
+                              backgroundColor: "var(--theme-editor-background, #0B0C0F)",
+                              color: "var(--theme-text, #E6E8EB)",
+                              borderColor: "var(--theme-border, #22252B)",
+                              borderTopColor: "var(--theme-accent, #4CC2DE)",
+                            }
+                          : undefined
+                      }
+                      className={`group px-3 py-1.5 rounded-t flex items-center gap-2 cursor-pointer transition-colors ${
+                        activeTabPath === tab.path
+                          ? "border-t-2 border-x font-medium"
+                          : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]/50 border-t-2 border-transparent border-x border-transparent"
                       }`}
                     >
-                      <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                      <FileText className={`w-3.5 h-3.5 ${activeTabPath === tab.path ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
                       <span>{tab.name}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCloseTab(tab.path);
                         }}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-opacity cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-opacity cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -7678,7 +7689,7 @@ return (
                 </div>
 
                 {/* Editor or Empty State */}
-                <div className="flex-1 relative overflow-hidden">
+                <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "var(--theme-editor-background, #0B0C0F)" }}>
                   {activeTab ? (
                     <MonacoEditor
                       height="100%"
@@ -8313,15 +8324,15 @@ return (
                                 handleFindingClick(f);
                               }
                             }}
-                            className={`w-full text-left p-2.5 bg-[#050505] hover:bg-[#0d0d0d] transition-all rounded-xl border space-y-1 group cursor-pointer ${
+                            className={`w-full text-left p-2.5 bg-[#111318] hover:bg-[#1A1C22] transition-colors rounded-lg border space-y-1 group cursor-pointer ${
                               isSelected
-                                ? "border-cyan-400 bg-cyan-950/20 shadow-cyan-glow/20"
-                                : "border-cyan-500/30 hover:border-cyan-400/80"
+                                ? "border-[#4CC2DE] bg-[#1A1C22]"
+                                : "border-[#22252B] hover:border-[#2E323B]"
                             }`}
                           >
-                            <div className="flex items-center justify-between text-cyan-400 font-bold group-hover:text-cyan-300">
+                            <div className="flex items-center justify-between text-[#4CC2DE] font-medium">
                               <span className="flex items-center gap-1.5">
-                                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE]" />}
                                 Line {f.line}
                               </span>
                               <span className="text-[10px] bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">
@@ -8382,9 +8393,9 @@ return (
           {findings.length > 0 && (
             <button
               onClick={handleOpenDiffPreview}
-              className="w-full py-2.5 px-4 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold text-xs flex items-center justify-center gap-2 shadow-cyan-glow transition-all cursor-pointer"
+              className="w-full py-2 px-3 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 fill-black" />
+              <Sparkles className="w-4 h-4 text-[#0A0B0D]" />
               <span>Preview Safe Remove ({findings.length})</span>
             </button>
           )}
@@ -8492,7 +8503,7 @@ return (
 
       {/* 4. Right-Side Sliding Diff Drawer */}
       {diffDrawerOpen && diffData && (
-        <div className="fixed inset-y-0 right-0 w-[540px] bg-[#0a0a0a] border-l border-cyan-500/40 shadow-2xl z-50 flex flex-col overflow-hidden animate-slide-left">
+        <div className="fixed inset-y-0 right-0 w-[540px] bg-[#111318] border-l border-[#22252B] shadow-modal z-50 flex flex-col overflow-hidden animate-slide-left">
 
           <div className="p-4 border-b border-[#1f1f1f] flex items-center justify-between bg-[#050505]">
             <div className="flex items-center gap-2 font-mono">
@@ -8510,21 +8521,21 @@ return (
             </button>
           </div>
 
-          <div className="p-3 bg-cyan-950/30 border-b border-cyan-500/20 flex items-center justify-between font-mono text-xs px-4">
+          <div className="p-3 bg-[#14161B] border-b border-[#22252B] flex items-center justify-between font-sans text-xs px-4">
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400">Ghost Lines:</span>
-              <span className="text-purple-400 font-bold">{diffData.ghost_count_before}</span>
-              <ArrowRight className="w-3 h-3 text-zinc-500" />
-              <span className="text-cyan-400 font-bold">{diffData.ghost_count_after}</span>
+              <span className="text-[#9AA1AC]">Ghost Lines:</span>
+              <span className="text-rose-400 font-medium">{diffData.ghost_count_before}</span>
+              <ArrowRight className="w-3 h-3 text-[#6B7280]" />
+              <span className="text-[#3EAE79] font-medium">{diffData.ghost_count_after}</span>
             </div>
 
-            <div className="px-2 py-0.5 rounded bg-purple-950 border border-purple-500/30 text-purple-300 text-[10px]">
+            <div className="px-2 py-0.5 rounded bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] text-[10.5px]">
               {diffData.changed_lines.length} lines transformed
             </div>
           </div>
 
           {/* Differential Behavioral Harness Verification Card */}
-          <div className="p-3 mx-4 mt-3 bg-[#0d0d0d] border border-[#222] rounded-xl space-y-2 font-mono text-xs">
+          <div className="p-3 mx-4 mt-3 bg-[#111318] border border-[#22252B] rounded-lg space-y-2 font-sans text-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-zinc-200">
                 <ShieldCheck className="w-4 h-4 text-cyan-400" />
@@ -8630,10 +8641,10 @@ return (
             </div>
           </div>
 
-          <div className="p-4 border-t border-[#1f1f1f] bg-[#0a0a0a] flex items-center justify-between font-mono text-xs">
+          <div className="p-4 border-t border-[#22252B] bg-[#0E1013] flex items-center justify-between font-sans text-xs">
             <button
               onClick={() => setDiffDrawerOpen(false)}
-              className="px-4 py-2 rounded-xl border border-[#262626] text-zinc-300 hover:bg-[#141414] transition-all"
+              className="px-3 py-1.5 rounded-md border border-[#22252B] text-zinc-300 hover:bg-[#1A1C22] transition-colors"
             >
               Cancel
             </button>
@@ -8641,7 +8652,7 @@ return (
               {behaviorResult && !behaviorResult.behavior_preserved && (
                 <button
                   onClick={() => setShowForceApplyConfirm(true)}
-                  className="px-4 py-2 rounded-xl bg-red-950 hover:bg-red-900 border border-red-500/40 text-red-300 font-bold transition-all shadow-sm flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-md bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-300 font-medium transition-colors flex items-center gap-1.5"
                 >
                   <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
                   <span>Force Apply Anyway</span>
@@ -8655,9 +8666,9 @@ return (
                   transformedSource: diffData.transformed_source,
                 })}
                 disabled={applyingSurgery || behaviorVerifying || (behaviorResult !== null && !behaviorResult.behavior_preserved)}
-                className="px-5 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold shadow-cyan-glow transition-all flex items-center gap-2 disabled:opacity-40"
+                className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] font-medium transition-colors flex items-center gap-2 disabled:opacity-40"
               >
-                <Zap className="w-4 h-4 fill-black" />
+                <Zap className="w-3.5 h-3.5 text-[#0A0B0D]" />
                 <span>Apply Surgery</span>
               </button>
             </div>
@@ -8688,26 +8699,26 @@ return (
 
       {/* Force Apply Confirmation Dialog */}
       {showForceApplyConfirm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0a] border border-red-500/50 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl font-mono text-xs">
-            <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
-              <AlertTriangle className="w-5 h-5 text-red-400" />
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-5 max-w-md w-full space-y-3.5 shadow-modal font-sans text-xs text-[#E6E8EB]">
+            <div className="flex items-center gap-2 text-[#DC5B5B] font-semibold text-sm">
+              <AlertTriangle className="w-4 h-4 text-[#DC5B5B]" />
               <span>Confirm Force Apply Surgery</span>
             </div>
             <p className="text-zinc-300 text-xs font-sans leading-relaxed">
               Behavioral verification detected behavioral divergence between original and transformed code. Applying surgery may alter program execution.
             </p>
             {behaviorResult?.differences && behaviorResult.differences.length > 0 && (
-              <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-3 text-[11px] text-red-300 space-y-1">
+              <div className="bg-[#14161B] border border-[#DC5B5B]/30 rounded-lg p-2.5 text-xs text-[#DC5B5B] space-y-1 font-mono">
                 {behaviorResult.differences.map((d: string, idx: number) => (
                   <div key={idx}>• {d}</div>
                 ))}
               </div>
             )}
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-2.5 pt-1 font-sans">
               <button
                 onClick={() => setShowForceApplyConfirm(false)}
-                className="px-4 py-2 rounded-xl border border-[#262626] text-zinc-300 hover:bg-[#141414] transition-all"
+                className="px-3 py-1.5 rounded-md border border-[#22252B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -8723,7 +8734,7 @@ return (
                     });
                   }
                 }}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-all shadow-lg"
+                className="px-3.5 py-1.5 rounded-md bg-[#DC5B5B] hover:bg-[#c94a4a] text-white text-xs font-medium transition-colors cursor-pointer"
               >
                 Force Apply Surgery
               </button>
@@ -9226,13 +9237,13 @@ return (
                   }
                 }}
                 placeholder={explorerNewItemModal.type === "file" ? "name.ts" : "new-folder"}
-                className="w-full px-3 py-1.5 bg-[#050508] border border-[#242436] rounded-lg text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-1.5 bg-[#14161B] border border-[#22252B] rounded-md text-xs font-mono text-[#E6E8EB] focus:outline-none focus:border-[#4CC2DE]"
               />
             </div>
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="flex justify-end gap-2 pt-1 font-sans text-xs">
               <button
                 onClick={() => setExplorerNewItemModal(null)}
-                className="px-3 py-1 rounded-lg border border-[#242436] hover:bg-[#1a1a24] text-zinc-400 hover:text-white cursor-pointer"
+                className="px-3 py-1 rounded-md border border-[#22252B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -9244,7 +9255,7 @@ return (
                     handleExplorerCreateDir(explorerNewItemModal.targetDir, explorerNewItemModal.value);
                   }
                 }}
-                className="px-3.5 py-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black font-bold cursor-pointer"
+                className="px-3.5 py-1 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] font-medium cursor-pointer transition-colors"
               >
                 Create
               </button>
@@ -9258,14 +9269,14 @@ return (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div
             style={{
-              backgroundColor: "var(--theme-surface-panel, #0c0c14)",
-              borderColor: "var(--theme-border, #1f1f2c)",
+              backgroundColor: "var(--theme-surface-card, #111318)",
+              borderColor: "var(--theme-border, #22252B)",
             }}
-            className="w-full max-w-sm rounded-xl border p-4 shadow-2xl space-y-3 font-mono text-xs text-zinc-200"
+            className="w-full max-w-sm rounded-xl border p-4 shadow-modal space-y-3 font-sans text-xs text-zinc-200"
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold flex items-center gap-1.5 text-cyan-300">
-                <Edit2 className="w-4 h-4" />
+              <span className="font-bold flex items-center gap-1.5 text-[#E6E8EB]">
+                <Edit2 className="w-4 h-4 text-[#9AA1AC]" />
                 <span>Rename Item</span>
               </span>
               <button
@@ -9291,13 +9302,13 @@ return (
                     setExplorerRenameModal(null);
                   }
                 }}
-                className="w-full px-3 py-1.5 bg-[#050508] border border-[#242436] rounded-lg text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-1.5 bg-[#14161B] border border-[#22252B] rounded-md text-xs font-mono text-[#E6E8EB] focus:outline-none focus:border-[#4CC2DE]"
               />
             </div>
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="flex justify-end gap-2 pt-1 font-sans text-xs">
               <button
                 onClick={() => setExplorerRenameModal(null)}
-                className="px-3 py-1 rounded-lg border border-[#242436] hover:bg-[#1a1a24] text-zinc-400 hover:text-white cursor-pointer"
+                className="px-3 py-1 rounded-md border border-[#22252B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -9307,7 +9318,7 @@ return (
                     handleExplorerRename(explorerRenameModal.node, explorerRenameModal.value);
                   }
                 }}
-                className="px-3.5 py-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black font-bold cursor-pointer"
+                className="px-3.5 py-1 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] font-medium cursor-pointer transition-colors"
               >
                 Rename
               </button>
@@ -9318,25 +9329,21 @@ return (
 
       {/* Delete Confirmation Modal */}
       {explorerDeleteConfirm?.isOpen && explorerDeleteConfirm.node && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div
-            style={{
-              backgroundColor: "var(--theme-surface-panel, #0c0c14)",
-              borderColor: "var(--theme-border, #1f1f2c)",
-            }}
-            className="w-full max-w-sm rounded-xl border border-rose-500/40 p-4 shadow-2xl space-y-3 font-mono text-xs text-zinc-200"
+            className="w-full max-w-sm rounded-xl border border-[#22252B] bg-[#111318] p-4 shadow-modal space-y-3 font-sans text-xs text-[#E6E8EB]"
           >
-            <div className="flex items-center gap-2 text-rose-400 font-bold">
+            <div className="flex items-center gap-2 text-[#DC5B5B] font-semibold">
               <Trash2 className="w-4 h-4" />
               <span>Delete {explorerDeleteConfirm.node.isDirectory ? "Folder" : "File"}</span>
             </div>
             <p className="text-zinc-300 text-xs leading-relaxed">
-              Are you sure you want to permanently delete <strong className="text-white font-bold">{explorerDeleteConfirm.node.name}</strong>?
+              Are you sure you want to permanently delete <strong className="text-white font-semibold font-mono">{explorerDeleteConfirm.node.name}</strong>?
             </p>
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 pt-1 font-sans">
               <button
                 onClick={() => setExplorerDeleteConfirm(null)}
-                className="px-3 py-1 rounded-lg border border-[#242436] hover:bg-[#1a1a24] text-zinc-400 hover:text-white cursor-pointer"
+                className="px-3 py-1 rounded-md border border-[#22252B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -9346,7 +9353,7 @@ return (
                     handleExplorerDelete(explorerDeleteConfirm.node);
                   }
                 }}
-                className="px-3.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold cursor-pointer"
+                className="px-3.5 py-1 rounded-md bg-[#DC5B5B] hover:bg-[#c94a4a] text-white text-xs font-medium cursor-pointer transition-colors"
               >
                 Delete
               </button>
@@ -9374,37 +9381,33 @@ return (
 
       {/* Milestone 33: Git Hunk Revert Modal */}
       {revertingHunkModal?.isOpen && revertingHunkModal.hunk && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div
-            style={{
-              backgroundColor: "var(--theme-surface-panel, #0c0c14)",
-              borderColor: "var(--theme-border, #1f1f2c)",
-            }}
-            className="w-full max-w-lg rounded-xl border p-4 shadow-2xl space-y-3 font-mono text-xs text-zinc-200"
+            className="w-full max-w-lg rounded-xl border border-[#22252B] bg-[#111318] p-4 shadow-modal space-y-3 font-sans text-xs text-[#E6E8EB]"
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold flex items-center gap-1.5 text-cyan-300">
-                <RotateCcw className="w-4 h-4 text-cyan-400" />
+              <span className="font-semibold flex items-center gap-1.5 text-[#4CC2DE]">
+                <RotateCcw className="w-4 h-4 text-[#4CC2DE]" />
                 <span>Revert Git Hunk ({revertingHunkModal.hunk.changeType})</span>
               </span>
               <button
                 onClick={() => setRevertingHunkModal(null)}
-                className="text-zinc-500 hover:text-white"
+                className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="text-[11px] text-zinc-400">
-              <span>File: <strong className="text-zinc-200">{revertingHunkModal.filePath}</strong></span>
-              <span className="ml-3">Lines: <strong className="text-zinc-200">{revertingHunkModal.hunk.startLine}–{revertingHunkModal.hunk.endLine}</strong></span>
+            <div className="text-xs text-[#9AA1AC]">
+              <span>File: <strong className="text-[#E6E8EB] font-mono">{revertingHunkModal.filePath}</strong></span>
+              <span className="ml-3">Lines: <strong className="text-[#E6E8EB] font-mono">{revertingHunkModal.hunk.startLine}–{revertingHunkModal.hunk.endLine}</strong></span>
             </div>
             
             {revertingHunkModal.hunk.oldLines.length > 0 && (
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">
+                <label className="text-[10px] uppercase tracking-wider text-emerald-400 font-semibold block mb-1">
                   Original (HEAD to restore):
                 </label>
-                <pre className="max-h-32 overflow-y-auto p-2 bg-[#050508] border border-emerald-500/30 rounded text-[11px] text-emerald-300 font-mono">
+                <pre className="max-h-32 overflow-y-auto p-2 bg-[#0A0B0D] border border-emerald-500/30 rounded text-xs text-emerald-300 font-mono">
                   {revertingHunkModal.hunk.oldLines.join("\n")}
                 </pre>
               </div>
@@ -9412,19 +9415,19 @@ return (
 
             {revertingHunkModal.hunk.newLines.length > 0 && (
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-rose-400 font-bold block mb-1">
+                <label className="text-[10px] uppercase tracking-wider text-rose-400 font-semibold block mb-1">
                   Current (to be reverted):
                 </label>
-                <pre className="max-h-32 overflow-y-auto p-2 bg-[#050508] border border-rose-500/30 rounded text-[11px] text-rose-300 font-mono">
+                <pre className="max-h-32 overflow-y-auto p-2 bg-[#0A0B0D] border border-rose-500/30 rounded text-xs text-rose-300 font-mono">
                   {revertingHunkModal.hunk.newLines.join("\n")}
                 </pre>
               </div>
             )}
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 pt-1 font-sans">
               <button
                 onClick={() => setRevertingHunkModal(null)}
-                className="px-3 py-1 rounded-lg border border-[#242436] hover:bg-[#1a1a24] text-zinc-400 hover:text-white cursor-pointer"
+                className="px-3 py-1 rounded-md border border-[#22252B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -9434,7 +9437,7 @@ return (
                     handleRevertHunk(revertingHunkModal.hunk, revertingHunkModal.filePath);
                   }
                 }}
-                className="px-3.5 py-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black font-bold flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0A0B0D] font-medium text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Revert This Hunk</span>

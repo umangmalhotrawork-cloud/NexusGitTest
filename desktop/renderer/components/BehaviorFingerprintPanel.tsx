@@ -667,10 +667,10 @@ export default function BehaviorFingerprintPanel({
               <div className="space-y-4">
                 {/* First Divergence Highlight Card */}
                 {temporalResult.first_divergence ? (
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-rose-950/40 to-amber-950/30 border border-rose-500/40 space-y-3 shadow-lg">
+                  <div className="p-4 rounded-lg bg-[#14161B] border border-rose-500/30 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-rose-400 animate-pulse" />
+                        <AlertTriangle className="w-4 h-4 text-rose-400" />
                         <h4 className="text-xs font-bold uppercase tracking-wider text-rose-300">First Observable Behavioral Divergence Localized</h4>
                       </div>
                       <span className="px-2.5 py-0.5 rounded text-[10px] bg-rose-950 text-rose-300 border border-rose-500/50 font-bold">
@@ -1534,7 +1534,7 @@ export default function BehaviorFingerprintPanel({
                 <button
                   onClick={handleRunBlastAnalysis}
                   disabled={analyzingBlast || !filePath}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/50 transition-all disabled:opacity-50"
+                  className="w-full py-2 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                 >
                   <Sparkles className={`w-4 h-4 ${analyzingBlast ? "animate-spin" : ""}`} />
                   <span>{analyzingBlast ? "Calculating Downstream Impact..." : "Analyze AI Edit"}</span>
@@ -1680,7 +1680,7 @@ export default function BehaviorFingerprintPanel({
                 <button
                   onClick={handleRunCounterfactualAnalysis}
                   disabled={analyzingCf || !filePath}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all disabled:opacity-50"
+                  className="w-full py-2 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                 >
                   <Cpu className={`w-4 h-4 ${analyzingCf ? "animate-spin" : ""}`} />
                   <span>{analyzingCf ? "Executing Alternate World Sandbox..." : "Run Alternate World"}</span>

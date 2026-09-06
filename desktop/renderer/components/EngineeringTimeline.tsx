@@ -270,12 +270,12 @@ export default function EngineeringTimeline({
                   onClick={() => setSelectedNodeId(node.id)}
                   className={`p-2.5 rounded-lg border transition-all cursor-pointer relative ${
                     isSelected
-                      ? "bg-[#141420] border-cyan-500/60 shadow-[0_0_10px_rgba(6,182,212,0.15)]"
+                      ? "bg-[#14161B] border-[#4CC2DE]/60"
                       : isTestFail
                       ? "bg-[#180f12] border-rose-500/40 hover:border-rose-500/60"
                       : isTestPass
                       ? "bg-[#0e1612] border-emerald-500/40 hover:border-emerald-500/60"
-                      : "bg-[#0f0f17] border-[#1d1d2b] hover:border-cyan-500/30"
+                      : "bg-[#111318] border-[#22252B] hover:border-[#4CC2DE]/30"
                   }`}
                 >
                   {/* Step Connector Indicator */}

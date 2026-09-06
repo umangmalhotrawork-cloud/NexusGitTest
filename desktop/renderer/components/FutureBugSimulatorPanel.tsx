@@ -213,17 +213,17 @@ export default function FutureBugSimulatorPanel({
   };
 
   return (
-    <div className="flex flex-col h-full w-full min-w-0 max-w-full bg-[#0d0d12] text-zinc-200 border-r border-[#1a1a24] select-none font-sans text-xs overflow-hidden">
+    <div className="flex flex-col h-full w-full min-w-0 max-w-full bg-[#0E1013] text-zinc-200 border-r border-[#22252B] select-none font-sans text-xs overflow-hidden">
       {/* Header */}
-      <div className="p-2.5 border-b border-[#1a1a24] flex items-center justify-between shrink-0 min-w-0 max-w-full">
+      <div className="h-10 px-3 border-b border-[#22252B] flex items-center justify-between shrink-0 min-w-0 max-w-full bg-[#0E1013]">
         <div className="flex items-center gap-2 min-w-0">
-          <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+          <ShieldAlert className="w-4 h-4 text-[#4CC2DE] shrink-0" />
           <span className="font-semibold text-zinc-100 text-sm tracking-tight truncate">Future Bug Simulator</span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => handleSimulate()}
-            className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+            className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-zinc-200 transition-colors cursor-pointer"
             title="Re-run Simulation"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${simulating ? "animate-spin" : ""}`} />
@@ -231,7 +231,7 @@ export default function FutureBugSimulatorPanel({
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+              className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-zinc-200 transition-colors cursor-pointer"
               title="Close Simulator"
             >
               <X className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export default function FutureBugSimulatorPanel({
       </div>
 
       {/* Query Bar */}
-      <div className="p-2.5 border-b border-[#1a1a24] bg-[#08080c]/60 shrink-0 min-w-0 max-w-full space-y-2">
+      <div className="p-2.5 border-b border-[#22252B] bg-[#0E1013] shrink-0 min-w-0 max-w-full space-y-2">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -249,8 +249,8 @@ export default function FutureBugSimulatorPanel({
           }}
           className="space-y-1.5 min-w-0 max-w-full"
         >
-          <label className="text-[11px] font-mono text-amber-400 font-semibold flex items-center gap-1 min-w-0">
-            <HelpCircle className="w-3 h-3 text-amber-400 shrink-0" />
+          <label className="text-[11px] font-mono text-[#4CC2DE] font-semibold flex items-center gap-1 min-w-0">
+            <HelpCircle className="w-3 h-3 text-[#4CC2DE] shrink-0" />
             <span className="truncate">What could break?</span>
           </label>
           <div className="flex items-center gap-1.5 min-w-0 max-w-full">
@@ -259,12 +259,12 @@ export default function FutureBugSimulatorPanel({
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="e.g. What happens if the database becomes 10× slower?"
-              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#121218] border border-[#222230] text-zinc-200 text-xs focus:outline-none focus:border-amber-500/50"
+              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE]"
             />
             <button
               type="submit"
               disabled={simulating || !question.trim()}
-              className="px-3 py-1.5 rounded bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-mono text-[11px] font-semibold transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-mono text-[11px] font-medium transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
             >
               <Play className="w-3 h-3 fill-current shrink-0" />
               <span>Simulate</span>
@@ -274,13 +274,13 @@ export default function FutureBugSimulatorPanel({
 
         {/* Preset Pills */}
         <div className="space-y-1 min-w-0 max-w-full">
-          <div className="text-[10px] font-mono text-zinc-500">Scenario Presets:</div>
+          <div className="text-[10px] font-mono text-[#8C92A4]">Scenario Presets:</div>
           <div className="flex flex-wrap items-center gap-1 min-w-0 max-w-full">
             {presets.map((p) => (
               <button
                 key={p.id}
                 onClick={() => handleSelectPreset(p)}
-                className="px-2 py-0.5 rounded bg-[#121218] hover:bg-[#1c1c26] border border-[#222230] hover:border-amber-500/40 text-zinc-300 font-mono text-[10px] transition-colors cursor-pointer shrink-0"
+                className="px-2 py-0.5 rounded bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/40 text-zinc-300 font-mono text-[10px] transition-colors cursor-pointer shrink-0"
               >
                 {p.title}
               </button>
@@ -297,27 +297,27 @@ export default function FutureBugSimulatorPanel({
             <p className="text-xs font-mono">Analyzing call graphs and fault propagation...</p>
           </div>
         ) : !report ? (
-          <div className="text-center py-10 text-zinc-500 space-y-2 min-w-0">
-            <ShieldAlert className="w-7 h-7 mx-auto text-zinc-600 shrink-0" />
-            <p className="text-xs font-medium text-zinc-400">No active simulation.</p>
-            <p className="text-[10px] font-mono text-zinc-600 break-words [overflow-wrap:anywhere] px-3">
+          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0">
+            <ShieldAlert className="w-7 h-7 mx-auto text-[#5A6072] shrink-0" />
+            <p className="text-xs font-medium text-[#9AA1AC]">No active simulation.</p>
+            <p className="text-[10px] font-mono text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
               Ask a question above or select a preset to evaluate failure scenarios before production.
             </p>
           </div>
         ) : (
-          <div className="p-3 rounded-lg bg-[#111118] border border-[#1e1e2a] space-y-3 text-xs min-w-0 max-w-full overflow-hidden">
+          <div className="p-3 rounded-lg bg-[#111318] border border-[#22252B] space-y-3 text-xs min-w-0 max-w-full overflow-hidden">
             {/* Top Bar: Mode & Status */}
-            <div className="flex flex-wrap items-center justify-between gap-2 min-w-0 max-w-full pb-2 border-b border-[#1a1a24]">
+            <div className="flex flex-wrap items-center justify-between gap-2 min-w-0 max-w-full pb-2 border-b border-[#22252B]">
               {getModeBadge(report.mode)}
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] font-mono text-zinc-500">STATUS:</span>
+                <span className="text-[10px] font-mono text-[#8C92A4]">STATUS:</span>
                 {getStatusBadge(report.status)}
               </div>
             </div>
 
             {/* Scenario & Question */}
             <div className="space-y-0.5 min-w-0">
-              <div className="text-[10px] font-mono text-amber-400/90 font-bold uppercase">Scenario</div>
+              <div className="text-[10px] font-mono text-[#4CC2DE] font-semibold uppercase">Scenario</div>
               <div className="font-semibold text-zinc-100 text-xs leading-snug break-words [overflow-wrap:anywhere]">
                 {report.question}
               </div>
@@ -325,20 +325,20 @@ export default function FutureBugSimulatorPanel({
 
             {/* Likely Impact */}
             <div className="space-y-0.5 min-w-0">
-              <div className="text-[10px] font-mono text-zinc-400 font-bold uppercase">Likely Impact</div>
-              <div className="text-zinc-200 leading-relaxed font-body bg-[#0c0c12] p-2 rounded border border-[#181822] text-[11px] break-words [overflow-wrap:anywhere]">
+              <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Likely Impact</div>
+              <div className="text-zinc-200 leading-relaxed font-body bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere]">
                 {report.summary}
               </div>
             </div>
 
             {/* Severity & Confidence */}
-            <div className="flex flex-wrap items-center justify-between gap-2 py-1 border-y border-[#181822] min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-2 py-1 border-y border-[#22252B] min-w-0 max-w-full">
               <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] font-mono text-zinc-400">SEVERITY:</span>
+                <span className="text-[10px] font-mono text-[#8C92A4]">SEVERITY:</span>
                 {getSeverityBadge(report.severity)}
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] font-mono text-zinc-400">CONFIDENCE:</span>
+                <span className="text-[10px] font-mono text-[#8C92A4]">CONFIDENCE:</span>
                 {getConfidenceBadge(report.confidence)}
               </div>
             </div>
@@ -347,13 +347,13 @@ export default function FutureBugSimulatorPanel({
             <div className="space-y-1.5 min-w-0">
               {report.affectedFiles && report.affectedFiles.length > 0 && (
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-[10px] font-mono text-zinc-400 font-bold uppercase">Affected Files</div>
+                  <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Affected Files</div>
                   <div className="flex flex-wrap gap-1 min-w-0 max-w-full">
                     {report.affectedFiles.map((f, i) => (
                       <button
                         key={i}
                         onClick={() => onOpenFile && onOpenFile(f)}
-                        className="px-1.5 py-0.5 rounded bg-[#161624] border border-cyan-500/30 text-cyan-300 font-mono text-[10px] break-all [overflow-wrap:anywhere] hover:underline text-left cursor-pointer"
+                        className="px-1.5 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-[#4CC2DE] font-mono text-[10px] break-all [overflow-wrap:anywhere] hover:underline text-left cursor-pointer"
                         title={f}
                       >
                         {f}
@@ -365,12 +365,12 @@ export default function FutureBugSimulatorPanel({
 
               {report.affectedSymbols && report.affectedSymbols.length > 0 && (
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-[10px] font-mono text-zinc-400 font-bold uppercase">Affected Functions</div>
+                  <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Affected Functions</div>
                   <div className="flex flex-wrap gap-1 min-w-0 max-w-full">
                     {report.affectedSymbols.map((s, i) => (
                       <span
                         key={i}
-                        className="px-1.5 py-0.5 rounded bg-[#1a1426] border border-purple-500/30 text-purple-300 font-mono text-[10px] break-words [overflow-wrap:anywhere]"
+                        className="px-1.5 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-purple-300 font-mono text-[10px] break-words [overflow-wrap:anywhere]"
                       >
                         {s}()
                       </span>
@@ -383,16 +383,16 @@ export default function FutureBugSimulatorPanel({
             {/* Evidence */}
             {report.evidence && report.evidence.length > 0 && (
               <div className="space-y-1 min-w-0">
-                <div className="text-[10px] font-mono text-zinc-400 font-bold uppercase">Evidence Trail</div>
+                <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Evidence Trail</div>
                 <div className="space-y-1 min-w-0 max-w-full">
                   {report.evidence.map((ev, idx) => (
                     <div
                       key={idx}
-                      className="p-1.5 rounded bg-[#0c0c14] border border-[#1a1a26] text-[10px] font-mono space-y-0.5 break-words [overflow-wrap:anywhere]"
+                      className="p-1.5 rounded bg-[#0E1013] border border-[#22252B] text-[10px] font-mono space-y-0.5 break-words [overflow-wrap:anywhere]"
                     >
-                      <div className="flex items-center gap-1 text-cyan-400 font-bold">
+                      <div className="flex items-center gap-1 text-[#4CC2DE] font-semibold">
                         <span>[{ev.type}]</span>
-                        <span className="text-zinc-500">({ev.source})</span>
+                        <span className="text-[#5A6072]">({ev.source})</span>
                       </div>
                       <div className="text-zinc-300">{ev.description}</div>
                     </div>
@@ -404,14 +404,14 @@ export default function FutureBugSimulatorPanel({
             {/* Observed Results (Sandbox mode) */}
             {report.observedResults && report.observedResults.length > 0 && (
               <div className="space-y-1 min-w-0">
-                <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase">Observed Results</div>
+                <div className="text-[10px] font-mono text-emerald-400 font-semibold uppercase">Observed Results</div>
                 <div className="space-y-1 min-w-0 max-w-full">
                   {report.observedResults.map((obs, idx) => (
                     <div
                       key={idx}
-                      className="p-2 rounded bg-[#08120c] border border-emerald-500/30 text-[10px] font-mono space-y-1 break-words [overflow-wrap:anywhere]"
+                      className="p-2 rounded bg-[#0E1013] border border-emerald-500/30 text-[10px] font-mono space-y-1 break-words [overflow-wrap:anywhere]"
                     >
-                      <div className="flex items-center justify-between text-emerald-300 font-bold">
+                      <div className="flex items-center justify-between text-emerald-300 font-semibold">
                         <span>{obs.executionMethod}</span>
                         <span>{obs.passed ? "PASSED" : "FAILED"} ({obs.durationMs}ms)</span>
                       </div>
@@ -426,7 +426,7 @@ export default function FutureBugSimulatorPanel({
             {/* Suggested Tests */}
             {report.suggestedTests && report.suggestedTests.length > 0 && (
               <div className="space-y-1 min-w-0">
-                <div className="text-[10px] font-mono text-zinc-400 font-bold uppercase">Suggested Test</div>
+                <div className="text-[10px] font-mono text-[#8C92A4] font-semibold uppercase">Suggested Test</div>
                 <ul className="list-disc list-inside text-zinc-300 text-[11px] space-y-0.5 break-words [overflow-wrap:anywhere]">
                   {report.suggestedTests.map((st, i) => (
                     <li key={i}>{st}</li>
@@ -438,8 +438,8 @@ export default function FutureBugSimulatorPanel({
             {/* Limitations & Provenance Notice */}
             {report.limitations && report.limitations.length > 0 && (
               <div className="space-y-1 min-w-0">
-                <div className="text-[10px] font-mono text-zinc-500 font-bold uppercase">Limitations</div>
-                <div className="text-[10px] font-mono text-zinc-500 bg-[#08080c] p-2 rounded border border-[#161622] space-y-0.5 break-words [overflow-wrap:anywhere]">
+                <div className="text-[10px] font-mono text-[#5A6072] font-semibold uppercase">Limitations</div>
+                <div className="text-[10px] font-mono text-[#5A6072] bg-[#0E1013] p-2 rounded border border-[#22252B] space-y-0.5 break-words [overflow-wrap:anywhere]">
                   {report.limitations.map((lim, i) => (
                     <div key={i}>• {lim}</div>
                   ))}
@@ -448,15 +448,15 @@ export default function FutureBugSimulatorPanel({
             )}
 
             {/* Action Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#181824] min-w-0 max-w-full">
-              <span className="text-[10px] font-mono text-zinc-600 shrink-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#22252B] min-w-0 max-w-full">
+              <span className="text-[10px] font-mono text-[#5A6072] shrink-0">
                 {new Date(report.createdAt).toLocaleTimeString()}
               </span>
 
               {onAskAgentToImplement && (
                 <button
                   onClick={() => handleHandoff(report)}
-                  className="ml-auto px-2.5 py-1 rounded bg-amber-950/80 hover:bg-amber-900 border border-amber-500/40 text-amber-300 font-mono text-[10px] flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                  className="ml-auto px-2.5 py-1 rounded bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE] font-mono text-[10px] flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                 >
                   <span>Send to Agent</span>
                   <ArrowRight className="w-3 h-3" />

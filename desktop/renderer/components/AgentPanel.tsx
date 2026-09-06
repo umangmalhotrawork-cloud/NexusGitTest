@@ -1377,30 +1377,30 @@ export default function AgentPanel({
   return (
     <div
       style={{
-        backgroundColor: "var(--theme-surface, #08080c)",
-        borderColor: "var(--theme-border, #161620)",
-        color: "var(--theme-text, #f4f4f5)",
+        backgroundColor: "var(--theme-surface, #0A0B0D)",
+        borderColor: "var(--theme-border, #22252B)",
+        color: "var(--theme-text, #E6E8EB)",
       }}
       className={
         className
           ? className
           : isDocked
-          ? "w-[440px] max-w-full h-full border-l shadow-xl z-20 flex flex-col font-mono text-xs select-none shrink-0 overflow-hidden"
-          : "fixed inset-y-0 right-0 w-[480px] max-w-full border-l shadow-2xl z-50 flex flex-col font-mono text-xs select-none"
+          ? "w-[440px] max-w-full h-full border-l border-[#22252B] shadow-modal z-20 flex flex-col font-sans text-xs select-none shrink-0 overflow-hidden"
+          : "fixed inset-y-0 right-0 w-[480px] max-w-full border-l border-[#22252B] shadow-modal z-50 flex flex-col font-sans text-xs select-none"
       }
     >
       {/* 3A. Session Header Region */}
       <div 
         style={{
-          backgroundColor: "var(--theme-surface-panel, #0b0b10)",
-          borderColor: "var(--theme-border, #161620)",
+          backgroundColor: "var(--theme-surface-panel, #0E1013)",
+          borderColor: "var(--theme-border, #22252B)",
         }}
-        className="border-b p-2.5 space-y-1.5 shrink-0"
+        className="border-b border-[#22252B] p-2.5 space-y-1.5 shrink-0 bg-[#0E1013]"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-cyan-400 font-bold text-xs">
-            <Bot className="w-4 h-4 text-cyan-400" />
-            <span className="tracking-wide">NEXUS AGENT</span>
+          <div className="flex items-center gap-1.5 text-[#4CC2DE] font-semibold text-xs">
+            <Bot className="w-4 h-4 text-[#4CC2DE]" />
+            <span className="tracking-normal text-zinc-100">NEXUS AGENT</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -1408,21 +1408,21 @@ export default function AgentPanel({
             <button
               onClick={handleToggleContinuum}
               disabled={isActivatingContinuum}
-              className={`px-2 py-0.5 rounded-md border text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-sm ${
+              className={`px-2 py-0.5 rounded-md border text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors ${
                 continuumActive
-                  ? "bg-cyan-950/80 border-cyan-500/50 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.2)]"
-                  : "bg-[#12121a] border-[#222234] text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
+                  ? "bg-[#14161B] border-[#4CC2DE]/50 text-[#4CC2DE]"
+                  : "bg-[#14161B] border-[#22252B] text-[#8C92A4] hover:text-zinc-200 hover:border-[#383B45]"
               }`}
               title={continuumActive ? "Continuum Lineage Active: Inherited synthesized context from previous chat" : "Activate Continuum Lineage to synthesize and inject previous chat context"}
             >
               {isActivatingContinuum ? (
-                <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                <Loader2 className="w-3 h-3 animate-spin text-[#4CC2DE]" />
               ) : (
-                <GitBranch className={`w-3 h-3 ${continuumActive ? "text-cyan-400" : "text-zinc-500"}`} />
+                <GitBranch className={`w-3 h-3 ${continuumActive ? "text-[#4CC2DE]" : "text-zinc-500"}`} />
               )}
               <span>Continuum</span>
               <span className={`text-[8.5px] px-1 py-0.1 rounded font-mono ${
-                continuumActive ? "bg-cyan-500/20 text-cyan-200" : "bg-zinc-800 text-zinc-500"
+                continuumActive ? "bg-[#1A1C22] text-[#4CC2DE]" : "bg-[#14161B] text-zinc-500"
               }`}>
                 {continuumActive ? "ON" : "OFF"}
               </span>
@@ -1432,12 +1432,12 @@ export default function AgentPanel({
             <button
               onClick={handleCreateCapsule}
               disabled={isCapsuleCreateDisabled}
-              className={`px-2 py-0.5 rounded-md border text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-sm ${
+              className={`px-2 py-0.5 rounded-md border text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors ${
                 isCapsuleCreateDisabled
-                  ? "bg-[#0d0d14] border-[#181824] text-zinc-600 cursor-not-allowed"
+                  ? "bg-[#14161B] border-[#22252B] text-zinc-600 cursor-not-allowed"
                   : isCreatingCapsule
-                  ? "bg-cyan-950/60 border-cyan-500/40 text-cyan-300"
-                  : "bg-[#12121a] border-[#222234] text-zinc-300 hover:text-cyan-200 hover:border-cyan-500/40 hover:bg-[#161622]"
+                  ? "bg-[#14161B] border-[#4CC2DE]/40 text-[#4CC2DE]"
+                  : "bg-[#14161B] border-[#22252B] text-zinc-300 hover:text-white hover:bg-[#1A1C22]"
               }`}
               title={
                 !hasActiveChat
@@ -1446,9 +1446,9 @@ export default function AgentPanel({
               }
             >
               {isCreatingCapsule ? (
-                <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                <Loader2 className="w-3 h-3 animate-spin text-[#4CC2DE]" />
               ) : (
-                <Box className="w-3 h-3 text-cyan-400" />
+                <Box className="w-3 h-3 text-[#4CC2DE]" />
               )}
               <span>{isCreatingCapsule ? "Creating Capsule..." : "Create Context Capsule"}</span>
             </button>
@@ -1456,10 +1456,10 @@ export default function AgentPanel({
             {/* Import Context Capsule Button (Phase 4) */}
             <button
               onClick={handleOpenCapsuleDialog}
-              className="px-2 py-0.5 rounded-md border text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-sm bg-[#12121a] border-[#222234] text-zinc-300 hover:text-cyan-200 hover:border-cyan-500/40 hover:bg-[#161622]"
+              className="px-2 py-0.5 rounded-md border text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors bg-[#14161B] border-[#22252B] text-zinc-300 hover:text-white hover:bg-[#1A1C22]"
               title="Import Context Capsule (.json file) to continue previous conversation context"
             >
-              <Upload className="w-3 h-3 text-cyan-400" />
+              <Upload className="w-3 h-3 text-[#4CC2DE]" />
               <span>Import Capsule</span>
             </button>
 
@@ -1468,22 +1468,22 @@ export default function AgentPanel({
               <button
                 ref={agentModelTriggerRef}
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="px-2 py-0.5 rounded-md bg-[#12121a] border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-300 hover:bg-cyan-950/40 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors max-w-[170px]"
+                className="px-2 py-0.5 rounded-md bg-[#14161B] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#4CC2DE] hover:bg-[#1A1C22] text-[10px] font-medium flex items-center gap-1 cursor-pointer transition-colors max-w-[170px]"
                 title="Select Active AI Model"
               >
                 <span className="truncate">
                   {aiConfig?.providers?.find((p: any) => p.id === aiConfig?.activeProvider)?.name || activeProviderName} ({aiConfig?.activeModel ? aiConfig.activeModel.split('/').pop().replace(/^models\//, '') : "Default"})
                 </span>
-                <ChevronDown className="w-3 h-3 text-cyan-400 shrink-0" />
+                <ChevronDown className="w-3 h-3 text-[#4CC2DE] shrink-0" />
               </button>
 
               {/* Model Dropdown Menu */}
               {showModelDropdown && (
                 <div 
                   ref={agentModelDropdownRef}
-                  className="absolute right-0 top-7 w-72 bg-[#0c0c14] border border-[#242436] rounded-xl shadow-2xl z-50 p-2 space-y-1.5 text-xs font-mono text-zinc-200"
+                  className="absolute right-0 top-7 w-72 bg-[#111318] border border-[#22252B] rounded-lg shadow-modal z-50 p-2 space-y-1.5 text-xs font-sans text-zinc-200"
                 >
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-1 border-b border-[#1c1c28] pb-1 flex items-center justify-between">
+                  <div className="text-[10px] font-semibold text-[#8C92A4] uppercase tracking-wider px-1 border-b border-[#22252B] pb-1 flex items-center justify-between">
                     <span>AI Execution Provider & Model</span>
                     <button onClick={() => setShowModelDropdown(false)} className="text-zinc-500 hover:text-white">
                       <X className="w-3 h-3" />
@@ -1813,8 +1813,8 @@ export default function AgentPanel({
               </div>
 
               <div className="flex items-center justify-between pt-1 border-t border-[#101b2a]">
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                   Saved independently
                 </span>
                 {capsuleFeedback.createdAt && (

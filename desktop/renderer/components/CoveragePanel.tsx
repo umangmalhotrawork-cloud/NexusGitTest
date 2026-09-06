@@ -78,10 +78,10 @@ export default function CoveragePanel({
             <div
               className={`h-full rounded-full transition-all duration-300 ${
                 overallPct >= 80
-                  ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
+                  ? "bg-emerald-400"
                   : overallPct >= 50
-                  ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]"
-                  : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"
+                  ? "bg-amber-400"
+                  : "bg-rose-500"
               }`}
               style={{ width: `${overallPct}%` }}
             />

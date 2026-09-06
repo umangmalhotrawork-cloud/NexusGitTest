@@ -342,23 +342,15 @@ export default function GithubConnectModal({
   return (
     <div
       ref={modalRef}
-      className="fixed bottom-8.5 right-3 w-96 max-h-[calc(100vh-48px)] overflow-y-auto border rounded-2xl shadow-2xl z-50 p-4 space-y-3.5 font-mono text-xs animate-fade-in select-none"
-      style={{
-        backgroundColor: "var(--theme-surface-raised, #0a0a0f)",
-        borderColor: "var(--theme-border-card, #1f1f2e)",
-        color: "var(--theme-text, #f4f4f5)",
-      }}
+      className="fixed bottom-8.5 right-3 w-96 max-h-[calc(100vh-48px)] overflow-y-auto border border-[#22252B] bg-[#111318] rounded-lg shadow-popover z-50 p-4 space-y-3.5 font-sans text-xs text-[#E6E8EB] select-none"
     >
       {/* Header */}
-      <div
-        className="flex items-center justify-between border-b pb-2.5"
-        style={{ borderColor: "var(--theme-border-subtle, #1c1c28)" }}
-      >
-        <div className="flex items-center gap-2 font-bold text-xs" style={{ color: "var(--theme-accent, #22d3ee)" }}>
+      <div className="flex items-center justify-between border-b border-[#22252B] pb-2.5">
+        <div className="flex items-center gap-2 font-semibold text-xs text-[#E6E8EB]">
           {viewMode === "picker" ? (
             <button
               onClick={() => setViewMode("account")}
-              className="p-1 rounded hover:bg-[#161622] text-zinc-400 hover:text-white transition-colors cursor-pointer mr-0.5"
+              className="p-1 rounded-md hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer mr-0.5"
               title="Back to Account"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -366,13 +358,13 @@ export default function GithubConnectModal({
           ) : viewMode === "clone" ? (
             <button
               onClick={() => setViewMode("picker")}
-              className="p-1 rounded hover:bg-[#161622] text-zinc-400 hover:text-white transition-colors cursor-pointer mr-0.5"
+              className="p-1 rounded-md hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer mr-0.5"
               title="Back to Repositories"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
           ) : (
-            <div className="w-6 h-6 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <div className="w-6 h-6 rounded-md bg-[#1A1C22] border border-[#22252B] flex items-center justify-center text-[#4CC2DE]">
               <Github className="w-3.5 h-3.5" />
             </div>
           )}
@@ -391,23 +383,23 @@ export default function GithubConnectModal({
 
         <div className="flex items-center gap-2">
           {isConnected ? (
-            <span className="text-[9.5px] px-2 py-0.5 rounded-full font-bold bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 flex items-center gap-1">
+            <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-[#3EAE79]/10 border border-[#3EAE79]/30 text-[#3EAE79] flex items-center gap-1">
               <Check className="w-3 h-3" />
               Connected
             </span>
           ) : isAuthExpired ? (
-            <span className="text-[9.5px] px-2 py-0.5 rounded-full font-bold bg-rose-950/80 border border-rose-500/50 text-rose-300 flex items-center gap-1">
-              <AlertCircle className="w-3 h-3 text-rose-400" />
+            <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] flex items-center gap-1">
+              <AlertCircle className="w-3 h-3 text-[#DC5B5B]" />
               Expired
             </span>
           ) : (
-            <span className="text-[9.5px] px-2 py-0.5 rounded-full font-bold bg-amber-950/60 border border-amber-500/40 text-amber-300">
+            <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-[#D9A441]/10 border border-[#D9A441]/30 text-[#D9A441]">
               Disconnected
             </span>
           )}
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-200 p-1 rounded hover:bg-[#161622] transition-colors cursor-pointer"
+            className="text-[#9AA1AC] hover:text-[#E6E8EB] p-1 rounded-md hover:bg-[#14161B] transition-colors cursor-pointer"
             title="Close"
           >
             <X className="w-4 h-4" />
@@ -419,22 +411,22 @@ export default function GithubConnectModal({
       {viewMode === "clone" && selectedRepo ? (
         /* Clone Destination Prompt View */
         <div className="space-y-3">
-          <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/40 space-y-1">
-            <div className="text-[9.5px] font-bold text-cyan-400 uppercase tracking-wider">
+          <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B] space-y-1">
+            <div className="text-[10px] font-medium text-[#9AA1AC] uppercase tracking-wider">
               Selected Repository
             </div>
-            <div className="font-bold text-zinc-100 text-xs flex items-center gap-1.5">
-              <GitFork className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+            <div className="font-medium text-[#E6E8EB] text-xs flex items-center gap-1.5 font-mono">
+              <GitFork className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
               <span className="truncate">{selectedRepo.fullName}</span>
             </div>
           </div>
 
-          <p className="text-zinc-400 text-[11px] leading-relaxed">
+          <p className="text-[#9AA1AC] text-xs leading-relaxed">
             This repository is not yet checked out locally. Choose a destination folder to clone and set it as your active NEXUS workspace.
           </p>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+            <label className="text-[11px] text-[#9AA1AC] font-medium">
               Destination Directory:
             </label>
             <div className="flex items-center gap-1.5">
@@ -443,13 +435,13 @@ export default function GithubConnectModal({
                 value={clonePath}
                 onChange={(e) => setClonePath(e.target.value)}
                 placeholder="/path/to/clone/destination"
-                className="flex-1 bg-[#12121c] border border-[#252536] focus:border-cyan-500/70 rounded-xl px-2.5 py-1.5 text-zinc-100 placeholder-zinc-600 outline-none text-xs font-mono"
+                className="flex-1 bg-[#14161B] border border-[#22252B] focus:border-[#4CC2DE] rounded-md px-2.5 py-1.5 text-[#E6E8EB] placeholder-[#6B7280] outline-none text-xs font-mono"
               />
               <button
                 type="button"
                 onClick={handleSelectBrowseCloneDestination}
                 disabled={isCloning}
-                className="px-2.5 py-1.5 rounded-xl bg-[#181824] hover:bg-[#202030] border border-[#28283c] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors cursor-pointer shrink-0"
+                className="px-2.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium transition-colors cursor-pointer shrink-0"
                 title="Browse folder"
               >
                 Browse...
@@ -458,19 +450,19 @@ export default function GithubConnectModal({
           </div>
 
           {errorMessage && (
-            <div className="p-2 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-[11px] flex items-start gap-2 animate-fade-in">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] text-xs flex items-start gap-2">
+              <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Clone Action Controls */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#1c1c2a]">
+          <div className="flex items-center justify-between pt-2.5 border-t border-[#22252B]">
             <button
               type="button"
               onClick={() => setViewMode("picker")}
               disabled={isCloning}
-              className="px-3 py-1.5 rounded-xl bg-[#141420] hover:bg-[#1c1c2a] border border-[#252536] text-zinc-300 text-xs font-medium cursor-pointer transition-colors"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
             >
               Back
             </button>
@@ -479,11 +471,11 @@ export default function GithubConnectModal({
               type="button"
               onClick={handleCloneRepository}
               disabled={isCloning || !clonePath.trim()}
-              className="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 text-white font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-cyan-950/40"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] disabled:opacity-40 text-[#0A0B0D] font-medium text-xs transition-colors flex items-center gap-2 cursor-pointer"
             >
               {isCloning ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0B0D]" />
                   <span>Cloning repository...</span>
                 </>
               ) : (
@@ -506,20 +498,20 @@ export default function GithubConnectModal({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter repositories..."
               autoFocus
-              className="w-full bg-[#12121c] border border-[#252536] focus:border-cyan-500/70 rounded-xl pl-8 pr-3 py-1.5 text-zinc-100 placeholder-zinc-500 outline-none text-xs font-mono transition-colors"
+              className="w-full bg-[#14161B] border border-[#22252B] focus:border-[#4CC2DE] rounded-md pl-8 pr-3 py-1.5 text-[#E6E8EB] placeholder-[#6B7280] outline-none text-xs font-mono transition-colors"
             />
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-[#6B7280] absolute left-2.5 top-2 pointer-events-none" />
           </div>
 
           {/* Repositories Scrollable List */}
           <div className="max-h-52 overflow-y-auto space-y-1.5 pr-0.5 scrollbar-thin">
             {loadingRepos ? (
-              <div className="py-8 flex items-center justify-center gap-2 text-zinc-400">
-                <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+              <div className="py-8 flex items-center justify-center gap-2 text-[#9AA1AC]">
+                <Loader2 className="w-4 h-4 animate-spin text-[#4CC2DE]" />
                 <span>Loading repositories...</span>
               </div>
             ) : filteredRepositories.length === 0 ? (
-              <div className="py-6 text-center text-zinc-500 text-[11px]">
+              <div className="py-6 text-center text-[#6B7280] text-[11px]">
                 No matching repositories found.
               </div>
             ) : (
@@ -531,35 +523,35 @@ export default function GithubConnectModal({
                   <div
                     key={repo.id}
                     onClick={() => setSelectedRepoId(repo.id)}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                    className={`p-2.5 rounded-md border transition-colors cursor-pointer flex items-center justify-between ${
                       isSelected
-                        ? "bg-cyan-950/40 border-cyan-500/60 text-white"
-                        : "bg-[#101018] hover:bg-[#161622] border-[#1f1f2e] text-zinc-300"
+                        ? "bg-[#14161B] border-[#4CC2DE] text-[#E6E8EB]"
+                        : "bg-[#14161B] hover:bg-[#1A1C22] border-[#22252B] text-[#9AA1AC]"
                     }`}
                   >
                     <div className="min-w-0 flex-1 pr-2">
-                      <div className="font-bold truncate text-xs flex items-center gap-1.5">
-                        <GitFork className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span className="truncate">{repo.name}</span>
+                      <div className="font-medium truncate text-xs flex items-center gap-1.5 font-mono">
+                        <GitFork className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+                        <span className="truncate text-[#E6E8EB]">{repo.name}</span>
                         {isCurrentAssociated && (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 font-bold">
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE] font-medium">
                             Active
                           </span>
                         )}
                       </div>
-                      <div className="text-[10px] text-zinc-400 truncate mt-0.5">
+                      <div className="text-[10px] text-[#6B7280] truncate mt-0.5 font-mono">
                         @{repo.owner}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       {repo.private ? (
-                        <span className="text-[9.5px] px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-500/40 text-amber-300 flex items-center gap-0.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#D9A441]/10 border border-[#D9A441]/30 text-[#D9A441] flex items-center gap-0.5">
                           <Lock className="w-2.5 h-2.5" />
                           Private
                         </span>
                       ) : (
-                        <span className="text-[9.5px] px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-400 flex items-center gap-0.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] flex items-center gap-0.5">
                           <Globe className="w-2.5 h-2.5" />
                           Public
                         </span>
@@ -568,8 +560,8 @@ export default function GithubConnectModal({
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                           isSelected
-                            ? "border-cyan-400 bg-cyan-500 text-black"
-                            : "border-zinc-600 bg-transparent"
+                            ? "border-[#4CC2DE] bg-[#4CC2DE] text-[#0A0B0D]"
+                            : "border-[#6B7280] bg-transparent"
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -582,9 +574,9 @@ export default function GithubConnectModal({
           </div>
 
           {errorMessage && (
-            <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-[11px] space-y-2 animate-fade-in">
+            <div className="p-2.5 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] text-xs space-y-2">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0 mt-0.5" />
                 <span className="leading-snug">{errorMessage}</span>
               </div>
               {isAuthExpired && (
@@ -592,7 +584,7 @@ export default function GithubConnectModal({
                   type="button"
                   onClick={handleConnect}
                   disabled={loading}
-                  className="w-full py-1.5 px-3 rounded-lg bg-rose-900/60 hover:bg-rose-800 border border-rose-500/50 text-white font-bold text-[11px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                  className="w-full py-1.5 px-3 rounded-md bg-[#DC5B5B]/20 hover:bg-[#DC5B5B]/30 border border-[#DC5B5B]/40 text-[#DC5B5B] font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -606,12 +598,12 @@ export default function GithubConnectModal({
           )}
 
           {/* Picker Action Controls */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#1c1c2a]">
+          <div className="flex items-center justify-between pt-2.5 border-t border-[#22252B]">
             <button
               type="button"
               onClick={() => setViewMode("account")}
               disabled={loading}
-              className="px-3 py-1.5 rounded-xl bg-[#141420] hover:bg-[#1c1c2a] border border-[#252536] text-zinc-300 text-xs font-medium cursor-pointer transition-colors"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
             >
               Back
             </button>
@@ -620,11 +612,11 @@ export default function GithubConnectModal({
               type="button"
               onClick={handleConnectRepository}
               disabled={loading || !selectedRepo}
-              className="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 text-white font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-cyan-950/40"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] disabled:opacity-40 text-[#0A0B0D] font-medium text-xs transition-colors flex items-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0B0D]" />
                   <span>Checking local checkout...</span>
                 </>
               ) : (
@@ -639,38 +631,38 @@ export default function GithubConnectModal({
       ) : isConnected && user ? (
         /* Connected Account View */
         <div className="space-y-3.5">
-          <div className="p-3 rounded-xl bg-[#101018] border border-[#1f1f2e] flex items-center gap-3">
+          <div className="p-3 rounded-md bg-[#14161B] border border-[#22252B] flex items-center gap-3">
             {user.avatarUrl ? (
               <img
                 src={user.avatarUrl}
                 alt={user.username}
-                className="w-10 h-10 rounded-full border border-cyan-500/40 object-cover"
+                className="w-9 h-9 rounded-full border border-[#22252B] object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#1A1C22] border border-[#22252B] flex items-center justify-center text-[#4CC2DE] font-semibold text-xs">
                 {user.username.slice(0, 2).toUpperCase()}
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="font-bold text-zinc-100 truncate text-xs">{user.name || user.username}</div>
-              <div className="text-[11px] text-cyan-400 font-mono font-medium">@{user.username}</div>
+              <div className="font-semibold text-[#E6E8EB] truncate text-xs">{user.name || user.username}</div>
+              <div className="text-[11px] text-[#9AA1AC] font-mono">@{user.username}</div>
             </div>
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#3EAE79] shrink-0" />
           </div>
 
           {/* Workspace Associated Repository Card */}
           {associatedRepo && (
-            <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/40 space-y-1">
-              <div className="text-[9.5px] font-bold text-cyan-400 uppercase tracking-wider flex items-center justify-between">
+            <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B] space-y-1">
+              <div className="text-[10px] font-medium text-[#9AA1AC] uppercase tracking-wider flex items-center justify-between">
                 <span>Associated Workspace Repo</span>
-                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#3EAE79]" />
               </div>
-              <div className="font-bold text-zinc-100 text-xs flex items-center gap-1.5">
-                <GitFork className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+              <div className="font-medium text-[#E6E8EB] text-xs flex items-center gap-1.5 font-mono">
+                <GitFork className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
                 <span className="truncate">{associatedRepo.fullName}</span>
               </div>
               {associatedRemoteStatus && (
-                <div className="text-[10px] text-zinc-400">
+                <div className="text-[10px] text-[#6B7280]">
                   {associatedRemoteStatus}
                 </div>
               )}
@@ -678,8 +670,8 @@ export default function GithubConnectModal({
           )}
 
           {repoActionNotice && !associatedRepo && (
-            <div className="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-[10.5px] flex items-start gap-2 animate-fade-in">
-              <GitFork className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded-md bg-[#14161B] border border-[#22252B] text-[#E6E8EB] text-xs flex items-start gap-2">
+              <GitFork className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0 mt-0.5" />
               <span>{repoActionNotice}</span>
             </div>
           )}
@@ -689,7 +681,7 @@ export default function GithubConnectModal({
             <button
               onClick={handleOpenRepoPicker}
               disabled={loading}
-              className="w-full py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-cyan-950/40"
+              className="w-full py-2 px-3 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <GitFork className="w-3.5 h-3.5" />
               <span>{associatedRepo ? "Change Repository" : "Select Repository"}</span>
@@ -698,10 +690,10 @@ export default function GithubConnectModal({
             <button
               onClick={handleDisconnect}
               disabled={loading}
-              className="w-full py-1.5 px-3 rounded-xl bg-[#141420] hover:bg-rose-950/40 border border-[#252536] hover:border-rose-500/40 text-zinc-400 hover:text-rose-300 font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-1.5 px-3 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#DC5B5B] font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#DC5B5B]" />
               ) : (
                 <LogOut className="w-3.5 h-3.5" />
               )}
@@ -712,26 +704,26 @@ export default function GithubConnectModal({
       ) : user && isAuthExpired ? (
         /* Expired Account View */
         <div className="space-y-3.5">
-          <div className="p-3 rounded-xl bg-[#101018] border border-rose-500/40 flex items-center gap-3">
+          <div className="p-3 rounded-md bg-[#14161B] border border-[#DC5B5B]/30 flex items-center gap-3">
             {user.avatarUrl ? (
               <img
                 src={user.avatarUrl}
                 alt={user.username}
-                className="w-10 h-10 rounded-full border border-rose-500/40 object-cover opacity-70"
+                className="w-9 h-9 rounded-full border border-[#DC5B5B]/30 object-cover opacity-70"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-rose-950 border border-rose-500/40 flex items-center justify-center text-rose-300 font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 flex items-center justify-center text-[#DC5B5B] font-semibold text-xs">
                 {user.username.slice(0, 2).toUpperCase()}
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="font-bold text-zinc-100 truncate text-xs">{user.name || user.username}</div>
-              <div className="text-[11px] text-rose-400 font-mono font-medium">@{user.username} (Expired)</div>
+              <div className="font-semibold text-[#E6E8EB] truncate text-xs">{user.name || user.username}</div>
+              <div className="text-[11px] text-[#DC5B5B] font-mono">@{user.username} (Expired)</div>
             </div>
-            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-[#DC5B5B] shrink-0" />
           </div>
 
-          <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-[11px] leading-relaxed">
+          <div className="p-2.5 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] text-xs leading-relaxed">
             GitHub authentication expired or was revoked. Please reconnect your account to continue managing repositories.
           </div>
 
@@ -740,11 +732,11 @@ export default function GithubConnectModal({
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="w-full py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-cyan-950/40"
+              className="w-full py-2 px-3 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0B0D]" />
                   <span>Reconnecting...</span>
                 </>
               ) : (
@@ -758,7 +750,7 @@ export default function GithubConnectModal({
             <button
               onClick={handleDisconnect}
               disabled={loading}
-              className="w-full py-1.5 px-3 rounded-xl bg-[#141420] hover:bg-rose-950/40 border border-[#252536] hover:border-rose-500/40 text-zinc-400 hover:text-rose-300 font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-1.5 px-3 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#DC5B5B] font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Disconnect Account</span>
@@ -768,24 +760,24 @@ export default function GithubConnectModal({
       ) : (
         /* Disconnected State */
         <div className="space-y-3.5">
-          <p className="text-zinc-400 text-[11px] leading-relaxed">
+          <p className="text-[#9AA1AC] text-xs leading-relaxed">
             Connect your GitHub account to manage repositories and push your NEXUS workspace changes.
           </p>
 
           {errorMessage && (
-            <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-[11px] flex items-start gap-2 animate-fade-in">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] text-xs flex items-start gap-2">
+              <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Action Controls */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#1c1c2a]">
+          <div className="flex items-center justify-end gap-2.5 pt-2.5 border-t border-[#22252B]">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-3.5 py-1.5 rounded-xl bg-[#141420] hover:bg-[#1c1c2a] border border-[#252536] text-zinc-300 text-xs font-medium cursor-pointer transition-colors"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
             >
               Cancel
             </button>
@@ -794,11 +786,11 @@ export default function GithubConnectModal({
               type="button"
               onClick={handleConnect}
               disabled={loading}
-              className="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-cyan-950/40"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] disabled:opacity-50 text-[#0A0B0D] font-medium text-xs transition-colors flex items-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0B0D]" />
                   <span>Connecting...</span>
                 </>
               ) : (

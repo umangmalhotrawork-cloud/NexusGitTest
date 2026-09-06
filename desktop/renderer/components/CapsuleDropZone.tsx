@@ -112,9 +112,9 @@ export default function CapsuleDropZone({
 
       {/* Drag Overlay */}
       {isDragging && !disabled && (
-        <div className="absolute inset-0 z-50 rounded-xl bg-[#060c14]/90 backdrop-blur-sm border-2 border-dashed border-cyan-400 flex flex-col items-center justify-center p-6 text-center space-y-3 pointer-events-none animate-fadeIn">
-          <div className="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-            <Box className="w-6 h-6 text-cyan-300 animate-pulse" />
+        <div className="absolute inset-0 z-50 rounded-xl bg-black/80 border-2 border-dashed border-[#4CC2DE] flex flex-col items-center justify-center p-6 text-center space-y-3 pointer-events-none animate-fadeIn">
+          <div className="w-12 h-12 rounded-xl bg-[#14161B] border border-[#4CC2DE]/50 flex items-center justify-center">
+            <Box className="w-6 h-6 text-[#4CC2DE]" />
           </div>
           <div className="space-y-1">
             <div className="text-cyan-200 font-bold text-xs">

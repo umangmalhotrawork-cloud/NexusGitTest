@@ -257,28 +257,28 @@ export default function DeploymentInspectorPanel({
     switch (status) {
       case "READY":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)] shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 shrink-0">
             <CheckCircle2 className="w-3.5 h-3.5" />
             READY
           </span>
         );
       case "WARNING":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/80 text-amber-400 border border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.2)] shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-950/60 text-amber-400 border border-amber-500/30 shrink-0">
             <AlertTriangle className="w-3.5 h-3.5" />
             WARNINGS
           </span>
         );
       case "BLOCKED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-400 border border-rose-500/40 shadow-[0_0_8px_rgba(244,63,94,0.2)] shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-rose-950/60 text-rose-400 border border-rose-500/30 shrink-0">
             <XCircle className="w-3.5 h-3.5" />
             BLOCKED
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1A1C22] text-[#8C92A4] border border-[#22252B] shrink-0">
             <HelpCircle className="w-3.5 h-3.5" />
             UNKNOWN
           </span>
@@ -313,32 +313,32 @@ export default function DeploymentInspectorPanel({
     switch (suitability) {
       case "EXCELLENT":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)] shrink-0">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 shrink-0">
             EXCELLENT FIT
           </span>
         );
       case "GOOD":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-500/40 shrink-0">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30 shrink-0">
             GOOD FIT
           </span>
         );
       case "CONDITIONAL":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/90 text-amber-300 border border-amber-500/40 shrink-0">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/60 text-amber-300 border border-amber-500/30 shrink-0">
             CONDITIONAL
           </span>
         );
       case "POOR":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#8C92A4] border border-[#22252B] shrink-0">
             POOR FIT
           </span>
         );
       case "INCOMPATIBLE":
       default:
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-950/60 text-rose-400 border border-rose-500/30 shrink-0">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-950/60 text-rose-400 border border-rose-500/30 shrink-0">
             INCOMPATIBLE
           </span>
         );
@@ -365,22 +365,29 @@ export default function DeploymentInspectorPanel({
   const hasValidRecommendations = recommendations.some((r) => r.suitability === "EXCELLENT" || r.suitability === "GOOD" || r.suitability === "CONDITIONAL");
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0b0c10] text-zinc-200 font-mono select-none overflow-hidden min-w-0">
+    <div className="w-full h-full flex flex-col bg-[#0E1013] text-zinc-200 font-mono select-none overflow-hidden min-w-0">
       {/* Top Header */}
-      <header className="px-4 py-3 sm:px-5 border-b border-zinc-800/80 bg-[#0e1017] flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <header className="px-4 py-2.5 sm:px-5 border-b border-[#22252B] bg-[#0E1013] flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
+          <div className="w-7 h-7 rounded-md bg-[#14161B] border border-[#22252B] flex items-center justify-center text-[#4CC2DE] shrink-0">
             <Rocket className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-sm font-bold text-zinc-100 tracking-tight shrink-0">Deployment Inspector</h1>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 shrink-0">
+              <h1 className="text-sm font-semibold text-zinc-100 tracking-tight shrink-0">Deployment Inspector</h1>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#14161B] text-[#8C92A4] border border-[#22252B] shrink-0 font-sans">
                 Local Intelligence
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400 truncate max-w-md block" title={workspacePath || ""}>
-              {workspacePath || "No workspace opened"}
+            <p className="text-[11px] text-[#8C92A4] truncate max-w-md block" title={workspacePath || ""}>
+              {workspacePath ? (
+                <>
+                  <span className="text-zinc-300 font-medium">{workspacePath.split("/").pop()}</span>
+                  <span className="text-[#5A6072] ml-1.5">{workspacePath}</span>
+                </>
+              ) : (
+                "No workspace opened"
+              )}
             </p>
           </div>
         </div>
@@ -390,7 +397,7 @@ export default function DeploymentInspectorPanel({
           <button
             onClick={runInspection}
             disabled={loading || !workspacePath}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             <span className="shrink-0">{loading ? "Inspecting…" : "Inspect Project"}</span>
@@ -414,6 +421,21 @@ export default function DeploymentInspectorPanel({
           <div className="p-8 rounded-xl bg-[#11131c] border border-cyan-500/30 text-center space-y-3">
             <RefreshCw className="w-6 h-6 text-cyan-400 animate-spin mx-auto" />
             <p className="text-xs text-cyan-300 font-semibold">Analyzing deployment readiness & platform compatibility…</p>
+          </div>
+        )}
+
+        {/* Initial Centered Empty State */}
+        {!report && !loading && !error && (
+          <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-center p-8 space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-[#14161B] border border-[#22252B] flex items-center justify-center text-[#4CC2DE]">
+              <Rocket className="w-6 h-6" />
+            </div>
+            <div className="space-y-1 max-w-sm">
+              <h3 className="text-sm font-medium text-[#E6E8EB]">Ready to Inspect Deployment</h3>
+              <p className="text-xs text-[#9AA1AC]">
+                Click "Inspect Project" to evaluate framework manifests, runtime bindings, container requirements, and target platform compatibility.
+              </p>
+            </div>
           </div>
         )}
 
@@ -478,27 +500,29 @@ export default function DeploymentInspectorPanel({
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono bg-black/40 p-2.5 rounded-lg border border-zinc-800/80 text-zinc-300">
-              <div>
-                <span className="text-zinc-500">Workspace:</span>{" "}
-                <span className="text-zinc-200 font-semibold">{report.deploymentRepositoryContext.workspacePath ? report.deploymentRepositoryContext.workspacePath.split("/").pop() : "Current"}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono bg-[#14161B] p-3 rounded-lg border border-[#22252B] text-zinc-300">
+              <div className="min-w-0">
+                <span className="text-[#8C92A4]">Workspace:</span>{" "}
+                <span className="text-zinc-200 font-medium truncate" title={report.deploymentRepositoryContext.workspacePath || ""}>
+                  {report.deploymentRepositoryContext.workspacePath ? report.deploymentRepositoryContext.workspacePath.split("/").pop() : "Current"}
+                </span>
               </div>
-              <div>
-                <span className="text-zinc-500">Parent Git repo:</span>{" "}
+              <div className="min-w-0">
+                <span className="text-[#8C92A4]">Parent Git repo:</span>{" "}
                 <span className="text-zinc-300">{report.deploymentRepositoryContext.parentRepoName || "None"}</span>
                 {report.deploymentRepositoryContext.isNestedInParentRepo && (
-                  <span className="text-[10px] text-amber-400/90 ml-1.5">(Detected automatically: YES, Not used automatically)</span>
+                  <span className="text-[10px] text-amber-400/90 ml-1.5">(Detected: YES, Not used automatically)</span>
                 )}
               </div>
-              <div>
-                <span className="text-zinc-500">Deployment repository:</span>{" "}
-                <span className={userSelections.repository || report.deploymentRepositoryContext.remoteUrl ? "text-cyan-300" : "text-amber-300"}>
+              <div className="min-w-0 sm:col-span-2">
+                <span className="text-[#8C92A4]">Deployment repository:</span>{" "}
+                <span className={`break-all ${userSelections.repository || report.deploymentRepositoryContext.remoteUrl ? "text-[#4CC2DE]" : "text-amber-300"}`}>
                   {userSelections.repository || report.deploymentRepositoryContext.remoteUrl || "Not selected"}
                 </span>
               </div>
-              <div>
-                <span className="text-zinc-500">Execution source:</span>{" "}
-                <span className="text-zinc-200 font-semibold">
+              <div className="min-w-0 sm:col-span-2">
+                <span className="text-[#8C92A4]">Execution source:</span>{" "}
+                <span className="text-zinc-200 font-medium">
                   {userSelections.executionSource || (report.deploymentRepositoryContext.repositorySource === "WORKSPACE_GIT" ? "GIT_REMOTE" : "Not selected")}
                 </span>
               </div>
@@ -716,12 +740,12 @@ export default function DeploymentInspectorPanel({
                       key={rec.providerId}
                       className={`p-4 rounded-xl border transition-all space-y-3.5 min-w-0 ${
                         isTopRanked
-                          ? "bg-[#101422] border-cyan-500/40 shadow-[0_0_16px_rgba(6,182,212,0.15)]"
+                          ? "bg-[#14161B] border-[#4CC2DE]/40"
                           : rec.suitability === "EXCELLENT" || rec.suitability === "GOOD"
-                          ? "bg-[#11131c] border-zinc-800/90"
+                          ? "bg-[#111318] border-[#22252B]"
                           : rec.suitability === "CONDITIONAL"
-                          ? "bg-[#11131c] border-amber-500/20"
-                          : "bg-[#0d0e14] border-zinc-900 opacity-70"
+                          ? "bg-[#111318] border-amber-500/20"
+                          : "bg-[#0E1013] border-[#22252B] opacity-70"
                       }`}
                     >
                       {/* Provider Card Header */}
@@ -1059,9 +1083,9 @@ export default function DeploymentInspectorPanel({
       </div>
 
       {/* Action Footer (Fixed/Shrink-0 at bottom) */}
-      <footer className="px-4 py-3 sm:px-5 border-t border-zinc-800/80 bg-[#0e1017] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 shrink-0">
-          <Info className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+      <footer className="px-4 py-2.5 sm:px-5 border-t border-[#22252B] bg-[#0E1013] flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 text-[11px] text-[#8C92A4] shrink-0">
+          <Info className="w-3.5 h-3.5 text-[#5A6072] shrink-0" />
           <span>Deterministic analysis • 0 AI tokens</span>
         </div>
 
@@ -1069,9 +1093,9 @@ export default function DeploymentInspectorPanel({
           {workspacePath && (
             <button
               onClick={() => setShowAdvisorModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/50 transition-colors shadow-sm cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <Compass className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
               <span>Deployment Advisor</span>
             </button>
           )}
@@ -1079,9 +1103,9 @@ export default function DeploymentInspectorPanel({
           {report && report.overallStatus !== "UNKNOWN" && (
             <button
               onClick={() => setShowPlanModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-zinc-200 border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
               <span>Review Deployment Plan</span>
             </button>
           )}
@@ -1095,9 +1119,9 @@ export default function DeploymentInspectorPanel({
                   .join("\n\n");
                 onAskAgentToFix(`Please help resolve the following deployment readiness findings for this workspace:\n\n${issuesText}`);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-zinc-200 border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
               Fix Issues with AI
             </button>
           )}
@@ -1105,7 +1129,7 @@ export default function DeploymentInspectorPanel({
           {hasValidRecommendations && report?.recommendedProvider === "vercel" && isVercelConnected && report?.overallStatus !== "BLOCKED" ? (
             <button
               onClick={() => setDeployConsoleModal({ isOpen: true, providerId: "vercel", displayName: "Vercel" })}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors shadow-[0_0_12px_rgba(6,182,212,0.3)] cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] transition-colors cursor-pointer shrink-0"
             >
               <Rocket className="w-3.5 h-3.5" />
               Deploy to Vercel
@@ -1113,9 +1137,9 @@ export default function DeploymentInspectorPanel({
           ) : hasValidRecommendations && report?.recommendedProvider === "vercel" && !isVercelConnected ? (
             <button
               onClick={() => setCredentialsModal({ isOpen: true, providerId: "vercel", displayName: "Vercel" })}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] transition-colors cursor-pointer shrink-0"
             >
-              <Key className="w-3.5 h-3.5 text-cyan-400" />
+              <Key className="w-3.5 h-3.5 text-[#4CC2DE]" />
               Connect Vercel to Deploy
             </button>
           ) : (

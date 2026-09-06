@@ -100,7 +100,7 @@ export default function ApiKeyRequiredModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 select-none font-mono"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 select-none font-sans"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -109,24 +109,24 @@ export default function ApiKeyRequiredModal({
     >
       <div 
         ref={modalRef}
-        className="w-full max-w-md bg-[#0c0c14] border border-[#262636] rounded-2xl shadow-2xl overflow-hidden animate-fade-in text-xs text-zinc-200"
+        className="w-full max-w-md bg-[#111318] border border-[#22252B] rounded-xl shadow-modal overflow-hidden text-xs text-[#E6E8EB] font-sans"
       >
         
         {/* Header */}
-        <div className="p-4 border-b border-[#1c1c2a] flex items-center justify-between bg-[#08080d]">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+        <div className="p-4 border-b border-[#22252B] flex items-center justify-between bg-[#0E1013]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md bg-[#1A1C22] border border-[#22252B] flex items-center justify-center text-[#4CC2DE]">
               <Key className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="font-bold text-sm text-white tracking-tight">{currentMeta.name} API Key Configuration</h2>
-              <p className="text-[10.5px] text-zinc-400">Enter your {currentMeta.name} API key to enable AI features.</p>
+              <h2 className="font-semibold text-sm text-[#E6E8EB]">{currentMeta.name} API Key Configuration</h2>
+              <p className="text-[11px] text-[#9AA1AC]">Enter your {currentMeta.name} API key to enable AI features.</p>
             </div>
           </div>
           <button
             onClick={onClose}
             disabled={loading}
-            className="text-zinc-500 hover:text-zinc-200 p-1 rounded hover:bg-[#161622] transition-colors cursor-pointer"
+            className="text-[#9AA1AC] hover:text-[#E6E8EB] p-1 rounded-md hover:bg-[#14161B] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -136,7 +136,7 @@ export default function ApiKeyRequiredModal({
         <form onSubmit={handleContinue} className="p-4 space-y-3.5">
           {/* Provider Switcher */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+            <label className="text-[11px] font-medium text-[#9AA1AC]">
               Target Provider
             </label>
             <div className="relative">
@@ -144,14 +144,14 @@ export default function ApiKeyRequiredModal({
                 type="button"
                 onClick={() => setShowProviderDropdown(!showProviderDropdown)}
                 disabled={loading}
-                className="w-full bg-[#12121c] border border-[#252536] hover:border-[#3a3a50] rounded-xl px-3 py-2 text-zinc-100 flex items-center justify-between font-mono text-xs cursor-pointer"
+                className="w-full bg-[#14161B] border border-[#22252B] hover:border-[#2E323B] rounded-md px-3 py-2 text-[#E6E8EB] flex items-center justify-between font-sans text-xs cursor-pointer"
               >
-                <span className="font-bold text-cyan-300">{currentMeta.name}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="font-medium text-[#4CC2DE]">{currentMeta.name}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-[#9AA1AC]" />
               </button>
 
               {showProviderDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#0c0c16] border border-[#262638] rounded-xl shadow-2xl z-30 overflow-hidden py-1">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-[#1A1C22] border border-[#22252B] rounded-md shadow-popover z-30 overflow-hidden py-1">
                   {Object.entries(PROVIDER_METAS).map(([pId, meta]) => {
                     const isSelected = selectedProviderId === pId;
                     return (
@@ -163,12 +163,12 @@ export default function ApiKeyRequiredModal({
                           setShowProviderDropdown(false);
                           setErrorMessage(null);
                         }}
-                        className={`w-full px-3 py-1.5 text-left text-xs font-mono flex items-center justify-between transition-colors cursor-pointer ${
-                          isSelected ? "bg-cyan-950/60 text-cyan-300 font-bold" : "text-zinc-300 hover:bg-[#151522]"
+                        className={`w-full px-3 py-1.5 text-left text-xs font-sans flex items-center justify-between transition-colors cursor-pointer ${
+                          isSelected ? "bg-[#14161B] text-[#4CC2DE] font-medium" : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B]"
                         }`}
                       >
                         <span>{meta.name}</span>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400" />}
+                        {isSelected && <Check className="w-3.5 h-3.5 text-[#4CC2DE]" />}
                       </button>
                     );
                   })}
@@ -179,9 +179,9 @@ export default function ApiKeyRequiredModal({
 
           {/* API Key Input */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+            <label className="text-[11px] font-medium text-[#9AA1AC] flex items-center justify-between">
               <span>{currentMeta.name} API Key</span>
-              <span className="text-zinc-500 text-[9.5px]">Format: {currentMeta.placeholder}</span>
+              <span className="text-[#6B7280] text-[10px]">Format: {currentMeta.placeholder}</span>
             </label>
             <div className="relative">
               <input
@@ -194,49 +194,49 @@ export default function ApiKeyRequiredModal({
                 autoFocus
                 placeholder={`Enter ${currentMeta.name} API key (${currentMeta.placeholder})`}
                 disabled={loading}
-                className="w-full bg-[#12121c] border border-[#252536] focus:border-cyan-500/70 rounded-xl px-3 py-2 text-zinc-100 placeholder-zinc-600 outline-none text-xs font-mono transition-colors"
+                className="w-full bg-[#14161B] border border-[#22252B] focus:border-[#4CC2DE] rounded-md px-3 py-2 text-[#E6E8EB] placeholder-[#6B7280] outline-none text-xs font-mono transition-colors"
               />
-              <Lock className="w-3.5 h-3.5 text-zinc-500 absolute right-3 top-2.5 pointer-events-none" />
+              <Lock className="w-3.5 h-3.5 text-[#6B7280] absolute right-3 top-2.5 pointer-events-none" />
             </div>
           </div>
 
           {/* Error Message */}
           {errorMessage && (
-            <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-[11px] flex items-start gap-2 animate-fade-in">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded-md bg-[#DC5B5B]/10 border border-[#DC5B5B]/30 text-[#DC5B5B] text-xs flex items-start gap-2">
+              <AlertCircle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Security Note */}
-          <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-1">
+          <div className="flex items-center justify-between text-[11px] text-[#6B7280] pt-1">
             <div className="flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <Shield className="w-3.5 h-3.5 text-[#3EAE79] shrink-0" />
               <span>Stored securely in encrypted OS vault.</span>
             </div>
             {currentMeta.helpUrl && (
-              <span className="text-cyan-400/80">Never shared between providers</span>
+              <span className="text-[#4CC2DE]">Never shared between providers</span>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#1c1c2a]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#22252B]">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-3 py-1.5 rounded-xl bg-[#141420] hover:bg-[#1c1c2a] border border-[#252536] text-zinc-300 text-xs font-medium cursor-pointer transition-colors"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs font-medium cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !apiKey.trim()}
-              className="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 disabled:hover:bg-cyan-600 text-white text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-md shadow-cyan-950/50 cursor-pointer"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] disabled:opacity-40 disabled:hover:bg-[#4CC2DE] text-[#0A0B0D] text-xs font-medium font-sans transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-200" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0B0D]" />
                   <span>Validating Key...</span>
                 </>
               ) : (

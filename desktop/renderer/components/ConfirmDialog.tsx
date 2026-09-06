@@ -36,40 +36,40 @@ export default function ConfirmDialog({
     >
       <div 
         ref={dialogRef}
-        className="w-full max-w-md bg-[#0a0a0a] border border-[#1f1f1f] rounded-2xl shadow-2xl p-6 space-y-4 font-sans"
+        className="w-full max-w-md bg-[#111318] border border-[#22252B] rounded-xl shadow-modal p-6 space-y-4 font-sans"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/30 text-amber-400">
+          <div className="p-2 rounded-md bg-[#D9A441]/10 border border-[#D9A441]/30 text-[#D9A441]">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-heading font-bold text-base text-white">Save changes?</h3>
-            <p className="text-xs text-zinc-400 font-mono">
-              Do you want to save the changes to <span className="text-cyan-300 font-bold">{fileName}</span>?
+            <h3 className="font-semibold text-sm text-[#E6E8EB]">Save changes?</h3>
+            <p className="text-xs text-[#9AA1AC] mt-0.5">
+              Do you want to save the changes to <span className="text-[#E6E8EB] font-mono font-medium">{fileName}</span>?
             </p>
           </div>
         </div>
 
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-[#6B7280]">
           Your changes will be lost if you don't save them.
         </p>
 
-        <div className="flex items-center justify-end gap-2 font-mono text-xs pt-2 border-t border-[#1f1f1f]">
+        <div className="flex items-center justify-end gap-2 font-sans text-xs pt-3 border-t border-[#22252B]">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-xl border border-[#262626] text-zinc-300 hover:bg-[#141414] transition-all"
+            className="px-3.5 py-1.5 rounded-md border border-[#22252B] bg-[#14161B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22] transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onDiscard}
-            className="px-4 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-300 font-bold transition-all"
+            className="px-3.5 py-1.5 rounded-md bg-[#DC5B5B]/10 hover:bg-[#DC5B5B]/20 border border-[#DC5B5B]/30 text-[#DC5B5B] font-medium transition-colors"
           >
             Discard
           </button>
           <button
             onClick={onSave}
-            className="px-5 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold shadow-cyan-glow transition-all"
+            className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium transition-colors"
           >
             Save
           </button>

@@ -142,7 +142,7 @@ export default function ClonePanel({
           <button
             onClick={onRunScan}
             disabled={loading}
-            className="px-3 py-1 rounded-xl bg-pink-950/80 hover:bg-pink-900 border border-pink-500/40 text-pink-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(236,72,153,0.25)]"
+            className="px-3 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE] text-xs font-medium flex items-center gap-1.5 transition-colors"
           >
             {loading ? (
               <Activity className="w-3.5 h-3.5 animate-spin" />
@@ -167,11 +167,11 @@ export default function ClonePanel({
       {/* 2. Main Content Body */}
       {!report && !loading ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#0e0e0e] border border-pink-500/30 flex items-center justify-center text-pink-400 shadow-2xl">
-            <Layers className="w-8 h-8 opacity-80" />
+          <div className="w-12 h-12 rounded-xl bg-[#14161B] border border-[#22252B] flex items-center justify-center text-[#4CC2DE]">
+            <Layers className="w-6 h-6" />
           </div>
           <div className="max-w-md space-y-1">
-            <h3 className="font-heading font-bold text-base text-white">
+            <h3 className="font-heading font-semibold text-base text-white">
               Structural AST Clone Detection
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed font-sans">
@@ -180,7 +180,7 @@ export default function ClonePanel({
           </div>
           <button
             onClick={onRunScan}
-            className="px-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-400 text-black text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all"
+            className="px-4 py-2 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] text-xs font-medium flex items-center gap-2 transition-colors"
           >
             <Sparkles className="w-4 h-4" />
             <span>Detect Structural Clones</span>
@@ -316,7 +316,7 @@ export default function ClonePanel({
 
                         <button
                           onClick={() => onSelectInstance(inst)}
-                          className="px-2.5 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-xs font-bold flex items-center gap-1 transition-all group-hover:shadow-cyan-glow"
+                          className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] text-xs font-medium flex items-center gap-1 transition-colors"
                         >
                           <span>Jump to Code</span>
                           <ArrowUpRight className="w-3.5 h-3.5" />

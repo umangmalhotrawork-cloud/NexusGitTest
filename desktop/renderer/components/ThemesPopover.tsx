@@ -31,35 +31,25 @@ export default function ThemesPopover({
   return (
     <div
       ref={popoverRef}
-      className="absolute top-11 right-12 w-84 border rounded-2xl shadow-2xl z-50 p-3 space-y-2.5 font-mono text-xs animate-fade-in select-none"
-      style={{
-        backgroundColor: "var(--theme-surface-raised, #0a0a0f)",
-        borderColor: "var(--theme-border-card, #1f1f2e)",
-        color: "var(--theme-text, #f4f4f5)",
-      }}
+      className="absolute top-11 right-12 w-84 border border-[#22252B] rounded-lg shadow-popover z-50 p-3 space-y-2.5 font-sans text-xs select-none bg-[#1A1C22] text-[#E6E8EB]"
     >
       {/* Header */}
       <div
-        className="flex items-center justify-between border-b pb-2"
-        style={{ borderColor: "var(--theme-border-subtle, #1c1c28)" }}
+        className="flex items-center justify-between border-b border-[#22252B] pb-2"
       >
-        <div className="flex items-center gap-2 font-bold text-xs" style={{ color: "var(--theme-accent, #22d3ee)" }}>
-          <Palette className="w-4 h-4" />
+        <div className="flex items-center gap-2 font-medium text-xs text-[#E6E8EB]">
+          <Palette className="w-4 h-4 text-[#4CC2DE]" />
           <span>NEXUS Themes</span>
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="text-[9.5px] px-1.5 py-0.5 rounded font-bold"
-            style={{
-              backgroundColor: "var(--theme-accent-dim, rgba(34,211,238,0.15))",
-              color: "var(--theme-accent, #22d3ee)",
-            }}
+            className="text-[10px] px-1.5 py-0.5 rounded border border-[#22252B] bg-[#14161B] text-[#9AA1AC] font-mono"
           >
             8 Available
           </span>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-white cursor-pointer p-0.5 rounded hover:bg-white/5 transition-colors"
+            className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer p-0.5 rounded transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -67,7 +57,7 @@ export default function ThemesPopover({
       </div>
 
       {/* Theme Cards List */}
-      <div className="space-y-1.5 max-h-[380px] overflow-y-auto pr-0.5">
+      <div className="space-y-1 max-h-[380px] overflow-y-auto pr-0.5">
         {THEMES.map((theme: ThemeDefinition) => {
           const isActive = theme.id === activeThemeId;
 
@@ -78,28 +68,24 @@ export default function ThemesPopover({
                 onSelectTheme(theme.id);
                 onClose();
               }}
-              className={`w-full p-2 rounded-xl text-left transition-all flex items-center justify-between group cursor-pointer border ${
+              className={`w-full p-2 rounded-md text-left transition-colors flex items-center justify-between group cursor-pointer border ${
                 isActive
-                  ? "border-cyan-500/60 bg-cyan-950/30 shadow-sm"
-                  : "border-transparent hover:border-white/10 hover:bg-white/5"
+                  ? "border-[#2E323B] bg-[#111318]"
+                  : "border-transparent hover:bg-[#14161B]"
               }`}
-              style={{
-                borderColor: isActive ? "var(--border-focus, #22d3ee)" : undefined,
-                backgroundColor: isActive ? "var(--accent-primary-dim, rgba(34,211,238,0.12))" : undefined,
-              }}
             >
               {/* Left: Swatches + Name + Description */}
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
                 {/* 4-Color Swatch Preview Box */}
                 <div
-                  className="w-7 h-7 rounded-lg p-0.5 grid grid-cols-2 gap-0.5 shrink-0 shadow-inner border border-white/10"
+                  className="w-6 h-6 rounded-md p-0.5 grid grid-cols-2 gap-0.5 shrink-0 border border-[#22252B]"
                   style={{ backgroundColor: theme.colors.themeBackground }}
                   title={`${theme.name} Palette Preview`}
                 >
                   {theme.colors.swatches.map((color, idx) => (
                     <div
                       key={idx}
-                      className="w-full h-full rounded-[2px]"
+                      className="w-full h-full rounded-[1px]"
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -107,16 +93,16 @@ export default function ThemesPopover({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-[11.5px] truncate text-zinc-100 group-hover:text-white">
+                    <span className="font-medium text-xs truncate text-[#E6E8EB]">
                       {theme.name}
                     </span>
                     {theme.id === "nexus-dark" && (
-                      <span className="text-[8.5px] px-1 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold">
+                      <span className="text-[9px] px-1 py-0.2 rounded bg-[#14161B] text-[#4CC2DE] border border-[#22252B] font-mono">
                         DEFAULT
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-zinc-400 truncate mt-0.5">
+                  <div className="text-[11px] text-[#6B7280] truncate mt-0.5">
                     {theme.description}
                   </div>
                 </div>
@@ -126,17 +112,12 @@ export default function ThemesPopover({
               <div className="shrink-0 ml-2">
                 {isActive ? (
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center border"
-                    style={{
-                      backgroundColor: "var(--accent-primary, #22d3ee)",
-                      color: "#000000",
-                      borderColor: "var(--accent-primary, #22d3ee)",
-                    }}
+                    className="w-4 h-4 rounded-full flex items-center justify-center bg-[#4CC2DE] text-[#0A0B0D]"
                   >
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 ) : (
-                  <div className="w-5 h-5 rounded-full border border-white/10 group-hover:border-white/30 transition-colors" />
+                  <div className="w-4 h-4 rounded-full border border-[#22252B] group-hover:border-[#2E323B] transition-colors" />
                 )}
               </div>
             </button>
@@ -146,14 +127,13 @@ export default function ThemesPopover({
 
       {/* Footer */}
       <div
-        className="pt-2 border-t flex items-center justify-between text-[10px] text-zinc-400"
-        style={{ borderColor: "var(--border-subtle, #1c1c28)" }}
+        className="pt-2 border-t border-[#22252B] flex items-center justify-between text-[11px] text-[#6B7280]"
       >
         <span className="flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-cyan-400" />
-          <span>Global NEXUS Theme Engine</span>
+          <Sparkles className="w-3 h-3 text-[#4CC2DE]" />
+          <span>Global Theme Engine</span>
         </span>
-        <span className="text-[9.5px] text-zinc-500">Persistent across sessions</span>
+        <span className="text-[10px] text-[#6B7280]">Persistent</span>
       </div>
     </div>
   );

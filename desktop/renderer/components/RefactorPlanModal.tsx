@@ -105,21 +105,21 @@ export default function RefactorPlanModal({
   const getStatusBadge = (status: string) => {
     switch (status?.toUpperCase()) {
       case "PROPOSED":
-        return "bg-cyan-500/10 border-cyan-500/30 text-cyan-300";
+        return "bg-[#4CC2DE]/10 border-[#4CC2DE]/30 text-[#4CC2DE]";
       case "APPROVED":
-        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
+        return "bg-[#3EAE79]/10 border-[#3EAE79]/30 text-[#3EAE79]";
       case "EXECUTING":
-        return "bg-purple-500/10 border-purple-500/30 text-purple-300 animate-pulse";
+        return "bg-[#4CC2DE]/10 border-[#4CC2DE]/30 text-[#4CC2DE]";
       case "VERIFYING":
-        return "bg-blue-500/10 border-blue-500/30 text-blue-300 animate-pulse";
+        return "bg-[#5A8FD6]/10 border-[#5A8FD6]/30 text-[#5A8FD6]";
       case "COMPLETED":
-        return "bg-emerald-500/20 border-emerald-500/40 text-emerald-400";
+        return "bg-[#3EAE79]/15 border-[#3EAE79]/40 text-[#3EAE79]";
       case "CANCELLED":
-        return "bg-zinc-500/20 border-zinc-500/30 text-zinc-400";
+        return "bg-[#6B7280]/15 border-[#22252B] text-[#9AA1AC]";
       case "FAILED":
-        return "bg-rose-500/20 border-rose-500/40 text-rose-400";
+        return "bg-[#DC5B5B]/15 border-[#DC5B5B]/40 text-[#DC5B5B]";
       default:
-        return "bg-zinc-500/10 border-zinc-500/20 text-zinc-300";
+        return "bg-[#14161B] border-[#22252B] text-[#9AA1AC]";
     }
   };
 
@@ -162,62 +162,57 @@ export default function RefactorPlanModal({
   const progressPercent = plan.tasks.length > 0 ? Math.round((completedTaskCount / plan.tasks.length) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 font-sans">
       <div 
-        className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl border shadow-2xl overflow-hidden font-sans"
-        style={{
-          backgroundColor: "var(--theme-surface-modal, #0f0f18)",
-          borderColor: "var(--theme-border-card, #27273a)",
-          color: "var(--theme-text, #f4f4f5)",
-        }}
+        className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-xl border border-[#22252B] bg-[#111318] shadow-modal overflow-hidden font-sans text-xs text-[#E6E8EB]"
       >
         {/* Header */}
-        <div className="p-5 border-b flex items-start justify-between gap-4" style={{ borderColor: "var(--theme-border, #1e1e2d)" }}>
+        <div className="p-4 border-b border-[#22252B] flex items-start justify-between gap-4 bg-[#0E1013]">
           <div className="space-y-1.5 min-w-0">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-                <GitMerge className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-[#1A1C22] border border-[#22252B] text-[#4CC2DE]">
+                <GitMerge className="w-3.5 h-3.5 text-[#4CC2DE]" />
                 <span>NEXUS Refactor Plan</span>
               </div>
-              <div className={`px-2.5 py-1 rounded-full text-xs font-mono font-medium border ${getStatusBadge(plan.status)}`}>
+              <div className={`px-2 py-0.5 rounded text-xs font-medium border ${getStatusBadge(plan.status)}`}>
                 STATUS: {plan.status}
               </div>
-              <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono border ${riskMeta.bg}`}>
+              <div className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs border ${riskMeta.bg}`}>
                 <RiskIcon className="w-3 h-3" />
                 <span>{riskMeta.label}</span>
               </div>
             </div>
-            <h2 className="text-lg font-bold tracking-tight text-white line-clamp-2">
+            <h2 className="text-base font-semibold tracking-tight text-[#E6E8EB] line-clamp-2">
               {plan.goal}
             </h2>
-            <div className="text-xs font-mono text-zinc-400 flex items-center gap-2">
-              <span>Plan ID: <code className="text-zinc-300">{plan.planId}</code></span>
+            <div className="text-xs text-[#9AA1AC] flex items-center gap-2 font-mono">
+              <span>Plan ID: <code className="text-[#E6E8EB]">{plan.planId}</code></span>
               <span>•</span>
-              <span>Scope: <strong className="text-zinc-200">{plan.affectedFiles.length} files</strong> ({plan.tasks.length} subtasks)</span>
+              <span className="font-sans">Scope: <strong className="text-[#E6E8EB] font-mono">{plan.affectedFiles.length} files</strong> ({plan.tasks.length} subtasks)</span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+            className="p-1 rounded-md text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] transition-colors shrink-0"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Execution Progress Bar (if executing or completed) */}
         {(isRunning || isDone || completedTaskCount > 0) && (
-          <div className="px-5 pt-3 pb-1 border-b" style={{ borderColor: "var(--theme-border, #1e1e2d)" }}>
-            <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                {isRunning && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
+          <div className="px-5 pt-3 pb-2 border-b border-[#22252B] bg-[#0E1013]/40">
+            <div className="flex items-center justify-between text-xs mb-1.5 font-mono">
+              <span className="text-[#9AA1AC] flex items-center gap-1.5 font-sans">
+                {isRunning && <Loader2 className="w-3.5 h-3.5 text-[#4CC2DE] animate-spin" />}
                 {isDone ? "Refactor execution completed" : `Executing tasks (${completedTaskCount}/${plan.tasks.length})`}
               </span>
-              <span className="font-bold text-cyan-400">{progressPercent}%</span>
+              <span className="font-medium text-[#4CC2DE]">{progressPercent}%</span>
             </div>
-            <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-[#14161B] rounded-full overflow-hidden border border-[#22252B]">
               <div
                 className={`h-full transition-all duration-300 ${
-                  isDone ? "bg-emerald-400" : isFailed ? "bg-rose-400" : "bg-cyan-400"
+                  isDone ? "bg-[#3EAE79]" : isFailed ? "bg-[#DC5B5B]" : "bg-[#4CC2DE]"
                 }`}
                 style={{ width: `${progressPercent}%` }}
               />
@@ -226,11 +221,11 @@ export default function RefactorPlanModal({
         )}
 
         {/* Tab Navigation */}
-        <div className="px-5 pt-2 flex items-center gap-3 border-b text-xs font-mono" style={{ borderColor: "var(--theme-border, #1e1e2d)" }}>
+        <div className="px-5 pt-2 flex items-center gap-4 border-b border-[#22252B] text-xs bg-[#0E1013]/20">
           <button
             onClick={() => setActiveTab("tasks")}
-            className={`pb-2.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "tasks" ? "border-cyan-400 text-cyan-400" : "border-transparent text-zinc-400 hover:text-zinc-200"
+            className={`pb-2 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === "tasks" ? "border-[#4CC2DE] text-[#4CC2DE]" : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
             }`}
           >
             <ListTree className="w-3.5 h-3.5" />
@@ -238,8 +233,8 @@ export default function RefactorPlanModal({
           </button>
           <button
             onClick={() => setActiveTab("files")}
-            className={`pb-2.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "files" ? "border-cyan-400 text-cyan-400" : "border-transparent text-zinc-400 hover:text-zinc-200"
+            className={`pb-2 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === "files" ? "border-[#4CC2DE] text-[#4CC2DE]" : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
             }`}
           >
             <FileCode className="w-3.5 h-3.5" />
@@ -248,8 +243,8 @@ export default function RefactorPlanModal({
           {plan.testsToRun.length > 0 && (
             <button
               onClick={() => setActiveTab("verification")}
-              className={`pb-2.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
-                activeTab === "verification" ? "border-cyan-400 text-cyan-400" : "border-transparent text-zinc-400 hover:text-zinc-200"
+              className={`pb-2 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
+                activeTab === "verification" ? "border-[#4CC2DE] text-[#4CC2DE]" : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -393,15 +388,15 @@ export default function RefactorPlanModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t flex items-center justify-between gap-3 bg-black/20" style={{ borderColor: "var(--theme-border, #1e1e2d)" }}>
+        <div className="p-3.5 border-t border-[#22252B] flex items-center justify-between gap-3 bg-[#0E1013]">
           <div className="flex items-center gap-3">
             {isProposed && (
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-mono text-zinc-400 select-none">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-sans text-[#9AA1AC] select-none">
                 <input
                   type="checkbox"
                   checked={stepByStep}
                   onChange={(e) => setStepByStep(e.target.checked)}
-                  className="rounded border-zinc-700 bg-zinc-800 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-0"
+                  className="rounded border-[#22252B] bg-[#14161B] text-[#4CC2DE] focus:ring-0"
                 />
                 <span>Step-by-step confirmation</span>
               </label>
@@ -413,16 +408,16 @@ export default function RefactorPlanModal({
               <>
                 <button
                   onClick={() => onCancelPlan("Cancelled by user")}
-                  className="px-4 py-2 rounded-xl text-xs font-mono font-medium border border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-md text-xs font-medium border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Cancel Plan</span>
                 </button>
                 <button
                   onClick={() => onApproveAndExecute(stepByStep)}
-                  className="px-4 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer"
+                  className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Play className="w-3.5 h-3.5 fill-black" />
+                  <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Approve & Execute</span>
                 </button>
               </>
@@ -431,9 +426,9 @@ export default function RefactorPlanModal({
             {isRunning && (
               <button
                 disabled
-                className="px-4 py-2 rounded-xl text-xs font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-400 flex items-center gap-2 cursor-not-allowed"
+                className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#14161B] border border-[#22252B] text-[#9AA1AC] flex items-center gap-2 cursor-not-allowed"
               >
-                <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 text-[#4CC2DE] animate-spin" />
                 <span>Executing Plan Tasks...</span>
               </button>
             )}
@@ -441,7 +436,7 @@ export default function RefactorPlanModal({
             {(isDone || isCancelled || isFailed) && (
               <button
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-mono font-medium bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Close</span>

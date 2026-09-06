@@ -341,10 +341,10 @@ export default function WhyDidThisBreakModal({
             <button
               type="button"
               onClick={handleAskToFix}
-              className="px-3.5 py-1.5 rounded-xl bg-purple-950 hover:bg-purple-900 border border-purple-500/50 text-purple-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(168,85,247,0.35)] transition-all hover:brightness-110"
+              className="px-3.5 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#4CC2DE] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
               title="Pass causal context into standard NEXUS agent workflow"
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE]" />
               <span>Ask Agent to Fix</span>
             </button>
           )}

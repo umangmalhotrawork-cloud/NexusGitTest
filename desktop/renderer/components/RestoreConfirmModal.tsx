@@ -42,74 +42,74 @@ export default function RestoreConfirmModal({
     >
       <div 
         ref={modalRef}
-        className="bg-[#0a0a0a] border border-amber-500/50 rounded-2xl p-6 max-w-2xl w-full space-y-4 shadow-2xl font-mono text-xs animate-fade-in"
+        className="bg-[#111318] border border-[#22252B] rounded-xl p-5 max-w-2xl w-full space-y-4 shadow-modal font-sans text-xs"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-3">
-          <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-            <RotateCcw className="w-5 h-5 text-amber-400" />
-            <span>Confirm Time-Travel Checkpoint Restore</span>
+        <div className="flex items-center justify-between border-b border-[#22252B] pb-3">
+          <div className="flex items-center gap-2 text-[#D9A441] font-semibold text-sm">
+            <RotateCcw className="w-4 h-4 text-[#D9A441]" />
+            <span className="text-[#E6E8EB]">Confirm Time-Travel Checkpoint Restore</span>
           </div>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+          <button onClick={onClose} className="text-[#9AA1AC] hover:text-[#E6E8EB] p-1 rounded-md hover:bg-[#14161B] transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Warning / Summary Info */}
-        <div className="bg-amber-950/40 border border-amber-500/30 rounded-xl p-3 text-amber-200 text-xs font-sans space-y-1">
-          <div className="flex items-center gap-1.5 font-bold">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+        <div className="bg-[#D9A441]/10 border border-[#D9A441]/30 rounded-lg p-3 text-[#D9A441] text-xs font-sans space-y-1">
+          <div className="flex items-center gap-1.5 font-semibold">
+            <AlertTriangle className="w-4 h-4 text-[#D9A441] shrink-0" />
             <span>Restoring Pre-Surgery State for {fileName}</span>
           </div>
-          <p className="text-zinc-300 text-[11px] leading-relaxed">
-            This operation will revert <span className="font-mono text-amber-300">{fileName}</span> back to its state prior to checkpoint <span className="font-mono text-cyan-300">{entry.id}</span>. AST analysis, luminance metrics, clones, and graph will automatically re-index upon completion.
+          <p className="text-[#9AA1AC] text-[11px] leading-relaxed">
+            This operation will revert <span className="font-mono text-[#E6E8EB] font-medium">{fileName}</span> back to its state prior to checkpoint <span className="font-mono text-[#4CC2DE]">{entry.id}</span>. AST analysis, luminance metrics, clones, and graph will automatically re-index upon completion.
           </p>
         </div>
 
         {/* File Details Grid */}
-        <div className="grid grid-cols-2 gap-3 text-[11px] bg-[#0d0d0d] p-3 rounded-xl border border-[#1f1f1f]">
+        <div className="grid grid-cols-2 gap-3 text-[11px] bg-[#0E1013] p-3 rounded-lg border border-[#22252B]">
           <div>
-            <span className="text-zinc-500 block">File Path:</span>
-            <span className="text-zinc-200 font-bold truncate block" title={entry.file_path}>{entry.file_path}</span>
+            <span className="text-[#6B7280] block">File Path:</span>
+            <span className="text-[#E6E8EB] font-medium truncate block font-mono" title={entry.file_path}>{entry.file_path}</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Checkpoint ID:</span>
-            <span className="text-cyan-300 font-bold font-mono">{entry.id}</span>
+            <span className="text-[#6B7280] block">Checkpoint ID:</span>
+            <span className="text-[#4CC2DE] font-mono">{entry.id}</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Original Timestamp:</span>
-            <span className="text-zinc-300">{new Date(entry.timestamp).toLocaleString()}</span>
+            <span className="text-[#6B7280] block">Original Timestamp:</span>
+            <span className="text-[#9AA1AC]">{new Date(entry.timestamp).toLocaleString()}</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Target Operation:</span>
-            <span className="text-amber-300 font-bold">{entry.operation_type}</span>
+            <span className="text-[#6B7280] block">Target Operation:</span>
+            <span className="text-[#D9A441] font-mono font-medium">{entry.operation_type}</span>
           </div>
         </div>
 
         {/* Code Diff Preview Box */}
         <div className="space-y-1.5">
-          <span className="text-zinc-400 font-bold text-[11px] flex items-center justify-between">
+          <span className="text-[#9AA1AC] font-medium text-[11px] flex items-center justify-between">
             <span>Restored Source Snapshot Preview</span>
-            <span className="text-zinc-500 text-[10px]">{beforeLines.length} Lines</span>
+            <span className="text-[#6B7280] text-[10px]">{beforeLines.length} Lines</span>
           </span>
-          <div className="bg-[#050505] border border-[#1f1f1f] rounded-xl p-3 max-h-48 overflow-y-auto font-mono text-[11px] leading-relaxed text-zinc-300 space-y-0.5">
+          <div className="bg-[#0B0C0F] border border-[#22252B] rounded-lg p-3 max-h-48 overflow-y-auto font-mono text-[11px] leading-relaxed text-[#E6E8EB] space-y-0.5">
             {beforeLines.slice(0, 15).map((line, idx) => (
               <div key={idx} className="flex items-center gap-3">
-                <span className="w-6 text-right text-zinc-600 select-none text-[10px]">{idx + 1}</span>
+                <span className="w-6 text-right text-[#6B7280] select-none text-[10px]">{idx + 1}</span>
                 <span className="whitespace-pre">{line}</span>
               </div>
             ))}
             {beforeLines.length > 15 && (
-              <div className="text-zinc-500 italic text-[10px] pt-1 text-center">... and {beforeLines.length - 15} more lines</div>
+              <div className="text-[#6B7280] italic text-[10px] pt-1 text-center">... and {beforeLines.length - 15} more lines</div>
             )}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[#22252B]">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl border border-[#262626] text-zinc-300 hover:bg-[#141414] transition-all"
+            className="px-3.5 py-1.5 rounded-md border border-[#22252B] bg-[#14161B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22] transition-colors font-sans text-xs font-medium"
             disabled={isRestoring}
           >
             Cancel
@@ -117,9 +117,9 @@ export default function RestoreConfirmModal({
           <button
             onClick={() => onConfirmRestore(entry.id)}
             disabled={isRestoring}
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold transition-all shadow-amber-glow flex items-center gap-2"
+            className="px-4 py-1.5 rounded-md bg-[#D9A441] hover:bg-[#c99534] text-[#0A0B0D] font-medium transition-colors flex items-center gap-2 font-sans text-xs"
           >
-            <RotateCcw className="w-4 h-4 text-black" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#0A0B0D]" />
             <span>{isRestoring ? "Restoring Checkpoint..." : "Confirm Restore Checkpoint"}</span>
           </button>
         </div>

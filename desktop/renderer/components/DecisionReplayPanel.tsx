@@ -250,24 +250,24 @@ export default function DecisionReplayPanel({
   };
 
   return (
-    <div className="flex flex-col h-full w-full min-w-0 max-w-full bg-[#0d0d12] text-zinc-200 border-r border-[#1a1a24] select-none font-sans text-xs overflow-hidden">
+    <div className="flex flex-col h-full w-full min-w-0 max-w-full bg-[#0E1013] text-zinc-200 border-r border-[#22252B] select-none font-sans text-xs overflow-hidden">
       {/* Header */}
-      <div className="p-2.5 border-b border-[#1a1a24] flex items-center justify-between shrink-0 min-w-0 max-w-full">
+      <div className="h-10 px-3 border-b border-[#22252B] flex items-center justify-between shrink-0 min-w-0 max-w-full bg-[#0E1013]">
         <div className="flex items-center gap-2 min-w-0">
-          <BookmarkCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+          <BookmarkCheck className="w-4 h-4 text-[#4CC2DE] shrink-0" />
           <span className="font-semibold text-zinc-100 text-sm tracking-tight truncate">Decision Replay</span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setShowAddModal(true)}
-            className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-cyan-300 transition-colors cursor-pointer"
+            className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-[#4CC2DE] transition-colors cursor-pointer"
             title="Log New Decision"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={loadDecisions}
-            className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+            className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-zinc-200 transition-colors cursor-pointer"
             title="Refresh Decisions"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -275,7 +275,7 @@ export default function DecisionReplayPanel({
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+              className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-zinc-200 transition-colors cursor-pointer"
               title="Close Decision Replay (Back to Explorer)"
             >
               <X className="w-3.5 h-3.5" />
@@ -285,10 +285,10 @@ export default function DecisionReplayPanel({
       </div>
 
       {/* "Why" Replay Question Bar */}
-      <div className="p-2.5 border-b border-[#1a1a24] bg-[#08080c]/60 shrink-0 min-w-0 max-w-full">
+      <div className="p-2.5 border-b border-[#22252B] bg-[#0E1013] shrink-0 min-w-0 max-w-full">
         <form onSubmit={handleReplay} className="space-y-1.5 min-w-0 max-w-full">
-          <label className="text-[11px] font-mono text-cyan-400 font-semibold flex items-center gap-1 min-w-0">
-            <HelpCircle className="w-3 h-3 text-cyan-400 shrink-0" />
+          <label className="text-[11px] font-mono text-[#4CC2DE] font-semibold flex items-center gap-1 min-w-0">
+            <HelpCircle className="w-3 h-3 text-[#4CC2DE] shrink-0" />
             <span className="truncate">Ask "Why" about Architecture or Code:</span>
           </label>
           <div className="flex items-center gap-1.5 min-w-0 max-w-full">
@@ -297,12 +297,12 @@ export default function DecisionReplayPanel({
               value={replayQuery}
               onChange={(e) => setReplayQuery(e.target.value)}
               placeholder="e.g. Why is validation before payment?"
-              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#121218] border border-[#222230] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50"
+              className="flex-1 min-w-0 px-2.5 py-1.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE]"
             />
             <button
               type="submit"
               disabled={replaying || !replayQuery.trim()}
-              className="px-2.5 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-mono text-[11px] font-semibold transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] disabled:opacity-50 text-[#0E1013] font-mono text-[11px] font-medium transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
             >
               <Sparkles className="w-3 h-3 shrink-0" />
               <span>Replay</span>
@@ -313,20 +313,20 @@ export default function DecisionReplayPanel({
 
       {/* Replay Answer Modal / Dropdown Box */}
       {replayAnswer && (
-        <div className="p-2.5 border-b border-cyan-500/30 bg-gradient-to-b from-cyan-950/20 to-[#0c0d14] space-y-2 shrink-0 min-w-0 max-w-full">
+        <div className="p-2.5 border-b border-[#22252B] bg-[#111318] space-y-2 shrink-0 min-w-0 max-w-full">
           <div className="flex items-center justify-between min-w-0">
-            <span className="text-[11px] font-mono text-cyan-300 font-bold uppercase tracking-wider truncate">
+            <span className="text-[11px] font-mono text-[#4CC2DE] font-semibold uppercase tracking-wider truncate">
               Reconstructed Decision
             </span>
             <button
               onClick={() => setReplayAnswer(null)}
-              className="text-zinc-500 hover:text-zinc-300 text-xs font-mono shrink-0 cursor-pointer"
+              className="text-[#8C92A4] hover:text-zinc-300 text-xs font-mono shrink-0 cursor-pointer"
             >
               ✕ Dismiss
             </button>
           </div>
 
-          <div className="p-2.5 rounded bg-[#0a0a0f] border border-[#1e1e2d] space-y-2 text-xs min-w-0 max-w-full overflow-hidden">
+          <div className="p-2.5 rounded-lg bg-[#14161B] border border-[#22252B] space-y-2 text-xs min-w-0 max-w-full overflow-hidden">
             {/* 1. Decision */}
             <div className="min-w-0">
               <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">1. Decision</div>
@@ -414,15 +414,15 @@ export default function DecisionReplayPanel({
       )}
 
       {/* Search & Filter Bar */}
-      <div className="p-2.5 border-b border-[#1a1a24] space-y-2 shrink-0 min-w-0 max-w-full">
+      <div className="p-2.5 border-b border-[#22252B] space-y-2 shrink-0 min-w-0 max-w-full">
         <div className="relative min-w-0">
-          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-2 shrink-0 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-[#5A6072] absolute left-2.5 top-2 shrink-0 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="What decision are you looking for?"
-            className="w-full pl-8 pr-2.5 py-1.5 rounded bg-[#121218] border border-[#222230] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50 min-w-0"
+            className="w-full pl-8 pr-2.5 py-1.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] min-w-0"
           />
         </div>
 
@@ -434,8 +434,8 @@ export default function DecisionReplayPanel({
               onClick={() => setActiveFilter(filter)}
               className={`px-2 py-0.5 rounded transition-colors cursor-pointer shrink-0 ${
                 activeFilter === filter
-                  ? "bg-cyan-950/80 text-cyan-300 border border-cyan-500/40"
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-[#121218]"
+                  ? "bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/30"
+                  : "text-[#8C92A4] hover:text-zinc-300 hover:bg-[#14161B]"
               }`}
             >
               {filter}
@@ -447,10 +447,10 @@ export default function DecisionReplayPanel({
       {/* Decision Records List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2.5 space-y-2.5 min-w-0 max-w-full">
         {filteredDecisions.length === 0 ? (
-          <div className="text-center py-8 text-zinc-500 space-y-2 min-w-0">
-            <BookOpen className="w-6 h-6 mx-auto text-zinc-600 shrink-0" />
-            <p className="text-xs">No decision records found.</p>
-            <p className="text-[10px] font-mono text-zinc-600 break-words [overflow-wrap:anywhere] px-2">
+          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2 min-w-0">
+            <BookOpen className="w-6 h-6 mx-auto text-[#5A6072] shrink-0" />
+            <p className="text-xs text-[#9AA1AC]">No decision records found.</p>
+            <p className="text-[10px] font-mono text-[#5A6072] max-w-xs break-words [overflow-wrap:anywhere]">
               Decisions are captured during architectural discussions or Context Capsule imports.
             </p>
           </div>
@@ -458,7 +458,7 @@ export default function DecisionReplayPanel({
           filteredDecisions.map((d) => (
             <div
               key={d.decisionId}
-              className="p-3 rounded-lg bg-[#111118] border border-[#1e1e2a] hover:border-cyan-500/30 transition-all space-y-2 text-xs min-w-0 max-w-full overflow-hidden"
+              className="p-3 rounded-lg bg-[#111318] border border-[#22252B] hover:border-[#4CC2DE]/30 transition-colors space-y-2 text-xs min-w-0 max-w-full overflow-hidden"
             >
               {/* Card Top */}
               <div className="flex items-start justify-between gap-2 min-w-0">
@@ -476,7 +476,7 @@ export default function DecisionReplayPanel({
 
               {/* Problem Solved */}
               {d.problem && (
-                <div className="text-zinc-400 bg-[#0c0c12] p-2 rounded border border-[#181822] text-[11px] break-words [overflow-wrap:anywhere] min-w-0">
+                <div className="text-zinc-400 bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0">
                   <span className="font-semibold text-amber-400/90 font-mono text-[10px]">PROBLEM: </span>
                   <span>{d.problem}</span>
                 </div>
@@ -484,8 +484,8 @@ export default function DecisionReplayPanel({
 
               {/* Rationale / Why */}
               {d.rationale && (
-                <div className="text-zinc-400 bg-[#0c0c12] p-2 rounded border border-[#181822] text-[11px] break-words [overflow-wrap:anywhere] min-w-0 whitespace-pre-wrap leading-relaxed">
-                  <span className="font-semibold text-cyan-400 font-mono text-[10px]">WHY: </span>
+                <div className="text-zinc-400 bg-[#0E1013] p-2 rounded border border-[#22252B] text-[11px] break-words [overflow-wrap:anywhere] min-w-0 whitespace-pre-wrap leading-relaxed">
+                  <span className="font-semibold text-[#4CC2DE] font-mono text-[10px]">WHY: </span>
                   <span>{d.rationale}</span>
                 </div>
               )}
@@ -569,13 +569,13 @@ export default function DecisionReplayPanel({
 
       {/* Manual Decision Entry Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-[#101016] border border-[#222232] rounded-xl shadow-2xl p-5 space-y-4 min-w-0 max-w-full overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md bg-[#111318] border border-[#22252B] rounded-xl shadow-modal p-5 space-y-4 min-w-0 max-w-full overflow-hidden">
             <div className="flex items-center justify-between min-w-0">
               <h3 className="font-semibold text-zinc-100 text-sm truncate">Log Architectural Decision</h3>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-zinc-500 hover:text-zinc-300 font-mono shrink-0 cursor-pointer"
+                className="text-[#8C92A4] hover:text-zinc-300 font-mono shrink-0 cursor-pointer"
               >
                 ✕
               </button>
@@ -583,47 +583,47 @@ export default function DecisionReplayPanel({
 
             <form onSubmit={handleCreateDecision} className="space-y-3 font-sans text-xs min-w-0 max-w-full">
               <div className="min-w-0">
-                <label className="block text-[11px] font-mono text-zinc-400 mb-1">Title</label>
+                <label className="block text-[11px] font-mono text-[#8C92A4] mb-1">Title</label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Keep validation before payment processing"
-                  className="w-full px-2.5 py-1.5 rounded bg-[#181822] border border-[#28283a] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50 min-w-0"
+                  className="w-full px-2.5 py-1.5 rounded bg-[#0E1013] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] min-w-0"
                 />
               </div>
 
               <div className="min-w-0">
-                <label className="block text-[11px] font-mono text-zinc-400 mb-1">Decision Statement *</label>
+                <label className="block text-[11px] font-mono text-[#8C92A4] mb-1">Decision Statement *</label>
                 <textarea
                   required
                   rows={2}
                   value={newDecision}
                   onChange={(e) => setNewDecision(e.target.value)}
                   placeholder="What was decided?"
-                  className="w-full px-2.5 py-1.5 rounded bg-[#181822] border border-[#28283a] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50 min-w-0"
+                  className="w-full px-2.5 py-1.5 rounded bg-[#0E1013] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] min-w-0"
                 />
               </div>
 
               <div className="min-w-0">
-                <label className="block text-[11px] font-mono text-zinc-400 mb-1">Problem Solved</label>
+                <label className="block text-[11px] font-mono text-[#8C92A4] mb-1">Problem Solved</label>
                 <input
                   type="text"
                   value={newProblem}
                   onChange={(e) => setNewProblem(e.target.value)}
                   placeholder="What problem or regression does this prevent?"
-                  className="w-full px-2.5 py-1.5 rounded bg-[#181822] border border-[#28283a] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50 min-w-0"
+                  className="w-full px-2.5 py-1.5 rounded bg-[#0E1013] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] min-w-0"
                 />
               </div>
 
               <div className="min-w-0">
-                <label className="block text-[11px] font-mono text-zinc-400 mb-1">Rationale / Why</label>
+                <label className="block text-[11px] font-mono text-[#8C92A4] mb-1">Rationale / Why</label>
                 <textarea
                   rows={2}
                   value={newRationale}
                   onChange={(e) => setNewRationale(e.target.value)}
                   placeholder="Why was this chosen? (Supporting evidence/tradeoffs)"
-                  className="w-full px-2.5 py-1.5 rounded bg-[#181822] border border-[#28283a] text-zinc-200 text-xs focus:outline-none focus:border-cyan-500/50 min-w-0"
+                  className="w-full px-2.5 py-1.5 rounded bg-[#0E1013] border border-[#22252B] text-zinc-200 text-xs focus:outline-none focus:border-[#4CC2DE] min-w-0"
                 />
               </div>
 
@@ -631,14 +631,14 @@ export default function DecisionReplayPanel({
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-mono text-xs cursor-pointer"
+                  className="px-3 py-1.5 rounded bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-zinc-300 font-mono text-xs cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!newDecision.trim()}
-                  className="px-4 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-semibold disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] font-mono text-xs font-medium disabled:opacity-50 cursor-pointer transition-colors"
                 >
                   Save Decision
                 </button>

@@ -151,31 +151,31 @@ export default function TestExplorerPanel({
   };
 
   return (
-    <div className="h-full flex flex-col font-mono text-xs select-none bg-[#070709] border-r border-[#1f1f24] overflow-hidden">
+    <div className="h-full flex flex-col font-sans text-xs select-none bg-[#0E1013] border-r border-[#22252B] overflow-hidden">
       {/* Top Header & Tab Switcher */}
-      <div className="h-10 bg-[#0d0d12] border-b border-[#1f1f24] px-2.5 flex items-center justify-between shrink-0">
+      <div className="h-10 bg-[#0E1013] border-b border-[#22252B] px-2.5 flex items-center justify-between shrink-0">
         {/* Left Controls & Tabs */}
         <div className="flex items-center gap-1.5">
           {(onClose || onBack) && (
             <button
               onClick={onClose || onBack}
-              className="p-1 rounded hover:bg-[#1f1f26] text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              className="p-1 rounded hover:bg-[#1A1C22] text-[#8C92A4] hover:text-white transition-colors cursor-pointer"
               title="Back to Explorer"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
           )}
 
-          <div className="flex items-center gap-1 bg-[#141418] p-0.5 rounded-lg border border-[#27272a]">
+          <div className="flex items-center gap-0.5 bg-[#14161B] p-0.5 rounded border border-[#22252B]">
             <button
               onClick={() => setActiveTab("tests")}
-              className={`px-2 py-1 rounded text-[10.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded text-[11px] font-sans flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === "tests"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-500/40"
-                  : "text-zinc-400 hover:text-white"
+                  ? "bg-[#1A1C22] text-[#4CC2DE] font-medium"
+                  : "text-[#8C92A4] hover:text-[#E6E8EB]"
               }`}
             >
-              <FlaskConical className="w-3 h-3 text-cyan-400" />
+              <FlaskConical className="w-3 h-3 text-[#4CC2DE]" />
               <span>Tests ({totalTests})</span>
             </button>
 
@@ -184,13 +184,13 @@ export default function TestExplorerPanel({
                 setActiveTab("coverage");
                 if (!coverageData) fetchCoverage();
               }}
-              className={`px-2 py-1 rounded text-[10.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded text-[11px] font-sans flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === "coverage"
-                  ? "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
-                  : "text-zinc-400 hover:text-white"
+                  ? "bg-[#1A1C22] text-[#3EAE79] font-medium"
+                  : "text-[#8C92A4] hover:text-[#E6E8EB]"
               }`}
             >
-              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <ShieldCheck className="w-3 h-3 text-[#3EAE79]" />
               <span>Coverage {coverageData ? `(${coverageData.overallCoveragePct}%)` : ""}</span>
             </button>
           </div>
@@ -259,7 +259,7 @@ export default function TestExplorerPanel({
               return (
                 <div
                   key={file.filePath}
-                  className="rounded-xl bg-[#09090c] border border-[#1a1a22] overflow-hidden"
+                  className="rounded-md bg-[#13161A] border border-[#22252B] overflow-hidden"
                 >
                   {/* File Row */}
                   <div
@@ -272,12 +272,12 @@ export default function TestExplorerPanel({
                       ) : (
                         <ChevronDown className="w-3 h-3 text-zinc-500 shrink-0" />
                       )}
-                      <FileCode className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <FileCode className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
                       <span className="text-zinc-200 font-bold truncate">{file.name}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="px-1.5 py-0.5 rounded bg-[#14141c] text-zinc-400 text-[9.5px]">
+                      <span className="px-1.5 py-0.5 rounded bg-[#1A1D23] text-zinc-400 text-[9.5px]">
                         {file.testCount}
                       </span>
                       {renderStatusIcon(file.status)}
@@ -287,7 +287,7 @@ export default function TestExplorerPanel({
                           runFileTests(file.filePath, file.framework);
                         }}
                         disabled={running}
-                        className="p-1 rounded hover:bg-[#1f1f26] text-zinc-400 hover:text-emerald-400 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                        className="p-1 rounded hover:bg-[#1A1D23] text-zinc-400 hover:text-emerald-400 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
                         title="Run this file"
                       >
                         <Play className="w-3 h-3" />
@@ -297,7 +297,7 @@ export default function TestExplorerPanel({
 
                   {/* Children (Suites / Tests) */}
                   {!isFileCollapsed && (
-                    <div className="pl-4 pr-1 pb-1 space-y-0.5 border-t border-[#14141a]">
+                    <div className="pl-4 pr-1 pb-1 space-y-0.5 border-t border-[#22252B]">
                       {file.children.map((child) => {
                         if (child.type === "suite") {
                           const isSuiteCollapsed = collapsedItems[child.id] ?? false;
@@ -306,7 +306,7 @@ export default function TestExplorerPanel({
                               {/* Suite Row */}
                               <div
                                 onClick={() => toggleCollapse(child.id)}
-                                className="p-1 rounded hover:bg-[#121218] flex items-center justify-between cursor-pointer text-[10.5px] text-zinc-300"
+                                className="p-1 rounded hover:bg-[#1A1D23] flex items-center justify-between cursor-pointer text-[10.5px] text-zinc-300"
                               >
                                 <div className="flex items-center gap-1 truncate">
                                   {isSuiteCollapsed ? (
@@ -430,12 +430,13 @@ export default function TestExplorerPanel({
             })}
 
             {testFiles.length === 0 && !discovering && (
-              <div className="py-12 text-center text-zinc-600 space-y-2">
-                <FlaskConical className="w-8 h-8 text-zinc-700 mx-auto" />
-                <p className="text-xs">No tests discovered in workspace.</p>
+              <div className="h-full min-h-[220px] flex flex-col items-center justify-center text-center p-6 text-zinc-500">
+                <FlaskConical className="w-8 h-8 text-zinc-600 mb-2" />
+                <p className="text-xs text-zinc-300 font-medium">No tests discovered</p>
+                <p className="text-[11px] text-zinc-500 max-w-[220px] mt-1 mb-3">Scan your workspace to discover test suites and runnable specs.</p>
                 <button
                   onClick={discoverTests}
-                  className="px-2.5 py-1 rounded-lg bg-[#14141c] hover:bg-[#1e1e28] text-cyan-400 text-[10.5px] font-bold border border-cyan-500/30"
+                  className="px-3 py-1.5 rounded bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0A0B0D] text-[11px] font-medium transition-colors"
                 >
                   Scan for Tests
                 </button>
@@ -445,11 +446,11 @@ export default function TestExplorerPanel({
 
           {/* Docked Output Stream Panel */}
           {activeOutput && (
-            <div className="h-44 border-t border-[#1f1f26] bg-[#050508] flex flex-col shrink-0 font-mono text-[10.5px]">
+            <div className="h-44 border-t border-[#22252B] bg-[#0A0B0D] flex flex-col shrink-0 font-mono text-[10.5px]">
               {/* Output Header */}
-              <div className="h-7 bg-[#0b0b10] border-b border-[#1a1a22] px-2 flex items-center justify-between text-zinc-400">
+              <div className="h-7 bg-[#13161A] border-b border-[#22252B] px-2 flex items-center justify-between text-zinc-400">
                 <div className="flex items-center gap-1.5">
-                  <Terminal className="w-3 h-3 text-cyan-400" />
+                  <Terminal className="w-3 h-3 text-[#4CC2DE]" />
                   <span className="font-bold text-zinc-300 truncate max-w-[200px]">
                     {activeOutput.command}
                   </span>
@@ -486,10 +487,10 @@ export default function TestExplorerPanel({
                     {/* Flagship Intelligence Action (Phase 3 - Read-Only) */}
                     <button
                       onClick={handleWhyDidThisBreak}
-                      className="px-2.5 py-1 rounded bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_8px_rgba(34,211,238,0.3)] transition-all hover:brightness-110"
+                      className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#4CC2DE]/50 text-[#4CC2DE] text-[11px] font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
                       title="Perform read-only causal analysis to explain why this test broke"
                     >
-                      <HelpCircle className="w-3 h-3 text-cyan-400" />
+                      <HelpCircle className="w-3 h-3 text-[#4CC2DE]" />
                       <span>Why Did This Break?</span>
                     </button>
 
@@ -507,10 +508,10 @@ export default function TestExplorerPanel({
                             command: activeOutput.command,
                           });
                         }}
-                        className="px-2.5 py-1 rounded bg-purple-950/90 hover:bg-purple-900 border border-purple-500/50 text-purple-200 text-[10.5px] font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_8px_rgba(168,85,247,0.3)] transition-all"
+                        className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-zinc-300 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
                         title="Dispatch autonomous repair for this failure"
                       >
-                        <Sparkles className="w-3 h-3 text-purple-400" />
+                        <Sparkles className="w-3 h-3 text-[#4CC2DE]" />
                         <span>Repair with AI</span>
                       </button>
                     )}
@@ -529,10 +530,10 @@ export default function TestExplorerPanel({
                             status: "failed",
                           });
                         }}
-                        className="px-2.5 py-1 rounded bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_8px_rgba(6,182,212,0.3)] transition-all"
+                        className="px-2.5 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-zinc-300 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
                         title="Start debug session on this failing test"
                       >
-                        <Bug className="w-3 h-3 text-cyan-400" />
+                        <Bug className="w-3 h-3 text-[#8C92A4]" />
                         <span>Debug Test</span>
                       </button>
                     )}

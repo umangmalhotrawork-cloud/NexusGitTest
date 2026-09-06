@@ -583,39 +583,39 @@ export default function DeploymentPlanModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-4xl max-h-[90vh] bg-[#090a0f] border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden text-zinc-200 font-sans">
+      <div className="w-full max-w-4xl max-h-[90vh] bg-[#111318] border border-[#22252B] rounded-xl shadow-modal flex flex-col overflow-hidden text-[#E1E4EA] font-sans">
         
         {/* Modal Header */}
-        <header className="px-5 py-4 border-b border-zinc-800 bg-[#0e1017] flex items-center justify-between gap-4 shrink-0">
+        <header className="px-5 py-4 border-b border-[#22252B] bg-[#0E1013] flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2 rounded-lg bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 shrink-0">
+            <div className="p-2 rounded-lg bg-[#14161B] border border-[#22252B] text-[#4CC2DE] shrink-0">
               <Layers className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base font-bold text-zinc-100 tracking-tight">Deployment Plan</h2>
+                <h2 className="text-base font-semibold text-[#E1E4EA] tracking-tight">Deployment Plan</h2>
                 {plan && (
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider ${
                       plan.overallStatus === "READY"
                         ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
                         : plan.overallStatus === "WARNING"
                         ? "bg-amber-950/80 border border-amber-500/40 text-amber-300"
                         : plan.overallStatus === "BLOCKED"
                         ? "bg-rose-950/80 border border-rose-500/40 text-rose-300"
-                        : "bg-zinc-800 border border-zinc-700 text-zinc-400"
+                        : "bg-[#1A1C22] border border-[#22252B] text-[#868C96]"
                     }`}
                   >
                     {plan.overallStatus}
                   </span>
                 )}
                 {plan?.topology.isMonorepo && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950/40 border border-cyan-500/30 text-cyan-300">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#14161B] border border-[#22252B] text-[#4CC2DE]">
                     Monorepo Topology
                   </span>
                 )}
               </div>
-              <p className="text-xs text-zinc-400 font-mono truncate mt-0.5 max-w-[500px]" title={workspacePath}>
+              <p className="text-xs text-[#868C96] font-mono truncate mt-0.5 max-w-[500px]" title={workspacePath}>
                 {workspacePath}
               </p>
             </div>
@@ -701,10 +701,10 @@ export default function DeploymentPlanModal({
 
               {/* Execution Source Info Banner when GIT_REMOTE is active */}
               {plan.executionSource === "GIT_REMOTE" && (
-                <div className="p-3.5 rounded-xl bg-[#101422] border border-cyan-500/40 text-xs space-y-2.5">
+                <div className="p-3.5 rounded-lg bg-[#14161B] border border-[#22252B] text-xs space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 font-bold text-zinc-100">
-                      <FolderGit2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <div className="flex items-center gap-2 font-medium text-zinc-100">
+                      <FolderGit2 className="w-4 h-4 text-[#4CC2DE] shrink-0" />
                       <span>Deployment Source: <strong className="text-cyan-300">GIT REMOTE</strong></span>
                     </div>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
@@ -781,10 +781,10 @@ export default function DeploymentPlanModal({
 
               {/* DEPLOYMENT SOURCE NOT YET DEFINED / CONFIGURATION REQUIRED Banner */}
               {(plan.remotePreflight?.code === "DEPLOYMENT_SOURCE_UNCONFIGURED" || plan.executionSource === "UNCONFIGURED") && (
-                <div className="p-4 rounded-xl bg-[#101422] border border-cyan-500/40 text-xs space-y-3">
+                <div className="p-4 rounded-lg bg-[#14161B] border border-[#22252B] text-xs space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 font-bold text-zinc-100 text-sm">
-                      <FolderGit2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <div className="flex items-center gap-2 font-medium text-zinc-100 text-sm">
+                      <FolderGit2 className="w-4 h-4 text-[#4CC2DE] shrink-0" />
                       <span>DEPLOYMENT SOURCE NOT YET DEFINED</span>
                     </div>
                     <span className="px-2 py-0.5 rounded bg-amber-950/80 border border-amber-500/50 text-[10px] font-bold text-amber-200 uppercase tracking-wider">
@@ -820,7 +820,7 @@ export default function DeploymentPlanModal({
                     <button
                       type="button"
                       onClick={() => handleSelectExecutionSource("LOCAL_WORKSPACE")}
-                      className="px-3.5 py-2 rounded-lg bg-emerald-950/90 hover:bg-emerald-900 text-emerald-200 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                      className="px-3.5 py-2 rounded-md bg-emerald-950/90 hover:bg-emerald-900 text-emerald-200 border border-emerald-500/40 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <UploadCloud className="w-4 h-4 text-emerald-400" />
                       <span>Use Local Workspace</span>
@@ -829,9 +829,9 @@ export default function DeploymentPlanModal({
                     <button
                       type="button"
                       onClick={() => setIsConfiguringGitRepo(true)}
-                      className="px-3.5 py-2 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-200 border border-cyan-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                      className="px-3.5 py-2 rounded-md bg-[#14161B] hover:bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <FolderGit2 className="w-4 h-4 text-cyan-400" />
+                      <FolderGit2 className="w-4 h-4 text-[#4CC2DE]" />
                       <span>Select Git Repository</span>
                     </button>
                   </div>
@@ -840,9 +840,9 @@ export default function DeploymentPlanModal({
 
               {/* Git Repository Selector Form Modal / Drawer */}
               {isConfiguringGitRepo && (
-                <div className="p-4 rounded-xl bg-black/60 border border-cyan-500/40 space-y-3 animate-in fade-in duration-150">
-                  <div className="font-bold text-zinc-100 text-xs flex items-center gap-1.5">
-                    <GitBranch className="w-4 h-4 text-cyan-400" />
+                <div className="p-4 rounded-lg bg-[#0E1013] border border-[#22252B] space-y-3 animate-in fade-in duration-150">
+                  <div className="font-medium text-zinc-100 text-xs flex items-center gap-1.5">
+                    <GitBranch className="w-4 h-4 text-[#4CC2DE]" />
                     <span>Select Git Repository for Deployment</span>
                   </div>
 
@@ -854,7 +854,7 @@ export default function DeploymentPlanModal({
                         value={customRepoUrl}
                         onChange={(e) => setCustomRepoUrl(e.target.value)}
                         placeholder="https://github.com/umangmalhotrawork-cloud/NexusGitTest.git"
-                        className="w-full px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-100 font-mono text-[11px] focus:border-cyan-500 focus:outline-none"
+                        className="w-full px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-zinc-100 font-mono text-[11px] focus:border-[#4CC2DE] focus:outline-none"
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -865,7 +865,7 @@ export default function DeploymentPlanModal({
                           value={customBranch}
                           onChange={(e) => setCustomBranch(e.target.value)}
                           placeholder="milestone-11-navigation-search"
-                          className="w-full px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-100 font-mono text-[11px] focus:border-cyan-500 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-zinc-100 font-mono text-[11px] focus:border-[#4CC2DE] focus:outline-none"
                         />
                       </div>
                       <div>
@@ -875,7 +875,7 @@ export default function DeploymentPlanModal({
                           value={customRootDir}
                           onChange={(e) => setCustomRootDir(e.target.value)}
                           placeholder="."
-                          className="w-full px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-100 font-mono text-[11px] focus:border-cyan-500 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-zinc-100 font-mono text-[11px] focus:border-[#4CC2DE] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -885,7 +885,7 @@ export default function DeploymentPlanModal({
                     <button
                       type="button"
                       onClick={handleApplyGitRepoSelection}
-                      className="px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                      className="px-3 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Check className="w-3.5 h-3.5" />
                       <span>Apply Repository Selection</span>
@@ -969,7 +969,7 @@ export default function DeploymentPlanModal({
                           type="button"
                           disabled={gitActionBusy || isUpdating}
                           onClick={handleRecheckGitReadiness}
-                          className="px-3 py-1 rounded bg-cyan-900/80 hover:bg-cyan-800 disabled:opacity-50 text-cyan-200 border border-cyan-500/40 text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] disabled:opacity-50 text-[#4CC2DE] border border-[#22252B] text-[11px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${gitActionBusy || isUpdating ? "animate-spin" : ""}`} />
                           <span>Re-check Readiness</span>
@@ -979,8 +979,8 @@ export default function DeploymentPlanModal({
 
                     {/* Action Feedback Banner */}
                     {gitActionStatus && (
-                      <div className="p-2 rounded bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-[11px] flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <div className="p-2 rounded-md bg-[#14161B] border border-[#22252B] text-[#4CC2DE] text-[11px] flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
                         <span>{gitActionStatus}</span>
                       </div>
                     )}
@@ -1027,7 +1027,14 @@ export default function DeploymentPlanModal({
                                   >
                                     {file.isStaged ? "STAGED" : file.status === "??" ? "UNTRACKED" : file.status}
                                   </span>
-                                  <span className="text-zinc-200 font-mono truncate">{file.path}</span>
+                                  <span className="text-zinc-200 font-mono truncate text-[11px]" title={file.path}>
+                                    {file.path.split(/[/\\]/).pop()}
+                                    {(file.path.includes("/") || file.path.includes("\\")) && (
+                                      <span className="text-[#5A6072] ml-1.5 text-[10px] font-mono font-normal">
+                                        {file.path.substring(0, Math.max(file.path.lastIndexOf("/"), file.path.lastIndexOf("\\")) + 1)}
+                                      </span>
+                                    )}
+                                  </span>
                                 </div>
                                 <button
                                   type="button"
@@ -1274,10 +1281,10 @@ export default function DeploymentPlanModal({
                 <button
                   disabled={!canDeploy}
                   onClick={() => setShowConfirmation(true)}
-                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
                     canDeploy
-                      ? "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/30"
-                      : "bg-zinc-800 text-zinc-500 border border-zinc-700 cursor-not-allowed opacity-60"
+                      ? "bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D]"
+                      : "bg-[#14161B] text-[#868C96] border border-[#22252B] cursor-not-allowed opacity-60"
                   }`}
                   title={deployDisabledReason || "Deploy complete multi-service project"}
                 >
@@ -1292,45 +1299,45 @@ export default function DeploymentPlanModal({
         {/* EXPLICIT CONFIRMATION MODAL */}
         {showConfirmation && plan && (
           <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
-            <div className="w-full max-w-lg bg-[#0d0e14] border border-cyan-500/40 rounded-xl shadow-2xl overflow-hidden text-zinc-200">
-              <div className="px-5 py-4 border-b border-zinc-800 bg-[#0e1017] flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-cyan-950 border border-cyan-500/40 text-cyan-400">
+            <div className="w-full max-w-lg bg-[#111318] border border-[#22252B] rounded-xl shadow-modal overflow-hidden text-[#E1E4EA] font-sans">
+              <div className="px-5 py-4 border-b border-[#22252B] bg-[#0E1013] flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-[#14161B] border border-[#22252B] text-[#4CC2DE]">
                   <Rocket className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-100">CONFIRM COMPLETE PROJECT DEPLOYMENT</h3>
-                  <p className="text-[11px] text-zinc-400">Explicit user approval required prior to cloud execution</p>
+                  <h3 className="text-sm font-semibold text-[#E1E4EA]">CONFIRM COMPLETE PROJECT DEPLOYMENT</h3>
+                  <p className="text-[11px] text-[#868C96]">Explicit user approval required prior to cloud execution</p>
                 </div>
               </div>
 
               <div className="p-5 space-y-4 text-xs">
                 <div>
-                  <span className="text-zinc-400 font-semibold">Workspace:</span>
-                  <div className="mt-1 p-2 rounded bg-zinc-900 border border-zinc-800 font-mono text-[11px] text-zinc-300 break-all">
+                  <span className="text-[#868C96] font-medium">Workspace:</span>
+                  <div className="mt-1 p-2 rounded bg-[#0E1013] border border-[#22252B] font-mono text-[11px] text-[#CCCCCC] break-all">
                     {workspacePath}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-zinc-400 font-semibold">Deployment Topology & Selected Providers:</span>
+                  <span className="text-[#868C96] font-medium">Deployment Topology & Selected Providers:</span>
                   <div className="space-y-1.5">
                     {plan.topology.databases.map((db, i) => (
-                      <div key={db.databaseId} className="flex items-center justify-between p-2 rounded bg-zinc-900/80 border border-zinc-800 text-[11px]">
+                      <div key={db.databaseId} className="flex items-center justify-between p-2 rounded bg-[#0E1013] border border-[#22252B] text-[11px]">
                         <span>{i + 1}. Database: <strong>{db.name}</strong></span>
-                        <span className="text-amber-400 font-mono font-semibold">{db.providerDisplayName}</span>
+                        <span className="text-amber-400 font-mono font-medium">{db.providerDisplayName}</span>
                       </div>
                     ))}
                     {plan.topology.services.map((svc, i) => (
-                      <div key={svc.serviceId} className="flex items-center justify-between p-2 rounded bg-zinc-900/80 border border-zinc-800 text-[11px]">
+                      <div key={svc.serviceId} className="flex items-center justify-between p-2 rounded bg-[#0E1013] border border-[#22252B] text-[11px]">
                         <span>{plan.topology.databases.length + i + 1}. {svc.type}: <strong>{svc.name}</strong></span>
-                        <span className="text-cyan-400 font-mono font-semibold">{svc.providerDisplayName}</span>
+                        <span className="text-[#4CC2DE] font-mono font-medium">{svc.providerDisplayName}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-500/30 text-amber-200 text-[11px] space-y-1.5">
-                  <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-500/30 text-amber-200 text-[11px] space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-amber-300">
                     <ShieldAlert className="w-4 h-4 shrink-0" />
                     <span>Important Notices</span>
                   </div>
@@ -1342,17 +1349,17 @@ export default function DeploymentPlanModal({
                 </div>
               </div>
 
-              <div className="px-5 py-3.5 border-t border-zinc-800 bg-[#0e1017] flex items-center justify-end gap-2">
+              <div className="px-5 py-3.5 border-t border-[#22252B] bg-[#0E1013] flex items-center justify-end gap-2">
                 <button
                   onClick={() => setShowConfirmation(false)}
-                  className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors cursor-pointer"
+                  className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#1A1C22] hover:bg-[#22252B] text-[#CCCCCC] border border-[#22252B] transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleConfirmDeploy}
                   disabled={isConfirmingDeployment}
-                  className="px-4 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-900/40 transition-colors cursor-pointer"
+                  className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#3db0cc] text-[#0A0B0D] transition-colors cursor-pointer"
                 >
                   {isConfirmingDeployment ? "Starting…" : "Confirm & Deploy"}
                 </button>

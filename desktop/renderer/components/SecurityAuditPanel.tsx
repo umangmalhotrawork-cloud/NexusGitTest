@@ -52,19 +52,19 @@ export default function SecurityAuditPanel({
     switch (severity) {
       case "critical":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-950/80 text-red-300 border border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-red-950/80 text-red-300 border border-red-500/50">
             Critical
           </span>
         );
       case "high":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-950/80 text-rose-300 border border-rose-500/50">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-rose-950/80 text-rose-300 border border-rose-500/50">
             High
           </span>
         );
       case "medium":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-950/80 text-amber-300 border border-amber-500/50">
+          <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-amber-950/80 text-amber-300 border border-amber-500/50">
             Medium
           </span>
         );
@@ -235,10 +235,10 @@ export default function SecurityAuditPanel({
               <div
                 key={finding.id}
                 onClick={() => setSelectedFinding(finding)}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
+                className={`p-2.5 rounded-lg border transition-all cursor-pointer space-y-1.5 ${
                   isSelected
-                    ? "bg-[#12121c] border-red-500/60 shadow-[0_0_12px_rgba(239,68,68,0.2)]"
-                    : "bg-[#09090e] border-[#1a1a24] hover:bg-[#0f0f16] hover:border-zinc-700"
+                    ? "bg-[#14161B] border-red-500/60"
+                    : "bg-[#111318] border-[#22252B] hover:border-[#383B45]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">

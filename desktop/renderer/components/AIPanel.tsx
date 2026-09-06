@@ -43,16 +43,16 @@ export default function AIPanel({
   };
 
   return (
-    <div className="fixed right-0 top-0 bottom-0 w-96 max-w-[90vw] bg-[#09090c] border-l border-[#1f1f1f] shadow-2xl z-40 flex flex-col font-mono text-xs animate-slideInRight select-none">
+    <div className="fixed right-0 top-0 bottom-0 w-96 max-w-[90vw] bg-[#111318] border-l border-[#22252B] shadow-modal z-40 flex flex-col font-sans text-xs animate-slideInRight select-none">
       {/* Header */}
-      <div className="h-10 bg-[#0d0d12] border-b border-[#1f1f1f] px-3 flex items-center justify-between shrink-0">
+      <div className="h-9 bg-[#0E1013] border-b border-[#22252B] px-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-cyan-400" />
-          <span className="font-bold text-zinc-100 uppercase tracking-wide text-[11px]">
+          <Sparkles className="w-4 h-4 text-[#4CC2DE]" />
+          <span className="font-semibold text-zinc-100 text-xs">
             AI Code Actions
           </span>
           {response?.action && (
-            <span className="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30 text-[9.5px] font-bold">
+            <span className="px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] text-[10px] font-medium">
               {actionLabels[response.action] || response.action}
             </span>
           )}
@@ -60,7 +60,7 @@ export default function AIPanel({
 
         <button
           onClick={onClose}
-          className="p-1 rounded text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer"
+          className="p-1 rounded text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer"
           title="Close AI Panel"
         >
           <X className="w-4 h-4" />
@@ -116,7 +116,7 @@ export default function AIPanel({
 
                   <button
                     onClick={() => response.proposedPatch && onApplyPatch(response.proposedPatch)}
-                    className="py-1.5 px-3 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(6,182,212,0.4)] transition-all cursor-pointer"
+                    className="py-1.5 px-3 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Apply Patch</span>

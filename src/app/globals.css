@@ -10,64 +10,67 @@
     --foreground: 0 0% 100%;
 
     /* IDE Surface Hierarchy */
-    --theme-background: #050505;
-    --theme-surface: #08080c;
-    --theme-surface-panel: #0a0a0f;
-    --theme-surface-raised: #0e0e16;
-    --theme-surface-card: #101018;
-    --theme-surface-hover: #161622;
-    --theme-surface-active: #1c1c2c;
-    --theme-surface-input: #08080e;
-    --theme-surface-badge: #082f49;
+    --theme-background: #0A0B0D;
+    --theme-surface: #0E1013;
+    --theme-surface-panel: #0E1013;
+    --theme-surface-raised: #1A1C22;
+    --theme-surface-card: #111318;
+    --theme-surface-hover: #1A1C22;
+    --theme-surface-active: #22252B;
+    --theme-surface-input: #14161B;
+    --theme-surface-badge: #1A1C22;
 
-    --theme-border: #161620;
-    --theme-border-subtle: #14141e;
-    --theme-border-card: #1f1f2e;
-    --theme-border-focus: #22d3ee;
+    --theme-border: #22252B;
+    --theme-border-subtle: #22252B;
+    --theme-border-card: #22252B;
+    --theme-border-strong: #2E323B;
+    --theme-border-focus: #4CC2DE;
 
-    --theme-text: #f4f4f5;
-    --theme-text-muted: #a1a1aa;
-    --theme-text-subtle: #71717a;
-    --theme-text-accent: #22d3ee;
+    --theme-text: #E6E8EB;
+    --theme-text-muted: #9AA1AC;
+    --theme-text-subtle: #6B7280;
+    --theme-text-disabled: #4B5058;
+    --theme-text-accent: #4CC2DE;
 
-    --theme-accent: #22d3ee;
-    --theme-accent-hover: #06b6d4;
-    --theme-accent-dim: rgba(34, 211, 238, 0.15);
-    --theme-accent-secondary: #a855f7;
-    --theme-success: #34d399;
-    --theme-warning: #fbbf24;
-    --theme-error: #f87171;
-    --theme-info: #38bdf8;
+    --theme-accent: #4CC2DE;
+    --theme-accent-hover: #6ED4EA;
+    --theme-accent-active: #2FA3C0;
+    --theme-accent-dim: rgba(76, 194, 222, 0.12);
+    --theme-accent-secondary: #2FA3C0;
+    --theme-success: #3EAE79;
+    --theme-warning: #D9A441;
+    --theme-error: #DC5B5B;
+    --theme-info: #5A8FD6;
 
-    --theme-editor-background: #050505;
-    --theme-editor-foreground: #e4e4e7;
-    --theme-selection: #083344;
+    --theme-editor-background: #0B0C0F;
+    --theme-editor-foreground: #E6E8EB;
+    --theme-selection: #173747;
 
     /* Backward-compatibility aliases */
-    --bg-app: #050505;
-    --bg-header: #08080c;
-    --bg-sidebar: #08080c;
-    --bg-card: #0a0a0f;
-    --bg-card-hover: #12121a;
-    --bg-editor: #050505;
-    --bg-input: #0e0e16;
-    --bg-popover: #0a0a0f;
-    --bg-badge: #082f49;
-    --border-app: #161620;
-    --border-card: #1f1f2e;
-    --border-focus: #22d3ee;
-    --border-subtle: #1a1a26;
-    --accent-primary: #22d3ee;
-    --accent-primary-hover: #06b6d4;
-    --accent-primary-dim: rgba(34, 211, 238, 0.15);
-    --accent-secondary: #a855f7;
-    --accent-warning: #fbbf24;
-    --accent-success: #34d399;
-    --accent-error: #f87171;
-    --text-main: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --text-dim: #71717a;
-    --text-accent: #22d3ee;
+    --bg-app: #0A0B0D;
+    --bg-header: #0E1013;
+    --bg-sidebar: #0E1013;
+    --bg-card: #111318;
+    --bg-card-hover: #1A1C22;
+    --bg-editor: #0B0C0F;
+    --bg-input: #14161B;
+    --bg-popover: #1A1C22;
+    --bg-badge: #1A1C22;
+    --border-app: #22252B;
+    --border-card: #22252B;
+    --border-focus: #4CC2DE;
+    --border-subtle: #22252B;
+    --accent-primary: #4CC2DE;
+    --accent-primary-hover: #6ED4EA;
+    --accent-primary-dim: rgba(76, 194, 222, 0.12);
+    --accent-secondary: #2FA3C0;
+    --accent-warning: #D9A441;
+    --accent-success: #3EAE79;
+    --accent-error: #DC5B5B;
+    --text-main: #E6E8EB;
+    --text-muted: #9AA1AC;
+    --text-dim: #6B7280;
+    --text-accent: #4CC2DE;
   }
 
   [data-theme="dracula"] {
@@ -505,8 +508,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.04em;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -516,14 +519,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--theme-background, #050505);
+  background: var(--theme-background, #0A0B0D);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--theme-border, #1f1f1f);
+  background: var(--theme-border, #22252B);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--theme-accent, #22d3ee);
+  background: var(--theme-accent, #4CC2DE);
 }
 
 /* Custom Grid & Texture Patterns */
@@ -538,78 +541,45 @@
 .bg-grid-pattern-v2 {
   background-size: 48px 48px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 .bg-radial-gradient-v2 {
-  background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.18) 0%, rgba(139, 92, 246, 0.08) 45%, rgba(0, 0, 0, 0) 80%);
+  background: none;
 }
 
 .bg-radial-glow-cyan {
-  background: radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  background: none;
 }
 
 .bg-radial-glow-violet {
-  background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  background: none;
 }
 
 /* Scanline Effect */
 .scanline {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0) 50%,
-    rgba(0, 0, 0, 0.25) 50%,
-    rgba(0, 0, 0, 0.25)
-  );
-  background-size: 100% 4px;
+  background: none;
 }
 
-/* Animated Top Edge Cyan Scanline */
+/* Top Edge Hairline Divider (Neutral, Non-Decorative) */
 .top-scanline {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #22d3ee, #8b5cf6, transparent);
-  background-size: 200% 100%;
-  animation: scanlineMove 4s linear infinite;
+  height: 1px;
+  background: var(--theme-border, #22252B);
 }
 
-@keyframes scanlineMove {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #050505;
-}
-::-webkit-scrollbar-thumb {
-  background: #1f1f1f;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #22d3ee;
-}
-
-/* Glassmorphism */
+/* Clean Panels */
 .glass-panel-v2 {
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid #1f1f1f;
+  background: var(--theme-surface-card, #111318);
+  border: 1px solid var(--theme-border, #22252B);
 }
 
 .glass-panel-hover-v2 {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 .glass-panel-hover-v2:hover {
-  border-color: rgba(34, 211, 238, 0.4);
-  box-shadow: 0 0 30px -5px rgba(34, 211, 238, 0.25);
-  transform: translateY(-3px);
+  border-color: var(--theme-border-strong, #2E323B);
+  background-color: var(--theme-surface-hover, #1A1C22);
 }
 
 /* Monaco Ghost Code Line Highlights */
@@ -676,21 +646,21 @@
 .resizer-col {
   width: 4px;
   cursor: col-resize;
-  background: #121212;
-  transition: background 0.2s;
+  background: var(--theme-border, #22252B);
+  transition: background 0.15s;
 }
 .resizer-col:hover, .resizer-col:active {
-  background: #22d3ee;
+  background: var(--theme-accent, #4CC2DE);
 }
 
 .resizer-row {
   height: 4px;
   cursor: row-resize;
-  background: #121212;
-  transition: background 0.2s;
+  background: var(--theme-border, #22252B);
+  transition: background 0.15s;
 }
 .resizer-row:hover, .resizer-row:active {
-  background: #22d3ee;
+  background: var(--theme-accent, #4CC2DE);
 }
 
 /* Milestone 33: Monaco Git Gutter Annotations & Hunk Revert */
@@ -737,7 +707,7 @@
   margin-left: 5px !important;
   margin-top: 4px !important;
   cursor: pointer !important;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  border: 1px solid rgba(239, 68, 68, 0.8);
 }
 
 .debug-breakpoint-glyph-disabled {
@@ -768,4 +738,29 @@
   font-size: 11px !important;
   margin-left: 4px !important;
 }
+
+/* Accessibility: Universal Focus Indicator */
+@layer base {
+  *:focus-visible {
+    outline: 1.5px solid var(--theme-border-focus, #4CC2DE) !important;
+    outline-offset: 1px !important;
+  }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 1.5px solid var(--theme-border-focus, #4CC2DE) !important;
+    outline-offset: 0px !important;
+  }
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 

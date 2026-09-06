@@ -104,50 +104,50 @@ export default function SwarmActivityPanel({
     switch (status) {
       case "RUNNING":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#4CC2DE] border border-[#4CC2DE]/40">
+            <Loader2 className="w-3 h-3 animate-spin text-[#4CC2DE]" />
             <span>RUNNING</span>
           </span>
         );
       case "AGGREGATING":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-950/80 text-purple-300 border border-purple-500/40 animate-pulse">
-            <Layers className="w-3 h-3 text-purple-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#14161B] text-[#7C65C1] border border-[#7C65C1]/40">
+            <Layers className="w-3 h-3 text-[#7C65C1]" />
             <span>AGGREGATING</span>
           </span>
         );
       case "COMPLETED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
             <span>COMPLETED</span>
           </span>
         );
       case "PARTIAL_SUCCESS":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-500/40">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/80 text-amber-300 border border-amber-500/40">
             <CheckCircle2 className="w-3 h-3 text-amber-400" />
             <span>PARTIAL SUCCESS</span>
           </span>
         );
       case "FAILED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-950/80 text-rose-300 border border-rose-500/40">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-rose-950/80 text-rose-300 border border-rose-500/40">
             <XCircle className="w-3 h-3 text-rose-400" />
             <span>FAILED</span>
           </span>
         );
       case "CANCELLED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-900 text-zinc-400 border border-zinc-700">
-            <Ban className="w-3 h-3 text-zinc-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1C22] text-[#868C96] border border-[#22252B]">
+            <Ban className="w-3 h-3 text-[#868C96]" />
             <span>CANCELLED</span>
           </span>
         );
       case "QUEUED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-900 text-zinc-300 border border-zinc-700">
-            <Clock className="w-3 h-3 text-zinc-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1C22] text-[#868C96] border border-[#22252B]">
+            <Clock className="w-3 h-3 text-[#868C96]" />
             <span>QUEUED</span>
           </span>
         );

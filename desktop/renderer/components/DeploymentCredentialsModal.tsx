@@ -295,7 +295,7 @@ export default function DeploymentCredentialsModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex items-center gap-1.5 px-5 py-1.5 rounded-md text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer"
+                  className="flex items-center gap-1.5 px-5 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] transition-colors cursor-pointer"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Done</span>
@@ -350,7 +350,7 @@ export default function DeploymentCredentialsModal({
                 <button
                   type="submit"
                   disabled={saving || !token.trim()}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <Lock className="w-3.5 h-3.5" />
                   {saving ? "Encrypting…" : "Save & Connect"}

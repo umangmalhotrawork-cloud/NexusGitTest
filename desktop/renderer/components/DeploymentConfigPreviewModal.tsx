@@ -347,7 +347,7 @@ export default function DeploymentConfigPreviewModal({
                 <button
                   onClick={handleApply}
                   disabled={applying}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-colors cursor-pointer shadow-[0_0_10px_rgba(6,182,212,0.3)]"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] text-xs font-medium transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   {applying ? "Writing…" : "Confirm & Write File"}
@@ -380,7 +380,7 @@ export default function DeploymentConfigPreviewModal({
               <button
                 onClick={() => setShowConfirmWrite(true)}
                 disabled={!configResult || !configResult.validation.valid || loading}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(6,182,212,0.3)] cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium bg-[#4CC2DE] hover:bg-[#38b2ce] text-[#0E1013] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 Write to Workspace

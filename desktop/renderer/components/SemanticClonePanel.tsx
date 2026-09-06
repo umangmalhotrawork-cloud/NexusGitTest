@@ -146,10 +146,10 @@ export default function SemanticClonePanel({
 
           <button
             onClick={() => setShowFingerprint(!showFingerprint)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-mono transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-sans transition-colors ${
               showFingerprint
-                ? "bg-cyan-950 text-cyan-300 border-cyan-500/50 font-bold shadow-cyan-glow"
-                : "bg-[#141414] hover:bg-[#1f1f1f] border-[#262626] text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#14161B] text-[#4CC2DE] border-[#4CC2DE] font-medium"
+                : "bg-[#14161B] hover:bg-[#1A1C22] border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB]"
             }`}
             title="Toggle Feature Fingerprint Details"
           >
@@ -160,9 +160,9 @@ export default function SemanticClonePanel({
           <button
             onClick={onRunScan}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-cyan-950/80 to-purple-950/80 hover:from-cyan-900 hover:to-purple-900 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] font-sans text-xs font-medium transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-cyan-400" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#4CC2DE] ${loading ? "animate-spin" : ""}`} />
             <span>{loading ? "Analyzing..." : "Run Semantic Scan"}</span>
           </button>
 
@@ -257,7 +257,7 @@ export default function SemanticClonePanel({
                     <h3 className="font-mono text-base font-bold text-white tracking-tight">
                       {activeGroup.semantic_pattern}
                     </h3>
-                    <span className="px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono text-xs font-bold shadow-cyan-glow">
+                    <span className="px-2 py-0.5 rounded bg-[#1A1C22] text-[#4CC2DE] border border-[#22252B] font-mono text-xs font-medium">
                       {activeGroup.similarity_label}
                     </span>
                   </div>

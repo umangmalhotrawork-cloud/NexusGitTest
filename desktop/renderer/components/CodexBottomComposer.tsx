@@ -432,22 +432,18 @@ export default function CodexBottomComposer({
       {/* Non-Blocking Dynamic Auto-Failover Notification Banner */}
       {failoverNotice && (
         <div
-          className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/50 shadow-2xl flex items-center justify-between gap-3 animate-fadeIn transition-all"
-          style={{
-            backgroundColor: "rgba(35, 22, 10, 0.95)",
-            color: "#fef3c7",
-          }}
+          className="w-full px-3.5 py-2.5 rounded-lg border border-[#D9A441]/40 bg-[#1A1C22] text-[#E6E8EB] flex items-center justify-between gap-3 font-sans transition-colors"
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-1 rounded-lg bg-amber-950/90 border border-amber-500/50 text-amber-400 shrink-0">
-              <Zap className="w-3.5 h-3.5 animate-pulse" />
+            <div className="p-1 rounded-md bg-[#14161B] border border-[#D9A441]/40 text-[#D9A441] shrink-0">
+              <Zap className="w-3.5 h-3.5" />
             </div>
-            <div className="text-xs font-mono min-w-0 flex items-center gap-1.5 flex-wrap">
-              <span className="text-amber-300 font-bold">⚡ Auto-Failover:</span>
-              <span className="text-zinc-300">{getProviderDisplayName(failoverNotice.primaryProviderId)} ({failoverNotice.reason})</span>
-              <span className="text-amber-400 font-bold">──►</span>
-              <span className="text-emerald-300 font-semibold">{failoverNotice.fallbackDisplayName}</span>
-              <span className="text-zinc-400 text-[10.5px]">(Zero data lost)</span>
+            <div className="text-xs min-w-0 flex items-center gap-1.5 flex-wrap">
+              <span className="text-[#D9A441] font-medium">Auto-Failover:</span>
+              <span className="text-[#9AA1AC]">{getProviderDisplayName(failoverNotice.primaryProviderId)} ({failoverNotice.reason})</span>
+              <span className="text-[#6B7280]">→</span>
+              <span className="text-[#3EAE79] font-medium">{failoverNotice.fallbackDisplayName}</span>
+              <span className="text-[#6B7280] text-[11px]">(Zero data lost)</span>
             </div>
           </div>
           <button
@@ -461,104 +457,221 @@ export default function CodexBottomComposer({
         </div>
       )}
 
-      {/* 1. Context Row: Workspace -> Local -> Branch -> CONTINUUM -> IMPORT CAPSULE */}
-      <div className="flex items-center gap-2 text-xs font-mono" style={{ color: "var(--theme-text-muted, #a1a1aa)" }}>
-        {/* Workspace Pill */}
-        <button
-          onClick={onOpenFolder}
-          style={{
-            backgroundColor: "var(--theme-surface-raised, #0e0e16)",
-            borderColor: "var(--theme-border, #1e1e2c)",
-            color: "var(--theme-text, #f4f4f5)",
-          }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-colors cursor-pointer text-[11px]"
-        >
-          <FolderOpen className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-          <span className="font-bold truncate max-w-[140px]">{workspaceName}</span>
-        </button>
-
-        {/* Environment Pill */}
-        <div 
-          style={{
-            backgroundColor: "var(--theme-surface-raised, #0e0e16)",
-            borderColor: "var(--theme-border, #1e1e2c)",
-            color: "var(--theme-text-muted, #a1a1aa)",
-          }}
-          className="flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px]"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span>Local</span>
-        </div>
-
-        {/* Branch Pill */}
-        <div 
-          style={{
-            backgroundColor: "var(--theme-surface-raised, #0e0e16)",
-            borderColor: "var(--theme-border, #1e1e2c)",
-            color: "var(--theme-accent-secondary, #a855f7)",
-          }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px]"
-        >
-          <GitBranch className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--theme-accent-secondary, #a855f7)" }} />
-          <span className="font-bold truncate max-w-[150px]">{gitBranch}</span>
-        </div>
-
-        {/* CONTINUUM Pill — IMMEDIATELY TO THE RIGHT OF THE BRANCH! */}
-        <button
-          onClick={onOpenContinuum}
-          style={{
-            backgroundColor: "var(--theme-accent-dim, rgba(34,211,238,0.15))",
-            borderColor: "var(--theme-border-focus, rgba(34,211,238,0.4))",
-            color: "var(--theme-accent, #22d3ee)",
-          }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-bold transition-all cursor-pointer text-[11px] shadow-sm hover:brightness-125"
-          title="Open Continuum Session Memory & Lineage"
-        >
-          <Layers className="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-pulse" />
-          <span>Continuum</span>
-        </button>
-
-        {/* Import Context Capsule Pill */}
-        {onImportCapsule && (
+      {/* 1. Quiet Context Line: [ workspace · branch · continuum / capsule context ... token estimate ] */}
+      <div className="w-full flex items-center justify-between gap-2 px-1 text-xs font-sans text-[#8C92A4]">
+        {/* Left: Quiet Consolidated Workspace & Branch Context */}
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          {/* Workspace Trigger */}
           <button
             type="button"
-            onClick={onImportCapsule}
-            style={{
-              backgroundColor: "var(--theme-surface-raised, #0e0e16)",
-              borderColor: "var(--theme-border, #1e1e2c)",
-              color: "var(--theme-accent, #22d3ee)",
-            }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-bold transition-all cursor-pointer text-[11px] shadow-sm hover:border-cyan-500/40 hover:bg-cyan-950/40"
-            title="Import Context Capsule to continue previous conversation"
+            onClick={onOpenFolder}
+            className="flex items-center gap-1 text-[#8C92A4] hover:text-[#E6E8EB] transition-colors cursor-pointer text-[11px]"
+            title="Switch Workspace Folder"
           >
-            <Upload className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>Import Capsule</span>
+            <FolderOpen className="w-3.5 h-3.5 text-[#8C92A4] shrink-0" />
+            <span className="font-medium truncate max-w-[130px]">{workspaceName}</span>
           </button>
+
+          <span className="text-[#3E424D]">·</span>
+
+          {/* Git Branch */}
+          <div 
+            className="flex items-center gap-1 text-[#8C92A4] text-[11px]"
+            title={`Active Branch: ${gitBranch}`}
+          >
+            <GitBranch className="w-3.5 h-3.5 shrink-0 text-[#6B7280]" />
+            <span className="truncate max-w-[130px]">{gitBranch}</span>
+          </div>
+
+          <span className="text-[#3E424D]">·</span>
+
+          {/* CONTINUUM Trigger */}
+          <button
+            type="button"
+            onClick={onOpenContinuum}
+            className="flex items-center gap-1 text-[#8C92A4] hover:text-[#4CC2DE] transition-colors cursor-pointer text-[11px]"
+            title="Open Continuum Session Memory & Lineage"
+          >
+            <Layers className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+            <span>Continuum</span>
+          </button>
+
+          {/* Import Context Capsule Trigger */}
+          {onImportCapsule && (
+            <>
+              <span className="text-[#3E424D]">·</span>
+              <button
+                type="button"
+                onClick={onImportCapsule}
+                className="flex items-center gap-1 text-[#8C92A4] hover:text-[#E6E8EB] transition-colors cursor-pointer text-[11px]"
+                title="Import Context Capsule to continue previous conversation"
+              >
+                <Upload className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
+                <span>Import Capsule</span>
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Right: Quiet Preflight Cost & Context Indicator */}
+        {preflight && preflight.estimatedInputTokens > 0 && (
+          <div className="relative shrink-0">
+            <button
+              ref={preflightTriggerRef}
+              type="button"
+              onClick={() => setShowPreflightPopover((prev) => !prev)}
+              className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-sans cursor-pointer transition-colors ${
+                preflight.budgetStatus?.level === "CRITICAL"
+                  ? "bg-[#DC5B5B]/10 text-[#DC5B5B] hover:bg-[#DC5B5B]/20"
+                  : preflight.budgetStatus?.level === "APPROACHING"
+                  ? "bg-[#D9A441]/10 text-[#D9A441] hover:bg-[#D9A441]/20"
+                  : "text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
+              }`}
+              title="Click for Preflight Token & Cost Details"
+            >
+              <Coins className="w-3 h-3 text-[#6B7280] shrink-0" />
+              <span>
+                {preflight.estimatedInputTokens >= 1000
+                  ? `~${(preflight.estimatedInputTokens / 1000).toFixed(1)}k`
+                  : `~${preflight.estimatedInputTokens}`}
+                {" tokens"}
+              </span>
+              {preflight.pricingAvailable && preflight.estimatedCostUSD !== null && (
+                <>
+                  <span className="text-[#3E424D]">•</span>
+                  <span className="text-[#3EAE79] font-medium">
+                    {`~$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`}
+                  </span>
+                </>
+              )}
+            </button>
+
+            {showPreflightPopover && (
+              <div
+                ref={preflightPopoverRef}
+                className="absolute right-0 bottom-7 w-64 border border-[#22252B] rounded-lg shadow-popover bg-[#1A1C22] z-50 p-2.5 space-y-2 text-xs font-sans"
+              >
+                <div className="flex items-center justify-between border-b border-[#22252B] pb-1.5">
+                  <span className="text-xs font-medium text-[#E6E8EB] flex items-center gap-1.5">
+                    <Coins className="w-3.5 h-3.5 text-[#4CC2DE]" />
+                    Preflight Estimate
+                  </span>
+                  <span
+                    className={`text-[9.5px] px-1.5 py-0.5 rounded font-mono font-medium ${
+                      preflight.budgetStatus?.level === "CRITICAL"
+                        ? "bg-[#DC5B5B]/10 text-[#DC5B5B] border border-[#DC5B5B]/30"
+                        : preflight.budgetStatus?.level === "APPROACHING"
+                        ? "bg-[#D9A441]/10 text-[#D9A441] border border-[#D9A441]/30"
+                        : "bg-[#3EAE79]/10 text-[#3EAE79] border border-[#3EAE79]/30"
+                    }`}
+                  >
+                    {preflight.budgetStatus?.level || "NORMAL"}
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-[11px] text-[#9AA1AC]">
+                  <div className="flex justify-between">
+                    <span className="text-[#6B7280]">Estimated input:</span>
+                    <span className="font-medium text-[#E6E8EB]">
+                      {preflight.estimatedInputTokens.toLocaleString()} tokens
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B7280]">Max output:</span>
+                    <span className="font-medium text-[#E6E8EB]">
+                      {preflight.estimatedMaxOutputTokens.toLocaleString()} tokens
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B7280]">Files:</span>
+                    <span className="font-medium text-[#E6E8EB]">
+                      {preflight.estimatedFiles?.count || 1}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B7280]">Tool calls:</span>
+                    <span className="font-medium text-[#E6E8EB]">
+                      {preflight.estimatedToolCalls?.min === 0
+                        ? "0"
+                        : `${preflight.estimatedToolCalls?.min}–${preflight.estimatedToolCalls?.max}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B7280]">Context window:</span>
+                    <span
+                      className={`font-medium ${
+                        preflight.isContextExceeded
+                          ? "text-[#D9A441]"
+                          : "text-[#E6E8EB]"
+                      }`}
+                    >
+                      {preflight.contextWindow
+                        ? `${(preflight.contextWindow / 1000).toFixed(0)}k ${
+                            preflight.contextUsageRatio
+                              ? `(${(preflight.contextUsageRatio * 100).toFixed(0)}%)`
+                              : ""
+                          }`
+                        : "Unknown limit"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-[#22252B]">
+                    <span className="text-[#6B7280]">Estimated cost:</span>
+                    <span className="font-medium text-[#3EAE79]">
+                      {preflight.pricingAvailable && preflight.estimatedCostUSD !== null
+                        ? `$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`
+                        : "N/A"}
+                    </span>
+                  </div>
+
+                  {preflight.recommendedModel?.modelId && (
+                    <div className="pt-1.5 border-t border-[#22252B] space-y-0.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-[#6B7280] flex items-center gap-1">
+                          {preflight.recommendedModel.isContextExceeded ? (
+                            <AlertTriangle className="w-3 h-3 text-[#D9A441] shrink-0" />
+                          ) : (
+                            <Sparkles className="w-3 h-3 text-[#4CC2DE] shrink-0" />
+                          )}
+                          Advisor:
+                        </span>
+                        <span className={`font-medium truncate max-w-[125px] ${preflight.recommendedModel.isContextExceeded ? "text-[#D9A441]" : "text-[#4CC2DE]"}`}>
+                          {preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}
+                        </span>
+                      </div>
+                      <div className={`text-[10px] leading-tight ${preflight.recommendedModel.isContextExceeded ? "text-[#D9A441]/90" : "text-[#9AA1AC]"}`}>
+                        {preflight.recommendedModel.reason}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-[10px] text-[#6B7280] pt-0.5 text-center">
+                  Deterministic preflight • Zero AI calls
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
       {/* 2. Codex Agent Composer Container */}
       <form onSubmit={handleSubmit} className="w-full">
         <div 
-          style={{
-            backgroundColor: "var(--theme-surface-panel, #0b0b12)",
-            borderColor: "var(--theme-border-card, #222234)",
-          }}
-          className="border focus-within:border-cyan-500/60 rounded-2xl p-3.5 shadow-2xl transition-all relative space-y-2"
+          className="border border-[#22252B] focus-within:border-[#4CC2DE] rounded-lg p-3 bg-[#111318] transition-colors relative space-y-2"
         >
           {/* Subtle Capsule Attachment Badge */}
           {attachedCapsule && (
-            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-[10px] text-cyan-300 font-mono animate-fadeIn">
+            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-[11px] text-[#9AA1AC] font-sans">
               <div className="flex items-center gap-2 min-w-0 truncate">
-                <Box className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span className="px-1.5 py-0.5 rounded bg-cyan-900/80 border border-cyan-400/40 text-cyan-200 font-bold tracking-wider shrink-0">
+                <Box className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+                <span className="px-1.5 py-0.5 rounded bg-[#1A1C22] border border-[#22252B] text-[#E6E8EB] font-mono text-[10px] shrink-0">
                   {`Context Capsule ${attachedCapsule.capsule_ref || (attachedCapsule.capsule_id ? `#CC${attachedCapsule.capsule_id.slice(-6).toUpperCase()}` : "#CC")}`}
                 </span>
-                <span className="font-bold text-zinc-200 truncate">Continuation context prepared</span>
+                <span className="font-medium text-[#E6E8EB] truncate">Continuation context prepared</span>
               </div>
-              <span className="text-[9.5px] text-emerald-400 flex items-center gap-1 font-bold shrink-0 ml-2">
-                <Check className="w-3 h-3 text-emerald-400" />
-                Ready to continue
+              <span className="text-[10px] text-[#3EAE79] flex items-center gap-1 font-medium shrink-0 ml-2">
+                <Check className="w-3 h-3 text-[#3EAE79]" />
+                Ready
               </span>
             </div>
           )}
@@ -585,26 +698,20 @@ export default function CodexBottomComposer({
             }}
             placeholder="Ask NEXUS to investigate or change code... (⌘Enter to send)"
             disabled={disabled}
-            style={{ color: "var(--theme-text, #f4f4f5)" }}
-            className={`w-full bg-transparent text-xs placeholder-zinc-500 focus:outline-none resize-none font-mono transition-all ${
+            className={`w-full bg-transparent text-xs text-[#E6E8EB] placeholder-[#6B7280] focus:outline-none resize-none font-sans transition-all ${
               attachedCapsule || prompt.length > 200 || prompt.includes("\n") ? "h-48" : "h-20"
             }`}
           />
 
           {/* Bottom Control Row */}
           <div 
-            style={{ borderColor: "var(--theme-border-subtle, #1a1a28)" }}
-            className="flex items-center justify-between pt-2 border-t text-xs"
+            className="flex items-center justify-between pt-2 border-t border-[#22252B] text-xs font-sans"
           >
             <div className="flex items-center gap-2 relative">
               {/* Attachment / Action Button */}
               <button
                 type="button"
-                style={{
-                  backgroundColor: "var(--theme-surface-raised, #141420)",
-                  borderColor: "var(--theme-border-card, #242436)",
-                }}
-                className="w-7 h-7 rounded-lg border flex items-center justify-center text-zinc-400 hover:text-cyan-300 transition-colors cursor-pointer"
+                className="w-7 h-7 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] flex items-center justify-center text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer"
                 title="Attach Context or File"
               >
                 <Plus className="w-4 h-4" />
@@ -616,26 +723,17 @@ export default function CodexBottomComposer({
                   ref={approvalTriggerRef}
                   type="button"
                   onClick={() => setShowApprovalDropdown((prev) => !prev)}
-                  style={{
-                    backgroundColor: "var(--theme-surface-raised, #141420)",
-                    borderColor: "var(--theme-border-card, #242436)",
-                    color: "var(--theme-text, #f4f4f5)",
-                  }}
-                  className="px-2.5 py-1 rounded-lg border text-[11px] font-mono flex items-center gap-1.5 cursor-pointer"
+                  className="px-2.5 py-1 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-[11px] font-sans flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
-                  <ShieldCheck className={`w-3.5 h-3.5 ${approvalMode === "auto" ? "text-emerald-400" : "text-amber-400"}`} />
+                  <ShieldCheck className={`w-3.5 h-3.5 ${approvalMode === "auto" ? "text-[#3EAE79]" : "text-[#D9A441]"}`} />
                   <span>{approvalMode === "auto" ? "Auto-Approve Safe" : "Require Approval"}</span>
-                  <ChevronDown className="w-3 h-3 text-zinc-500" />
+                  <ChevronDown className="w-3 h-3 text-[#6B7280]" />
                 </button>
 
                 {showApprovalDropdown && (
                   <div 
                     ref={approvalDropdownRef}
-                    style={{
-                      backgroundColor: "var(--theme-surface-card, #0c0c14)",
-                      borderColor: "var(--theme-border-card, #242436)",
-                    }}
-                    className="absolute left-0 bottom-9 w-48 border rounded-xl shadow-2xl z-50 p-1 space-y-1 text-xs"
+                    className="absolute left-0 bottom-9 w-48 border border-[#22252B] rounded-lg shadow-popover bg-[#1A1C22] z-50 p-1 space-y-0.5 text-xs font-sans"
                   >
                     <button
                       type="button"
@@ -643,10 +741,10 @@ export default function CodexBottomComposer({
                         setApprovalMode("auto");
                         setShowApprovalDropdown(false);
                       }}
-                      className="w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between hover:bg-white/5 text-emerald-300 cursor-pointer"
+                      className="w-full text-left px-2 py-1.5 rounded-md flex items-center justify-between hover:bg-[#22252B] text-[#E6E8EB] cursor-pointer"
                     >
                       <span>Auto-Approve Safe</span>
-                      {approvalMode === "auto" && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                      {approvalMode === "auto" && <Check className="w-3.5 h-3.5 text-[#3EAE79]" />}
                     </button>
                     <button
                       type="button"
@@ -654,10 +752,10 @@ export default function CodexBottomComposer({
                         setApprovalMode("strict");
                         setShowApprovalDropdown(false);
                       }}
-                      className="w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between hover:bg-white/5 text-amber-300 cursor-pointer"
+                      className="w-full text-left px-2 py-1.5 rounded-md flex items-center justify-between hover:bg-[#22252B] text-[#E6E8EB] cursor-pointer"
                     >
                       <span>Require Approval</span>
-                      {approvalMode === "strict" && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      {approvalMode === "strict" && <Check className="w-3.5 h-3.5 text-[#D9A441]" />}
                     </button>
                   </div>
                 )}
@@ -669,30 +767,21 @@ export default function CodexBottomComposer({
                   ref={modelTriggerRef}
                   type="button"
                   onClick={() => setShowModelDropdown((prev) => !prev)}
-                  style={{
-                    backgroundColor: "var(--theme-surface-raised, #141420)",
-                    borderColor: "var(--theme-border-card, #242436)",
-                    color: "var(--theme-accent, #22d3ee)",
-                  }}
-                  className="px-2.5 py-1 rounded-lg border text-[11px] font-mono flex items-center gap-1.5 cursor-pointer max-w-[180px]"
+                  className="px-2.5 py-1 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] text-[#E6E8EB] text-[11px] font-sans flex items-center gap-1.5 cursor-pointer max-w-[180px] transition-colors"
                 >
-                  <Cpu className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <Cpu className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
                   <span className="truncate capitalize">
                     {activeProvider.startsWith("nexus") 
                       ? (activeProvider === "nexus6" ? "NEXUS 6 (Groq)" : `NEXUS ${activeProvider.replace("nexus", "")} (Gemini)`) 
                       : `${activeProvider} (${activeModel.split('/').pop()?.replace(/^models\//, '') || activeModel})`}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-zinc-500 shrink-0" />
+                  <ChevronDown className="w-3 h-3 text-[#6B7280] shrink-0" />
                 </button>
 
                 {showModelDropdown && (
                   <div 
                     ref={modelDropdownRef}
-                    style={{
-                      backgroundColor: "var(--theme-surface-card, #0c0c14)",
-                      borderColor: "var(--theme-border-card, #242436)",
-                    }}
-                    className="absolute left-0 bottom-9 w-64 border rounded-xl shadow-2xl z-50 p-1.5 space-y-1 text-xs max-h-56 overflow-y-auto"
+                    className="absolute left-0 bottom-9 w-64 border border-[#22252B] rounded-lg shadow-popover bg-[#1A1C22] z-50 p-1 space-y-0.5 text-xs font-sans max-h-56 overflow-y-auto"
                   >
                     {[
                       { id: "nexus1", name: "NEXUS 1", modelId: "gemini-2.5-flash", label: "NEXUS 1 (Gemini 2.5 Flash)" },
@@ -711,8 +800,8 @@ export default function CodexBottomComposer({
                             onSelectModel(p.id, p.modelId);
                             setShowModelDropdown(false);
                           }}
-                          className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between hover:bg-white/5 cursor-pointer text-xs ${
-                            isSel ? "text-cyan-300 font-bold bg-cyan-950/40" : "text-zinc-400"
+                          className={`w-full text-left px-2 py-1.5 rounded-md flex items-center justify-between hover:bg-[#22252B] cursor-pointer text-xs transition-colors ${
+                            isSel ? "text-[#4CC2DE] font-medium bg-[#22252B]" : "text-[#9AA1AC]"
                           }`}
                         >
                           <span className="truncate">{isSel ? `✓ ${p.label}` : p.label}</span>
@@ -723,158 +812,6 @@ export default function CodexBottomComposer({
                 )}
               </div>
 
-              {/* Preflight Cost & Context Indicator (Phase 2 - Non-blocking) */}
-              {preflight && preflight.estimatedInputTokens > 0 && (
-                <div className="relative">
-                  <button
-                    ref={preflightTriggerRef}
-                    type="button"
-                    onClick={() => setShowPreflightPopover((prev) => !prev)}
-                    style={{
-                      backgroundColor: "var(--theme-surface-raised, #141420)",
-                      borderColor:
-                        preflight.budgetStatus?.level === "CRITICAL"
-                          ? "rgba(239, 68, 68, 0.4)"
-                          : preflight.budgetStatus?.level === "APPROACHING"
-                          ? "rgba(245, 158, 11, 0.4)"
-                          : "var(--theme-border-card, #242436)",
-                      color:
-                        preflight.budgetStatus?.level === "CRITICAL"
-                          ? "#f87171"
-                          : preflight.budgetStatus?.level === "APPROACHING"
-                          ? "#fbbf24"
-                          : "var(--theme-text-muted, #a1a1aa)",
-                    }}
-                    className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:border-cyan-500/40 transition-all"
-                    title="Click for Preflight Token & Cost Details"
-                  >
-                    <Coins className="w-3 h-3 text-cyan-400 shrink-0" />
-                    <span>
-                      {preflight.estimatedInputTokens >= 1000
-                        ? `~${(preflight.estimatedInputTokens / 1000).toFixed(1)}k tokens`
-                        : `~${preflight.estimatedInputTokens} tokens`}
-                    </span>
-                    {preflight.pricingAvailable && preflight.estimatedCostUSD !== null && (
-                      <>
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-emerald-400 font-semibold">
-                          {`~$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`}
-                        </span>
-                      </>
-                    )}
-                  </button>
-
-                  {showPreflightPopover && (
-                    <div
-                      ref={preflightPopoverRef}
-                      style={{
-                        backgroundColor: "var(--theme-surface-card, #0c0c14)",
-                        borderColor: "var(--theme-border-card, #242436)",
-                      }}
-                      className="absolute left-0 bottom-9 w-60 border rounded-xl shadow-2xl z-50 p-2.5 space-y-2 text-xs font-mono animate-fadeIn"
-                    >
-                      <div className="flex items-center justify-between border-b border-white/5 pb-1.5">
-                        <span className="text-[11px] font-bold text-zinc-200 flex items-center gap-1">
-                          <Coins className="w-3.5 h-3.5 text-cyan-400" />
-                          Preflight Estimate
-                        </span>
-                        <span
-                          className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold ${
-                            preflight.budgetStatus?.level === "CRITICAL"
-                              ? "bg-red-950/80 text-red-300 border border-red-500/30"
-                              : preflight.budgetStatus?.level === "APPROACHING"
-                              ? "bg-amber-950/80 text-amber-300 border border-amber-500/30"
-                              : "bg-emerald-950/80 text-emerald-300 border border-emerald-500/30"
-                          }`}
-                        >
-                          {preflight.budgetStatus?.level || "NORMAL"}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1 text-[11px] text-zinc-300">
-                        <div className="flex justify-between">
-                          <span className="text-zinc-500">Estimated input:</span>
-                          <span className="font-semibold text-zinc-200">
-                            {preflight.estimatedInputTokens.toLocaleString()} tokens
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-zinc-500">Max output:</span>
-                          <span className="font-semibold text-zinc-200">
-                            {preflight.estimatedMaxOutputTokens.toLocaleString()} tokens
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-zinc-500">Files:</span>
-                          <span className="font-semibold text-zinc-200">
-                            {preflight.estimatedFiles?.count || 1}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-zinc-500">Tool calls:</span>
-                          <span className="font-semibold text-zinc-200">
-                            {preflight.estimatedToolCalls?.min === 0
-                              ? "0"
-                              : `${preflight.estimatedToolCalls?.min}–${preflight.estimatedToolCalls?.max}`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-zinc-500">Context window:</span>
-                          <span
-                            className={`font-semibold ${
-                              preflight.isContextExceeded
-                                ? "text-amber-400 font-bold"
-                                : "text-zinc-300"
-                            }`}
-                          >
-                            {preflight.contextWindow
-                              ? `${(preflight.contextWindow / 1000).toFixed(0)}k ${
-                                  preflight.contextUsageRatio
-                                    ? `(${(preflight.contextUsageRatio * 100).toFixed(0)}%)`
-                                    : ""
-                                }`
-                              : "Unknown limit"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between pt-1 border-t border-white/5">
-                          <span className="text-zinc-500">Estimated cost:</span>
-                          <span className="font-bold text-emerald-400">
-                            {preflight.pricingAvailable && preflight.estimatedCostUSD !== null
-                              ? `$${preflight.estimatedCostUSD.toFixed(preflight.estimatedCostUSD < 0.01 ? 4 : 2)}`
-                              : "N/A"}
-                          </span>
-                        </div>
-
-                        {preflight.recommendedModel?.modelId && (
-                          <div className="pt-1.5 border-t border-white/5 space-y-0.5">
-                            <div className="flex items-center justify-between text-[10.5px]">
-                              <span className="text-zinc-500 flex items-center gap-1">
-                                {preflight.recommendedModel.isContextExceeded ? (
-                                  <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
-                                ) : (
-                                  <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
-                                )}
-                                Advisor:
-                              </span>
-                              <span className={`font-semibold truncate max-w-[125px] ${preflight.recommendedModel.isContextExceeded ? "text-amber-300" : "text-cyan-300"}`}>
-                                {preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}
-                              </span>
-                            </div>
-                            <div className={`text-[9.5px] leading-tight ${preflight.recommendedModel.isContextExceeded ? "text-amber-300/90" : "text-zinc-400"}`}>
-                              {preflight.recommendedModel.reason}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-[9px] text-zinc-600 pt-0.5 text-center">
-                        Deterministic preflight • Zero AI calls
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
               {/* Model Selection Intelligence / Context Window Pre-Gating Suggestion */}
               {preflight?.recommendedModel?.modelId && !preflight.recommendedModel.isCurrentOptimal && (
                 <button
@@ -884,28 +821,21 @@ export default function CodexBottomComposer({
                       onSelectModel(preflight.recommendedModel.providerId, preflight.recommendedModel.modelId);
                     }
                   }}
-                  style={{
-                    backgroundColor: preflight.recommendedModel.isContextExceeded
-                      ? "rgba(245, 158, 11, 0.12)"
-                      : "rgba(6, 182, 212, 0.08)",
-                    borderColor: preflight.recommendedModel.isContextExceeded
-                      ? "rgba(245, 158, 11, 0.45)"
-                      : "rgba(6, 182, 212, 0.3)",
-                    color: preflight.recommendedModel.isContextExceeded
-                      ? "#fbbf24"
-                      : "#67e8f9",
-                  }}
-                  className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:brightness-125 transition-all"
+                  className={`px-2 py-1 rounded-md border text-[11px] font-sans flex items-center gap-1.5 cursor-pointer transition-colors ${
+                    preflight.recommendedModel.isContextExceeded
+                      ? "border-[#D9A441]/50 bg-[#D9A441]/10 text-[#D9A441] hover:bg-[#D9A441]/20"
+                      : "border-[#4CC2DE]/40 bg-[#4CC2DE]/10 text-[#4CC2DE] hover:bg-[#4CC2DE]/20"
+                  }`}
                   title={`Click to switch: ${preflight.recommendedModel.reason}`}
                 >
                   {preflight.recommendedModel.isContextExceeded ? (
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#D9A441] shrink-0" />
                   ) : (
-                    <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
                   )}
                   <span>
                     {preflight.recommendedModel.isContextExceeded
-                      ? `⚠️ Context Limit Risk: Switch to ${preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}`
+                      ? `Context Limit Risk: Switch to ${preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}`
                       : `Suggested: ${preflight.recommendedModel.modelDisplayName || preflight.recommendedModel.modelId}`}
                   </span>
                 </button>
@@ -914,16 +844,11 @@ export default function CodexBottomComposer({
               {/* Unresolved Context Exceeded State (No larger compatible model configured) */}
               {preflight?.isContextExceeded && !preflight?.recommendedModel?.modelId && (
                 <div
-                  style={{
-                    backgroundColor: "rgba(239, 68, 68, 0.12)",
-                    borderColor: "rgba(239, 68, 68, 0.4)",
-                    color: "#f87171",
-                  }}
-                  className="px-2 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5"
+                  className="px-2 py-1 rounded-md border border-[#DC5B5B]/50 bg-[#DC5B5B]/10 text-[#DC5B5B] text-[11px] font-sans flex items-center gap-1.5"
                   title={preflight.recommendedModel?.reason || "Estimated context exceeds active model limit"}
                 >
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                  <span>⚠️ Context Limit Risk (No larger configured model)</span>
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#DC5B5B] shrink-0" />
+                  <span>Context Limit Risk (No larger configured model)</span>
                 </div>
               )}
 
@@ -932,136 +857,113 @@ export default function CodexBottomComposer({
                 <button
                   type="button"
                   onClick={handleOpenRefactorPlan}
-                  style={{
-                    backgroundColor: "rgba(168, 85, 247, 0.12)",
-                    borderColor: "rgba(168, 85, 247, 0.35)",
-                    color: "#d8b4fe",
-                  }}
-                  className="px-2.5 py-1 rounded-lg border text-[10.5px] font-mono flex items-center gap-1.5 cursor-pointer hover:bg-purple-950/50 hover:border-purple-400 transition-all font-medium"
+                  className="px-2.5 py-1 rounded-md border border-[#22252B] bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] text-[11px] font-sans flex items-center gap-1.5 cursor-pointer transition-colors font-medium"
                   title="Generate visual task DAG, scope boundaries, and step-by-step refactor plan"
                 >
-                  <GitMerge className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <GitMerge className="w-3.5 h-3.5 text-[#9AA1AC] shrink-0" />
                   <span>Plan Refactor</span>
                 </button>
               )}
             </div>
 
-
-            {/* Send Button */}
+            {/* Primary Action: Send / Start Task */}
             <button
               type="submit"
               disabled={!prompt.trim() || disabled}
-              style={{
-                backgroundColor: "var(--theme-accent, #06b6d4)",
-                color: "#ffffff",
-              }}
-              className="px-4 py-1.5 rounded-xl hover:brightness-110 disabled:opacity-40 text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="px-4 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#38b2ce] active:bg-[#2fa3c0] disabled:opacity-40 disabled:cursor-not-allowed text-[#0A0B0D] text-xs font-medium font-sans transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-none"
             >
               <span>Start Task</span>
               <Send className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Compact API Usage & Credential Status Area */}
-          <div
-            style={{ borderColor: "var(--theme-border-subtle, #1a1a28)" }}
-            className="flex items-center justify-between px-1 pt-2 border-t text-[10.5px] font-mono text-zinc-400 select-text"
-          >
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-1">
-                <span className="text-zinc-500">Provider:</span>
-                <span className="text-zinc-200 font-semibold">{getProviderDisplayName(activeProvider)}</span>
-              </div>
-              <span className="text-zinc-700">•</span>
-              <div className="flex items-center gap-1">
-                <span className="text-zinc-500">Credential:</span>
-                <span className={isKeyConfigured ? "text-emerald-400 font-semibold" : "text-zinc-500"}>
-                  {isKeyConfigured ? "Configured ✓" : "Not configured"}
-                </span>
-              </div>
-              <span className="text-zinc-700">•</span>
-              <div className="flex items-center gap-1">
-                <span className="text-zinc-500">Account usage:</span>
-                <span className={verifiedUsage?.isAvailable ? "text-cyan-400 font-semibold" : "text-zinc-500"}>
-                  {verifiedUsage?.display || "Not available"}
-                </span>
-              </div>
-            </div>
+          {/* Contextual Notices (Quiet Precision: Healthy systems are silent; only render alerts/status) */}
+          {(!isKeyConfigured || testVerificationStatus) && (
+            <div className="flex items-center justify-between px-1 pt-2 border-t border-[#22252B] text-[11px] font-sans select-text">
+              {!isKeyConfigured ? (
+                <div className="flex items-center gap-1.5 text-[#D9A441]">
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#D9A441] shrink-0" />
+                  <span>API Key not configured for {getProviderDisplayName(activeProvider)}</span>
+                </div>
+              ) : (
+                <div />
+              )}
 
-            {/* Non-Blocking Test Verification & Autonomous Repair Status Badge */}
-            {testVerificationStatus && (
-              <div
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono border animate-in fade-in duration-200"
-                style={{
-                  backgroundColor:
-                    testVerificationStatus.status === "PASSED"
-                      ? "rgba(16, 185, 129, 0.1)"
-                      : testVerificationStatus.status === "REPAIRING"
-                      ? "rgba(234, 179, 8, 0.12)"
-                      : testVerificationStatus.status === "VERIFYING"
-                      ? "rgba(6, 182, 212, 0.1)"
-                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
-                        testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
-                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
-                      ? "rgba(113, 113, 122, 0.15)"
-                      : "rgba(239, 68, 68, 0.1)",
-                  borderColor:
-                    testVerificationStatus.status === "PASSED"
-                      ? "rgba(16, 185, 129, 0.35)"
-                      : testVerificationStatus.status === "REPAIRING"
-                      ? "rgba(234, 179, 8, 0.4)"
-                      : testVerificationStatus.status === "VERIFYING"
-                      ? "rgba(6, 182, 212, 0.35)"
-                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
-                        testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
-                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
-                      ? "rgba(113, 113, 122, 0.35)"
-                      : "rgba(239, 68, 68, 0.35)",
-                  color:
-                    testVerificationStatus.status === "PASSED"
-                      ? "#34d399"
-                      : testVerificationStatus.status === "REPAIRING"
-                      ? "#fde047"
-                      : testVerificationStatus.status === "VERIFYING"
-                      ? "#67e8f9"
-                      : testVerificationStatus.status === "NO_TESTS_FOUND" ||
-                        testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
-                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
-                      ? "#a1a1aa"
-                      : "#f87171",
-                }}
-              >
-                {testVerificationStatus.status === "VERIFYING" && (
-                  <Loader2 className="w-3 h-3 animate-spin text-cyan-400 shrink-0" />
-                )}
-                {testVerificationStatus.status === "PASSED" && (
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-                )}
-                {testVerificationStatus.status === "REPAIRING" && (
-                  <RefreshCw className="w-3 h-3 animate-spin text-yellow-400 shrink-0" />
-                )}
-                {(testVerificationStatus.status === "NO_TESTS_FOUND" ||
-                  testVerificationStatus.status === "SKIPPED" ||
-                  testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
-                  testVerificationStatus.status === "TESTS_NOT_CONFIGURED") && (
-                  <Info className="w-3 h-3 text-zinc-400 shrink-0" />
-                )}
-                {testVerificationStatus.status !== "VERIFYING" &&
-                  testVerificationStatus.status !== "PASSED" &&
-                  testVerificationStatus.status !== "REPAIRING" &&
-                  testVerificationStatus.status !== "NO_TESTS_FOUND" &&
-                  testVerificationStatus.status !== "SKIPPED" &&
-                  testVerificationStatus.status !== "RUNNER_NOT_DETECTED" &&
-                  testVerificationStatus.status !== "TESTS_NOT_CONFIGURED" && (
-                    <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+              {/* Non-Blocking Test Verification & Autonomous Repair Status Badge */}
+              {testVerificationStatus && (
+                <div
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono border animate-in fade-in duration-200"
+                  style={{
+                    backgroundColor:
+                      testVerificationStatus.status === "PASSED"
+                        ? "rgba(16, 185, 129, 0.1)"
+                        : testVerificationStatus.status === "REPAIRING"
+                        ? "rgba(234, 179, 8, 0.12)"
+                        : testVerificationStatus.status === "VERIFYING"
+                        ? "rgba(6, 182, 212, 0.1)"
+                        : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                          testVerificationStatus.status === "SKIPPED" ||
+                          testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                          testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
+                        ? "rgba(113, 113, 122, 0.15)"
+                        : "rgba(239, 68, 68, 0.1)",
+                    borderColor:
+                      testVerificationStatus.status === "PASSED"
+                        ? "rgba(16, 185, 129, 0.35)"
+                        : testVerificationStatus.status === "REPAIRING"
+                        ? "rgba(234, 179, 8, 0.4)"
+                        : testVerificationStatus.status === "VERIFYING"
+                        ? "rgba(6, 182, 212, 0.35)"
+                        : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                          testVerificationStatus.status === "SKIPPED" ||
+                          testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                          testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
+                        ? "rgba(113, 113, 122, 0.35)"
+                        : "rgba(239, 68, 68, 0.35)",
+                    color:
+                      testVerificationStatus.status === "PASSED"
+                        ? "#34d399"
+                        : testVerificationStatus.status === "REPAIRING"
+                        ? "#fde047"
+                        : testVerificationStatus.status === "VERIFYING"
+                        ? "#67e8f9"
+                        : testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                          testVerificationStatus.status === "SKIPPED" ||
+                          testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                          testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
+                        ? "#a1a1aa"
+                        : "#f87171",
+                  }}
+                >
+                  {testVerificationStatus.status === "VERIFYING" && (
+                    <Loader2 className="w-3 h-3 animate-spin text-cyan-400 shrink-0" />
                   )}
-                <span>{testVerificationStatus.display || testVerificationStatus.badge || testVerificationStatus.status}</span>
-              </div>
-            )}
-          </div>
+                  {testVerificationStatus.status === "PASSED" && (
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                  )}
+                  {testVerificationStatus.status === "REPAIRING" && (
+                    <RefreshCw className="w-3 h-3 animate-spin text-yellow-400 shrink-0" />
+                  )}
+                  {(testVerificationStatus.status === "NO_TESTS_FOUND" ||
+                    testVerificationStatus.status === "SKIPPED" ||
+                    testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                    testVerificationStatus.status === "TESTS_NOT_CONFIGURED") && (
+                    <Info className="w-3 h-3 text-zinc-400 shrink-0" />
+                  )}
+                  {testVerificationStatus.status !== "VERIFYING" &&
+                    testVerificationStatus.status !== "PASSED" &&
+                    testVerificationStatus.status !== "REPAIRING" &&
+                    testVerificationStatus.status !== "NO_TESTS_FOUND" &&
+                    testVerificationStatus.status !== "SKIPPED" &&
+                    testVerificationStatus.status !== "RUNNER_NOT_DETECTED" &&
+                    testVerificationStatus.status !== "TESTS_NOT_CONFIGURED" && (
+                      <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+                    )}
+                  <span>{testVerificationStatus.display || testVerificationStatus.badge || testVerificationStatus.status}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </form>
 

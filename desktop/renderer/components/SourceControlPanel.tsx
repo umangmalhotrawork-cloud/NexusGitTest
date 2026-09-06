@@ -567,44 +567,44 @@ export default function SourceControlPanel({
     <div
       style={{
         backgroundColor: isPopover ? "transparent" : "var(--theme-surface-panel, #050507)",
-        borderColor: isPopover ? "transparent" : "var(--theme-border, #1f1f1f)",
-        color: "var(--theme-text, #f4f4f5)",
+        borderColor: isPopover ? "transparent" : "var(--theme-border, #22252B)",
+        color: "var(--theme-text, #E6E8EB)",
       }}
-      className={`flex flex-col font-mono text-xs select-none ${isPopover ? "h-auto max-h-[500px] overflow-hidden" : "h-full border-r overflow-hidden"}`}
+      className={`flex flex-col font-sans text-xs select-none ${isPopover ? "h-auto max-h-[500px] overflow-hidden" : "h-full border-r border-[#22252B] overflow-hidden"}`}
     >
       {/* Top Header */}
       <div
         style={{
-          backgroundColor: isPopover ? "rgba(10, 12, 22, 0.95)" : "var(--theme-surface, #0a0a0d)",
-          borderColor: isPopover ? "rgba(31, 31, 46, 0.8)" : "var(--theme-border, #1f1f1f)",
+          backgroundColor: isPopover ? "rgba(14, 16, 19, 0.95)" : "var(--theme-surface, #0E1013)",
+          borderColor: isPopover ? "#22252B" : "var(--theme-border, #22252B)",
         }}
-        className={`px-2.5 flex items-center justify-between shrink-0 border-b ${isPopover ? "h-8.5" : "h-10"}`}
+        className={`px-3 flex items-center justify-between shrink-0 border-b ${isPopover ? "h-8" : "h-9"}`}
       >
         <div className="flex items-center gap-2">
-          <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="font-bold text-zinc-100 uppercase tracking-wide text-[10.5px]">
+          <GitBranch className="w-3.5 h-3.5 text-[#4CC2DE]" />
+          <span className="font-semibold text-[#E6E8EB] text-xs">
             Source Control
           </span>
           {totalChanges > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-cyan-950 text-cyan-300 text-[9.5px] font-bold border border-cyan-500/30">
+            <span className="px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#4CC2DE] text-[10px] font-medium border border-[#22252B]">
               {totalChanges}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <button
             onClick={onRefresh}
             disabled={loading || isFetching || isPulling || isPushing}
-            className="p-1 rounded bg-[#141414] hover:bg-[#202020] text-zinc-400 hover:text-white transition-all cursor-pointer disabled:opacity-40"
+            className="p-1 rounded bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer disabled:opacity-40 border border-transparent hover:border-[#22252B]"
             title="Refresh Git Status"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-cyan-400" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#4CC2DE]" : ""}`} />
           </button>
           {isPopover && onClosePopover && (
             <button
               onClick={onClosePopover}
-              className="p-1 rounded bg-[#141414] hover:bg-[#202020] text-zinc-400 hover:text-white transition-all cursor-pointer"
+              className="p-1 rounded bg-[#14161B] hover:bg-[#1A1C22] text-[#9AA1AC] hover:text-[#E6E8EB] transition-colors cursor-pointer border border-transparent hover:border-[#22252B]"
               title="Close Source Control Popover (Esc)"
             >
               <X className="w-3.5 h-3.5" />
@@ -615,13 +615,13 @@ export default function SourceControlPanel({
 
       {/* Toast Messages */}
       {statusMessage && (
-        <div className="px-3 py-1.5 bg-cyan-950/80 border-b border-cyan-500/30 text-cyan-300 text-[11px] flex items-center gap-1.5 animate-fadeIn">
+        <div className="px-3 py-1.5 bg-[#14161B] border-b border-[#22252B] text-[#3EAE79] text-xs flex items-center gap-1.5 animate-fadeIn">
           <Check className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">{statusMessage}</span>
         </div>
       )}
       {errorMessage && (
-        <div className="px-3 py-1.5 bg-rose-950/80 border-b border-rose-500/30 text-rose-300 text-[11px] flex items-center gap-1.5 animate-fadeIn">
+        <div className="px-3 py-1.5 bg-[#14161B] border-b border-[#DC5B5B]/30 text-[#DC5B5B] text-xs flex items-center gap-1.5 animate-fadeIn">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">{errorMessage}</span>
         </div>
@@ -630,23 +630,23 @@ export default function SourceControlPanel({
       {/* Sub-navigation Tabs: Changes | History | Stashes */}
       <div
         style={{
-          backgroundColor: isPopover ? "rgba(8, 10, 18, 0.9)" : "#08080c",
-          borderColor: isPopover ? "rgba(31, 31, 46, 0.8)" : "#1f1f1f",
+          backgroundColor: isPopover ? "rgba(14, 16, 19, 0.9)" : "#0E1013",
+          borderColor: isPopover ? "#22252B" : "#22252B",
         }}
-        className="flex border-b shrink-0 text-[10.5px] font-semibold"
+        className="flex border-b border-[#22252B] shrink-0 text-xs font-medium"
       >
         <button
           onClick={() => setActiveSection("changes")}
-          className={`flex-1 ${isPopover ? "py-1.5 px-1.5" : "py-2 px-2"} flex items-center justify-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+          className={`flex-1 ${isPopover ? "py-1.5 px-1.5" : "py-1.5 px-2"} flex items-center justify-center gap-1.5 border-b-2 transition-colors cursor-pointer ${
             activeSection === "changes"
-              ? "border-cyan-500 text-cyan-400 bg-cyan-950/20"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-[#4CC2DE] text-[#4CC2DE] bg-[#14161B]"
+              : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
           }`}
         >
           <FileCode className="w-3.5 h-3.5" />
           <span>Changes</span>
           {totalChanges > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-cyan-950 text-cyan-300 text-[9.5px] border border-cyan-500/30">
+            <span className="px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#4CC2DE] text-[10px] font-medium border border-[#22252B]">
               {totalChanges}
             </span>
           )}
@@ -657,16 +657,16 @@ export default function SourceControlPanel({
             setActiveSection("history");
             if (!historyGraph && onFetchHistory) onFetchHistory();
           }}
-          className={`flex-1 py-2 px-2 flex items-center justify-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 border-b-2 transition-colors cursor-pointer ${
             activeSection === "history"
-              ? "border-cyan-500 text-cyan-400 bg-cyan-950/20"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-[#4CC2DE] text-[#4CC2DE] bg-[#14161B]"
+              : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
           }`}
         >
           <GitCommit className="w-3.5 h-3.5" />
           <span>History</span>
           {historyGraph && historyGraph.totalCommits > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-zinc-800 text-zinc-300 text-[9.5px]">
+            <span className="px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#9AA1AC] text-[10px] font-medium border border-[#22252B]">
               {historyGraph.totalCommits}
             </span>
           )}
@@ -674,16 +674,16 @@ export default function SourceControlPanel({
 
         <button
           onClick={() => setActiveSection("stashes")}
-          className={`flex-1 py-2 px-2 flex items-center justify-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 border-b-2 transition-colors cursor-pointer ${
             activeSection === "stashes"
-              ? "border-cyan-500 text-cyan-400 bg-cyan-950/20"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-[#4CC2DE] text-[#4CC2DE] bg-[#14161B]"
+              : "border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
           }`}
         >
           <Archive className="w-3.5 h-3.5" />
           <span>Stashes</span>
           {stashes.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-950 text-amber-300 text-[9.5px] border border-amber-500/30">
+            <span className="px-1.5 py-0.2 rounded bg-[#1A1C22] text-[#D9A441] text-[10px] font-medium border border-[#22252B]">
               {stashes.length}
             </span>
           )}
@@ -728,15 +728,15 @@ export default function SourceControlPanel({
             className={`border-b shrink-0 ${isPopover ? "p-2.5 space-y-2" : "p-3 space-y-2.5"}`}
           >
             {/* 1. Repository Info Display */}
-            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#0e0e14] border border-[#1f1f2a] text-[11px]">
+            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-[#111318] border border-[#22252B] text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
-                <FolderGit2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span className="font-bold text-zinc-100 truncate" title={workspacePath || repositoryName || "LocalRepo"}>
+                <FolderGit2 className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
+                <span className="font-medium text-zinc-100 truncate" title={workspacePath || repositoryName || "LocalRepo"}>
                   {repositoryName || (workspacePath ? workspacePath.split(/[\\/]/).filter(Boolean).pop() : "LocalRepo")}
                 </span>
               </div>
               {associatedRepo ? (
-                <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/30 shrink-0">
+                <div className="flex items-center gap-1 text-[10px] text-[#3EAE79] font-medium bg-[#14161B] px-1.5 py-0.5 rounded border border-[#22252B] shrink-0">
                   <Check className="w-3 h-3" />
                   <span className="truncate max-w-[120px]" title={associatedRepo.fullName}>@{associatedRepo.fullName}</span>
                 </div>
@@ -751,16 +751,16 @@ export default function SourceControlPanel({
                 <button
                   onClick={() => setShowBranchDropdown((prev) => !prev)}
                   style={{
-                    backgroundColor: "var(--theme-surface-raised, #121215)",
-                    borderColor: "var(--theme-border-card, #27272a)",
+                    backgroundColor: "#14161B",
+                    borderColor: "#22252B",
                   }}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold text-cyan-400 hover:border-cyan-500/50 transition-all cursor-pointer truncate flex-1 min-w-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs font-medium text-[#4CC2DE] hover:border-[#4CC2DE]/50 transition-colors cursor-pointer truncate flex-1 min-w-0"
                   title={`Active branch: ${currentBranch}${tracking ? ` (tracking ${tracking})` : ""}`}
                 >
-                  <GitBranch className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <GitBranch className="w-3.5 h-3.5 text-[#4CC2DE] shrink-0" />
                   <span className="truncate">{currentBranch || "HEAD"}</span>
                   {isDetached && (
-                    <span className="px-1 py-0.2 rounded bg-amber-950 text-amber-300 text-[9px] font-bold border border-amber-500/30">
+                    <span className="px-1 py-0.2 rounded bg-[#1A1C22] text-[#D9A441] text-[10px] font-medium border border-[#22252B]">
                       Detached
                     </span>
                   )}
@@ -779,13 +779,13 @@ export default function SourceControlPanel({
                     setBranchValidationError(null);
                   }}
                   style={{
-                    backgroundColor: "var(--theme-surface-raised, #18181b)",
-                    borderColor: "var(--theme-border-card, #27272a)",
+                    backgroundColor: "#14161B",
+                    borderColor: "#22252B",
                   }}
-                  className="px-2.5 py-1.5 rounded-lg border text-zinc-300 hover:text-white text-[10.5px] font-medium flex items-center gap-1 cursor-pointer transition-all hover:border-cyan-500/40 shrink-0"
+                  className="px-2.5 py-1.5 rounded-md border text-zinc-300 hover:text-white text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors hover:border-[#22252B] shrink-0"
                   title="Create New Branch"
                 >
-                  <Plus className="w-3.5 h-3.5 text-cyan-400" />
+                  <Plus className="w-3.5 h-3.5 text-[#4CC2DE]" />
                   <span>New Branch</span>
                 </button>
               </div>
@@ -794,10 +794,10 @@ export default function SourceControlPanel({
               {showBranchDropdown && (
                 <div
                   style={{
-                    backgroundColor: "var(--theme-surface-overlay, #0c0c12)",
-                    borderColor: "var(--theme-border, #27272a)",
+                    backgroundColor: "#111318",
+                    borderColor: "#22252B",
                   }}
-                  className="absolute left-0 top-10 w-64 border rounded-xl shadow-2xl z-40 p-2 space-y-2 text-xs font-mono animate-fadeIn"
+                  className="absolute left-0 top-10 w-64 border rounded-lg shadow-popover z-40 p-2 space-y-2 text-xs font-sans animate-fadeIn"
                 >
                   <div className="relative">
                     <Search className="w-3 h-3 text-zinc-500 absolute left-2 top-2" />
@@ -806,7 +806,7 @@ export default function SourceControlPanel({
                       value={branchSearch}
                       onChange={(e) => setBranchSearch(e.target.value)}
                       placeholder="Filter branches..."
-                      className="w-full bg-[#16161f] border border-[#272736] rounded pl-7 pr-2 py-1 text-zinc-200 text-xs outline-none focus:border-cyan-500/50"
+                      className="w-full bg-[#14161B] border border-[#22252B] rounded-md pl-7 pr-2 py-1 text-zinc-200 text-xs outline-none focus:border-[#4CC2DE]"
                       autoFocus
                     />
                   </div>
@@ -826,20 +826,24 @@ export default function SourceControlPanel({
                           <button
                             key={b}
                             onClick={() => handleSelectBranch(b)}
-                            className={`w-full px-2 py-1.5 rounded text-left flex items-center justify-between text-[11px] cursor-pointer transition-colors ${
+                            className={`w-full px-2 py-1.5 rounded text-left flex items-center justify-between text-xs cursor-pointer transition-colors ${
                               isCurrent
-                                ? "bg-cyan-950/80 text-cyan-300 font-bold border border-cyan-500/30"
-                                : "text-zinc-300 hover:bg-[#181822] hover:text-white"
+                                ? "bg-[#14161B] text-[#4CC2DE] font-medium border border-[#22252B]"
+                                : "hover:bg-[#14161B] text-zinc-300"
                             }`}
                           >
-                            <div className="flex items-center gap-1.5 truncate">
-                              <GitBranch className={`w-3 h-3 ${isCurrent ? "text-cyan-400" : isRemote ? "text-purple-400" : "text-zinc-500"}`} />
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <GitBranch className={`w-3 h-3 ${isCurrent ? "text-[#4CC2DE]" : isRemote ? "text-purple-400" : "text-zinc-500"}`} />
                               <span className="truncate">{b}</span>
                             </div>
-                            <div className="flex items-center gap-1 shrink-0 text-[10px]">
-                              {details && (details.ahead || 0) > 0 && <span className="text-emerald-400 font-mono">↑{details.ahead}</span>}
-                              {details && (details.behind || 0) > 0 && <span className="text-rose-400 font-mono">↓{details.behind}</span>}
-                              {isCurrent && <Check className="w-3 h-3 text-cyan-400" />}
+                            <div className="flex items-center gap-1 shrink-0 ml-1">
+                              {details?.ahead !== undefined && details.ahead > 0 && (
+                                <span className="text-[9.5px] text-emerald-400 font-mono">↑{details.ahead}</span>
+                              )}
+                              {details?.behind !== undefined && details.behind > 0 && (
+                                <span className="text-[9.5px] text-rose-400 font-mono">↓{details.behind}</span>
+                              )}
+                              {isCurrent && <Check className="w-3 h-3 text-[#4CC2DE]" />}
                             </div>
                           </button>
                         );
@@ -847,14 +851,13 @@ export default function SourceControlPanel({
                     )}
                   </div>
 
-                  <div className="border-t border-[#1c1c28] pt-1.5 flex items-center justify-between">
+                  <div className="pt-1 border-t border-[#22252B]">
                     <button
                       onClick={() => {
                         setShowBranchDropdown(false);
                         setShowBranchModal(true);
-                        setBranchValidationError(null);
                       }}
-                      className="w-full py-1 text-center text-cyan-400 hover:text-cyan-300 hover:bg-[#14141e] rounded text-[10.5px] font-bold flex items-center justify-center gap-1 cursor-pointer"
+                      className="w-full py-1 text-center text-[#4CC2DE] hover:text-[#6ED4EA] hover:bg-[#14161B] rounded text-xs font-medium flex items-center justify-center gap-1 cursor-pointer transition-colors"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Create Branch...</span>
@@ -870,10 +873,10 @@ export default function SourceControlPanel({
                 type="button"
                 onClick={handleFetchOnly}
                 disabled={loading || isFetching || isPulling || isPushing || isSyncing}
-                className="py-1 px-1.5 rounded bg-[#121218] hover:bg-[#1c1c28] border border-[#262638] hover:border-cyan-500/40 text-zinc-300 hover:text-white text-[10.5px] font-medium flex items-center justify-center gap-1 transition-all disabled:opacity-40 cursor-pointer"
+                className="py-1 px-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-zinc-300 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1 transition-colors disabled:opacity-40 cursor-pointer"
                 title="Fetch remote changes without merging"
               >
-                <RefreshCw className={`w-3 h-3 text-cyan-400 ${isFetching ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-3 h-3 text-[#4CC2DE] ${isFetching ? "animate-spin" : ""}`} />
                 <span>{isFetching ? "..." : "Fetch"}</span>
               </button>
 
@@ -881,13 +884,13 @@ export default function SourceControlPanel({
                 type="button"
                 onClick={handlePullOnly}
                 disabled={loading || isFetching || isPulling || isPushing || isSyncing}
-                className="py-1 px-1.5 rounded bg-[#121218] hover:bg-[#1c1c28] border border-[#262638] hover:border-cyan-500/40 text-zinc-300 hover:text-white text-[10.5px] font-medium flex items-center justify-center gap-1 transition-all disabled:opacity-40 cursor-pointer"
+                className="py-1 px-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-zinc-300 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1 transition-colors disabled:opacity-40 cursor-pointer"
                 title="Pull and merge remote changes into current branch"
               >
-                <Download className={`w-3 h-3 text-purple-400 ${isPulling ? "animate-bounce" : ""}`} />
+                <Download className={`w-3 h-3 text-[#9AA1AC] ${isPulling ? "animate-spin" : ""}`} />
                 <span>{isPulling ? "..." : "Pull"}</span>
                 {behind > 0 && (
-                  <span className="text-[9px] text-rose-400 font-bold font-mono">↓{behind}</span>
+                  <span className="text-[10px] text-[#DC5B5B] font-medium font-mono">↓{behind}</span>
                 )}
               </button>
 
@@ -895,13 +898,13 @@ export default function SourceControlPanel({
                 type="button"
                 onClick={handlePushOnly}
                 disabled={loading || isFetching || isPulling || isPushing || isSyncing}
-                className="py-1 px-1.5 rounded bg-[#121218] hover:bg-[#1c1c28] border border-[#262638] hover:border-cyan-500/40 text-zinc-300 hover:text-white text-[10.5px] font-medium flex items-center justify-center gap-1 transition-all disabled:opacity-40 cursor-pointer"
+                className="py-1 px-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-zinc-300 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1 transition-colors disabled:opacity-40 cursor-pointer"
                 title="Push local commits to remote repository"
               >
-                <UploadCloud className={`w-3 h-3 text-emerald-400 ${isPushing ? "animate-pulse" : ""}`} />
+                <UploadCloud className={`w-3 h-3 text-[#3EAE79] ${isPushing ? "animate-spin" : ""}`} />
                 <span>{isPushing ? "..." : "Push"}</span>
                 {ahead > 0 && (
-                  <span className="text-[9px] text-emerald-400 font-bold font-mono">↑{ahead}</span>
+                  <span className="text-[10px] text-[#3EAE79] font-medium font-mono">↑{ahead}</span>
                 )}
               </button>
 
@@ -909,13 +912,13 @@ export default function SourceControlPanel({
                 type="button"
                 onClick={handleSyncOnly}
                 disabled={loading || isFetching || isPulling || isPushing || isSyncing}
-                className="py-1 px-1.5 rounded bg-[#121218] hover:bg-[#1c1c28] border border-[#262638] hover:border-cyan-500/40 text-zinc-300 hover:text-white text-[10.5px] font-medium flex items-center justify-center gap-1 transition-all disabled:opacity-40 cursor-pointer"
+                className="py-1 px-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] hover:border-[#2E323B] text-zinc-300 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1 transition-colors disabled:opacity-40 cursor-pointer"
                 title="Sync with remote (Pull incoming & Push outgoing commits)"
               >
-                <RefreshCw className={`w-3 h-3 text-amber-400 ${isSyncing ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-3 h-3 text-[#D9A441] ${isSyncing ? "animate-spin" : ""}`} />
                 <span>{isSyncing ? "..." : "Sync"}</span>
                 {(ahead > 0 || behind > 0) && (
-                  <span className="text-[8.5px] text-cyan-300 font-mono">
+                  <span className="text-[10px] text-[#4CC2DE] font-mono">
                     {ahead > 0 ? `↑${ahead}` : ""}{behind > 0 ? `↓${behind}` : ""}
                   </span>
                 )}
@@ -988,7 +991,7 @@ export default function SourceControlPanel({
                     type="button"
                     onClick={handleCommitSubmit}
                     disabled={!commitMessage.trim() || loading || isSubmitting}
-                    className={`w-full ${isPopover ? "py-1.5 px-2.5 rounded-lg text-[11px]" : "py-2 px-3 rounded-xl text-xs"} bg-cyan-500 hover:bg-cyan-400 text-black font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-cyan-950/40 disabled:opacity-30 disabled:pointer-events-none cursor-pointer`}
+                    className="w-full py-1.5 px-2.5 rounded-md text-xs bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                     title="Commit only staged changes (Enter)"
                   >
                     {isSubmitting ? (
@@ -1005,7 +1008,7 @@ export default function SourceControlPanel({
                     type="button"
                     onClick={handleStageAllAndCommit}
                     disabled={!commitMessage.trim() || totalChanges === 0 || loading || isSubmitting}
-                    className={`w-full ${isPopover ? "py-1.5 px-2.5 rounded-lg text-[11px]" : "py-2 px-3 rounded-xl text-xs"} bg-cyan-500 hover:bg-cyan-400 text-black font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-cyan-950/40 disabled:opacity-30 disabled:pointer-events-none cursor-pointer`}
+                    className="w-full py-1.5 px-2.5 rounded-md text-xs bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                     title="Stage all changes and commit (Enter)"
                   >
                     {isSubmitting ? (
@@ -1018,7 +1021,7 @@ export default function SourceControlPanel({
                         ? "Committing..."
                         : totalChanges > 0
                         ? `Stage All & Commit (${totalChanges} changes)`
-                        : "Commit (0 staged - stage changes to commit)"}
+                        : "No Changes to Commit"}
                     </span>
                   </button>
                 )}
@@ -1085,7 +1088,7 @@ export default function SourceControlPanel({
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
                       operationProgress.state === "processing"
-                        ? "w-full bg-gradient-to-r from-cyan-600 via-cyan-400 to-cyan-600 animate-pulse"
+                        ? "w-full bg-[#4CC2DE]"
                         : operationProgress.state === "success"
                         ? "w-full bg-emerald-500"
                         : "w-full bg-rose-500"
@@ -1681,10 +1684,10 @@ export default function SourceControlPanel({
 
       {/* COMMIT INSPECTOR MODAL / DRAWER (Milestone 28) */}
       {inspectingCommit && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 font-mono">
-          <div className="bg-[#0c0c12] border border-[#27273a] rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-modal overflow-hidden">
             {/* Modal Header */}
-            <div className="p-4 border-b border-[#1f1f2e] bg-[#101018] flex items-start justify-between gap-3">
+            <div className="p-3.5 border-b border-[#22252B] bg-[#0E1013] flex items-start justify-between gap-3">
               <div className="space-y-1 flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-zinc-100 text-sm">Commit Inspector</span>
@@ -1827,10 +1830,10 @@ export default function SourceControlPanel({
 
       {/* COMMIT FILE DIFF MODAL (Milestone 28) */}
       {activeDiffFile && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 font-mono">
-          <div className="bg-[#0a0a0f] border border-[#27273a] rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-modal overflow-hidden">
             {/* Header */}
-            <div className="p-3 border-b border-[#1f1f2e] bg-[#101018] flex items-center justify-between gap-3">
+            <div className="p-3 border-b border-[#22252B] bg-[#0E1013] flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 truncate">
                 <FileCode className="w-4 h-4 text-cyan-400 shrink-0" />
                 <span className="font-bold text-zinc-100 text-xs truncate">{activeDiffFile}</span>
@@ -1929,11 +1932,11 @@ export default function SourceControlPanel({
 
       {/* CREATE BRANCH MODAL */}
       {showBranchModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0e0e12] border border-[#272736] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-2xl">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-modal">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-cyan-400 font-bold text-xs uppercase">
-                <GitBranch className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-[#E6E8EB] font-medium text-xs">
+                <GitBranch className="w-4 h-4 text-[#4CC2DE]" />
                 <span>Create New Branch</span>
               </div>
               <button
@@ -1942,14 +1945,14 @@ export default function SourceControlPanel({
                   setNewBranchName("");
                   setBranchValidationError(null);
                 }}
-                className="text-zinc-500 hover:text-zinc-300"
+                className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[11px] text-zinc-400">Branch Name:</label>
+              <label className="text-[11px] text-[#9AA1AC]">Branch Name:</label>
               <input
                 type="text"
                 value={newBranchName}
@@ -1958,22 +1961,22 @@ export default function SourceControlPanel({
                   setBranchValidationError(validateBranchInput(e.target.value));
                 }}
                 placeholder="e.g. feature/auth-flow or fix/typo"
-                className="w-full bg-[#16161f] border border-[#272736] rounded p-2 text-zinc-200 text-xs outline-none focus:border-cyan-500/50"
+                className="w-full bg-[#14161B] border border-[#22252B] rounded-md p-2 text-[#E6E8EB] text-xs outline-none focus:border-[#4CC2DE] font-sans"
                 autoFocus
               />
               {branchValidationError && (
-                <div className="text-[10.5px] text-rose-400 flex items-center gap-1">
+                <div className="text-[11px] text-[#DC5B5B] flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   <span>{branchValidationError}</span>
                 </div>
               )}
 
-              <label className="flex items-center gap-2 text-[11px] text-zinc-300 pt-1 cursor-pointer">
+              <label className="flex items-center gap-2 text-[11px] text-[#9AA1AC] pt-1 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={newBranchCheckout}
                   onChange={(e) => setNewBranchCheckout(e.target.checked)}
-                  className="rounded border-zinc-700 text-cyan-500 focus:ring-cyan-500/40"
+                  className="rounded border-[#22252B] text-[#4CC2DE] focus:ring-0"
                 />
                 <span>Checkout new branch immediately</span>
               </label>
@@ -1986,7 +1989,7 @@ export default function SourceControlPanel({
                   setNewBranchName("");
                   setBranchValidationError(null);
                 }}
-                className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -2010,7 +2013,7 @@ export default function SourceControlPanel({
                   setBranchValidationError(null);
                 }}
                 disabled={!newBranchName.trim() || Boolean(branchValidationError)}
-                className="px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs disabled:opacity-40 cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium text-xs disabled:opacity-40 cursor-pointer transition-colors"
               >
                 Create Branch
               </button>
@@ -2021,26 +2024,26 @@ export default function SourceControlPanel({
 
       {/* DIRTY SWITCH MODAL */}
       {showDirtySwitchModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0e0e12] border border-amber-500/30 rounded-xl p-4 w-full max-w-sm space-y-3 shadow-2xl">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-modal">
+            <div className="flex items-center gap-2 text-[#D9A441] font-medium text-xs">
               <ShieldAlert className="w-4 h-4" />
               <span>Uncommitted Changes</span>
             </div>
-            <p className="text-zinc-400 text-xs leading-relaxed">
-              You have local changes in <strong className="text-zinc-200">{totalChanges} file(s)</strong> that may be overwritten by switching to <strong className="text-cyan-400">{targetBranchToSwitch}</strong>.
+            <p className="text-[#9AA1AC] text-xs leading-relaxed">
+              You have local changes in <strong className="text-[#E6E8EB]">{totalChanges} file(s)</strong> that may be overwritten by switching to <strong className="text-[#4CC2DE]">{targetBranchToSwitch}</strong>.
             </p>
 
             <div className="flex flex-col gap-2 pt-2">
               <button
                 onClick={handleDirtySwitchStash}
-                className="w-full py-1.5 px-3 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs cursor-pointer"
+                className="w-full py-1.5 px-3 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] text-[#0A0B0D] font-medium text-xs cursor-pointer transition-colors"
               >
                 Stash Changes & Switch
               </button>
               <button
                 onClick={handleDirtySwitchForce}
-                className="w-full py-1.5 px-3 rounded bg-rose-600/80 hover:bg-rose-600 text-white font-bold text-xs cursor-pointer"
+                className="w-full py-1.5 px-3 rounded-md bg-[#DC5B5B] hover:bg-[#e06c6c] text-white font-medium text-xs cursor-pointer transition-colors"
               >
                 Force Switch (Overwrite Local)
               </button>
@@ -2049,7 +2052,7 @@ export default function SourceControlPanel({
                   setShowDirtySwitchModal(false);
                   setTargetBranchToSwitch(null);
                 }}
-                className="w-full py-1.5 px-3 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs cursor-pointer"
+                className="w-full py-1.5 px-3 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -2060,11 +2063,11 @@ export default function SourceControlPanel({
 
       {/* SAVE STASH MODAL */}
       {showStashSaveModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0e0e12] border border-[#272736] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-2xl">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-modal">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-cyan-400 font-bold text-xs uppercase">
-                <Archive className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-[#E6E8EB] font-medium text-xs">
+                <Archive className="w-4 h-4 text-[#4CC2DE]" />
                 <span>Save Changes to Stash</span>
               </div>
               <button
@@ -2072,20 +2075,20 @@ export default function SourceControlPanel({
                   setShowStashSaveModal(false);
                   setCustomStashMessage("");
                 }}
-                className="text-zinc-500 hover:text-zinc-300"
+                className="text-[#9AA1AC] hover:text-[#E6E8EB] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] text-zinc-400">Stash Description (Optional):</label>
+              <label className="text-[11px] text-[#9AA1AC]">Stash Description (Optional):</label>
               <input
                 type="text"
                 value={customStashMessage}
                 onChange={(e) => setCustomStashMessage(e.target.value)}
                 placeholder="e.g. WIP navbar styles"
-                className="w-full bg-[#16161f] border border-[#272736] rounded p-2 text-zinc-200 text-xs outline-none focus:border-cyan-500/50"
+                className="w-full bg-[#14161B] border border-[#22252B] rounded-md p-2 text-[#E6E8EB] text-xs outline-none focus:border-[#4CC2DE] font-sans"
                 autoFocus
               />
             </div>
@@ -2096,7 +2099,7 @@ export default function SourceControlPanel({
                   setShowStashSaveModal(false);
                   setCustomStashMessage("");
                 }}
-                className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -2108,7 +2111,7 @@ export default function SourceControlPanel({
                   setShowStashSaveModal(false);
                   setCustomStashMessage("");
                 }}
-                className="px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium text-xs cursor-pointer transition-colors"
               >
                 Save Stash
               </button>
@@ -2119,19 +2122,19 @@ export default function SourceControlPanel({
 
       {/* DROP STASH MODAL */}
       {stashToDrop && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0e0e12] border border-rose-500/30 rounded-xl p-4 w-full max-w-sm space-y-3 shadow-2xl">
-            <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-modal">
+            <div className="flex items-center gap-2 text-[#DC5B5B] font-medium text-xs">
               <AlertCircle className="w-4 h-4" />
               <span>Drop Stash?</span>
             </div>
-            <p className="text-zinc-400 text-xs leading-relaxed">
-              Are you sure you want to permanently drop <strong className="text-zinc-200">{stashToDrop.id}</strong> ({stashToDrop.message})? This cannot be undone.
+            <p className="text-[#9AA1AC] text-xs leading-relaxed">
+              Are you sure you want to permanently drop <strong className="text-[#E6E8EB]">{stashToDrop.id}</strong> ({stashToDrop.message})? This cannot be undone.
             </p>
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setStashToDrop(null)}
-                className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -2142,7 +2145,7 @@ export default function SourceControlPanel({
                   }
                   setStashToDrop(null);
                 }}
-                className="px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#DC5B5B] hover:bg-[#e06c6c] text-white font-medium text-xs cursor-pointer transition-colors"
               >
                 Drop Stash
               </button>
@@ -2153,19 +2156,19 @@ export default function SourceControlPanel({
 
       {/* DISCARD MODAL */}
       {fileToDiscard && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0e0e12] border border-rose-500/30 rounded-xl p-4 w-full max-w-sm space-y-3 shadow-2xl">
-            <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 font-sans">
+          <div className="bg-[#111318] border border-[#22252B] rounded-xl p-4 w-full max-w-sm space-y-3 shadow-modal">
+            <div className="flex items-center gap-2 text-[#DC5B5B] font-medium text-xs">
               <AlertCircle className="w-4 h-4" />
               <span>Discard Changes?</span>
             </div>
-            <p className="text-zinc-400 text-xs leading-relaxed">
-              Are you sure you want to discard all changes in <strong className="text-zinc-200">{fileToDiscard}</strong>? This action cannot be undone.
+            <p className="text-[#9AA1AC] text-xs leading-relaxed">
+              Are you sure you want to discard all changes in <strong className="text-[#E6E8EB]">{fileToDiscard}</strong>? This action cannot be undone.
             </p>
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setFileToDiscard(null)}
-                className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] border border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] text-xs cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -2174,7 +2177,7 @@ export default function SourceControlPanel({
                   onDiscardFile(fileToDiscard);
                   setFileToDiscard(null);
                 }}
-                className="px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-[#DC5B5B] hover:bg-[#e06c6c] text-white font-medium text-xs cursor-pointer transition-colors"
               >
                 Discard
               </button>
