@@ -446,6 +446,134 @@ class ChangeSet {
   }
 
   /**
+   * Authoritatively verifies that all files in the ChangeSet actually exist at
+   * their canonical workspace paths and that the requested modifications are
+   * confirmed in the re-read disk content.
+   *
+   * @param {string} [workspacePath]
+   * @returns {{ success: boolean, verifiedFiles: Array<Object>, error?: string, reason?: string }}
+   */
+  verifyPersistence(workspacePath) {
+    const workspaceRoot = workspacePathResolver.canonicalizeWorkspaceRoot(workspacePath || this.workspacePath);
+    const verifiedFiles = [];
+
+    if (!Array.isArray(this.files) || this.files.length === 0) {
+      return {
+        success: true,
+        verifiedFiles: [],
+      };
+    }
+
+    for (let i = 0; i < this.files.length; i++) {
+      const file = this.files[i];
+      const isFileDelete = file.changeType === 'DELETE';
+      const resolution = workspacePathResolver.resolve(workspaceRoot, file.filePath, {
+        allowDirectory: false,
+        mustExist: !isFileDelete,
+      });
+
+      if (!resolution.success) {
+        return {
+          success: false,
+          error: `Target file cannot be resolved at canonical path: "${file.filePath}". ${resolution.error || ''}`.trim(),
+          reason: 'CANONICAL_PATH_NOT_FOUND',
+          file: file.filePath,
+        };
+      }
+
+      const absPath = resolution.absolutePath;
+      if (!fs.existsSync(absPath)) {
+        if (isFileDelete) {
+          file.persistenceVerified = true;
+          file.canonicalPath = resolution.relativePath;
+          file.absolutePath = absPath;
+          verifiedFiles.push({
+            filePath: file.filePath,
+            canonicalPath: resolution.relativePath,
+            absolutePath: absPath,
+            contentLength: 0,
+            persistenceVerified: true,
+          });
+          continue;
+        }
+        return {
+          success: false,
+          error: `Target file does not exist on disk at canonical path: "${absPath}"`,
+          reason: 'FILE_NOT_FOUND_ON_DISK',
+          file: file.filePath,
+          absolutePath: absPath,
+        };
+      }
+
+      let diskContent;
+      try {
+        diskContent = fs.readFileSync(absPath, 'utf8');
+      } catch (readErr) {
+        return {
+          success: false,
+          error: `Failed to re-read target file from disk: ${readErr.message}`,
+          reason: 'DISK_READ_FAILED',
+          file: file.filePath,
+          absolutePath: absPath,
+        };
+      }
+
+      // Check requested mutation persistence
+      const replacementStr = typeof file.replacement === 'string' ? file.replacement : '';
+      const originalStr = typeof file.original === 'string' ? file.original : '';
+      const trimmedReplacement = replacementStr.trim();
+      const trimmedOriginal = originalStr.trim();
+
+      if (file.changeType === 'DELETE' || (!trimmedReplacement && trimmedOriginal)) {
+        // Deletion: original must not be in diskContent
+        if (diskContent.includes(originalStr) || (trimmedOriginal && diskContent.includes(trimmedOriginal))) {
+          return {
+            success: false,
+            error: `Mutation persistence verification failed: deleted content still present in "${file.filePath}" on disk`,
+            reason: 'MUTATION_NOT_PERSISTED',
+            file: file.filePath,
+            canonicalPath: resolution.relativePath,
+          };
+        }
+      } else if (trimmedReplacement) {
+        // Modification or creation: replacement must be present in re-read disk content
+        const containsFull = diskContent.includes(replacementStr);
+        const containsTrimmed = diskContent.includes(trimmedReplacement);
+        if (!containsFull && !containsTrimmed) {
+          return {
+            success: false,
+            error: `Mutation persistence verification failed: requested change not found in "${file.filePath}" on disk`,
+            reason: 'MUTATION_NOT_PERSISTED',
+            file: file.filePath,
+            canonicalPath: resolution.relativePath,
+          };
+        }
+      }
+
+      file.persistenceVerified = true;
+      file.canonicalPath = resolution.relativePath;
+      file.absolutePath = absPath;
+      file.verifiedContent = diskContent;
+
+      verifiedFiles.push({
+        filePath: file.filePath,
+        canonicalPath: resolution.relativePath,
+        absolutePath: absPath,
+        contentLength: diskContent.length,
+        persistenceVerified: true,
+      });
+    }
+
+    this.metadata.persistenceVerified = true;
+    this.metadata.verifiedFiles = verifiedFiles;
+
+    return {
+      success: true,
+      verifiedFiles,
+    };
+  }
+
+  /**
    * Applies the ChangeSet atomically via TransactionalPatchApplier.
    * The ChangeSet layer NEVER writes directly to disk.
    * @param {Object} [options]
@@ -514,6 +642,31 @@ class ChangeSet {
         };
       }
 
+      // Re-read from disk and verify persistence of all requested changes
+      const persistence = this.verifyPersistence(workspaceRoot);
+      if (!persistence.success) {
+        for (const file of this.files) {
+          file.applyStatus = 'FAILED';
+          file.persistenceVerified = false;
+        }
+        this.status = CHANGESET_STATUS.FAILED;
+        this.updatedAt = Date.now();
+        this.metadata.transactionError = persistence.error;
+
+        this._emit(EVENT_TYPES.CHANGE_SET_FAILED, {
+          error: persistence.error,
+          reason: persistence.reason,
+        });
+
+        return {
+          success: false,
+          status: CHANGESET_STATUS.FAILED,
+          error: persistence.error,
+          reason: persistence.reason || 'PERSISTENCE_VERIFICATION_FAILED',
+          rolledBack: true,
+        };
+      }
+
       // Mark all files applied
       for (const file of this.files) {
         file.applyStatus = 'APPLIED';
@@ -521,12 +674,14 @@ class ChangeSet {
       this.status = CHANGESET_STATUS.APPLIED;
       this.metadata.transactionId = txResult.transactionId;
       this.metadata.appliedCount = txResult.appliedCount;
+      this.metadata.persistenceVerified = true;
       this.updatedAt = Date.now();
 
       this._emit(EVENT_TYPES.CHANGE_SET_APPLIED, {
         transactionId: txResult.transactionId,
         appliedCount: txResult.appliedCount,
         modifiedFiles: txResult.modifiedFiles,
+        verifiedFiles: persistence.verifiedFiles,
       });
 
       if (evidenceGraphInstance && this.threadId) {
@@ -554,6 +709,8 @@ class ChangeSet {
         transactionId: txResult.transactionId,
         appliedCount: txResult.appliedCount,
         modifiedFiles: txResult.modifiedFiles,
+        verifiedFiles: persistence.verifiedFiles,
+        persistenceVerified: true,
       };
     } catch (err) {
       for (const file of this.files) {

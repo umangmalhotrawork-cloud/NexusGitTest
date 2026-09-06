@@ -3,7 +3,8 @@
  * Headless, multi-turn, multi-tool agent execution loop.
  * Coordinates Turn lifecycle, typed Item creation, ToolRegistry execution, and model context.
  */
-
+const fs = require('fs');
+const path = require('path');
 const {
   ITEM_TYPES,
   ITEM_STATUS,
@@ -137,7 +138,7 @@ class AgentLoop {
       userInput = '',
       workspacePath: rawWorkspacePath = process.cwd(),
       activeFilePath: rawActiveFilePath = null,
-      intent = 'MUTATION',
+      intent: rawIntent,
       approvalMode = 'strict',
       maxIterations = DEFAULT_MAX_ITERATIONS,
       maxToolCalls = DEFAULT_MAX_TOOL_CALLS,
@@ -200,6 +201,7 @@ class AgentLoop {
       ? this.runtime.classifyRequest(userInput, { activeFilePath, workspacePath })
       : requestRouter.classify(userInput, { activeFilePath, workspacePath });
 
+    const intent = rawIntent || routerClassification.codingIntent || (routerClassification.mode === ROUTER_MODES.CONVERSATION ? 'GENERAL_CHAT' : 'MUTATION');
     const isExplicitGeneralChat = payload.intent === 'GENERAL_CHAT';
     const isPureGreeting = isGreeting(userInput);
     const isClassifiedConversation = routerClassification.mode === ROUTER_MODES.CONVERSATION;
@@ -444,6 +446,9 @@ class AgentLoop {
     let finalAssistantResponse = null;
     let lastContextMetrics = null;
     const mutatedFilesSet = new Set();
+    const stagedChangeSets = [];
+    const verifiedMutations = new Map();
+    let mutationAttempted = false;
     const executedToolHistory = new Map();
     let consecutiveDuplicateTurns = 0;
 
@@ -773,8 +778,10 @@ class AgentLoop {
             // If apply_patch staged a ChangeSet, record CHANGE_SET item immediately
             let changeSetItemId = null;
             if (tc.toolName === 'apply_patch' && Array.isArray(tc.arguments?.edits)) {
+              mutationAttempted = true;
               const cs = execResult.changeSet || execResult.result?.changeSet;
               if (cs) {
+                stagedChangeSets.push(cs);
                 console.log(`[HARNESS-AGENTLOOP] Staged ChangeSet: ${cs.changeSetId} (${cs.files?.length || 0} files)`);
                 try {
                   const changeSetItem = this.runtime.startItem(turnId, ITEM_TYPES.CHANGE_SET, {
@@ -816,14 +823,19 @@ class AgentLoop {
                   this.runtime.turnManager.resumeTurn(turnId);
                 } catch (e) {}
 
+                const stagedCs = execResult.changeSet || execResult.result?.changeSet;
                 if (decision && decision.approved) {
                   execResult = await this.toolRegistry.execute(tc.toolName, tc.arguments, {
                     ...execContext,
+                    changeSetId: stagedCs?.changeSetId,
                     isApproved: true,
                     isForceApproved: Boolean(decision.force),
                     approvalReason: decision.reason,
                   });
                 } else {
+                  if (stagedCs) {
+                    stagedCs.status = 'rejected';
+                  }
                   execResult = {
                     success: false,
                     error: decision?.reason || 'Tool execution was rejected by user',
@@ -835,36 +847,62 @@ class AgentLoop {
 
             // If apply_patch was executed successfully, record FILE_CHANGE items
             if (tc.toolName === 'apply_patch' && Array.isArray(tc.arguments?.edits)) {
-              if (!changeSetItemId) {
-                const cs = execResult.result?.changeSet || execResult.changeSet;
-                if (cs) {
-                  try {
-                    const changeSetItem = this.runtime.startItem(turnId, ITEM_TYPES.CHANGE_SET, {
-                      changeSetId: cs.changeSetId,
-                      status: cs.status || (execResult.success ? 'applied' : 'staged'),
-                      risk: cs.risk || execResult.result?.firewall || { risk_level: 'AUTO_APPROVE', risk_score: 0 },
-                      files: cs.files,
-                      transactionId: execResult.result?.transactionId,
-                    });
-                    this.runtime.completeItem(changeSetItem.itemId);
-                  } catch (csErr) {}
+              mutationAttempted = true;
+              const cs = execResult.result?.changeSet || execResult.changeSet;
+              if (cs) {
+                const existingCs = stagedChangeSets.find((s) => s.changeSetId === cs.changeSetId);
+                if (existingCs) {
+                  existingCs.status = execResult.success ? 'applied' : (cs.status || 'staged');
+                } else if (stagedChangeSets.length > 0 && execResult.success) {
+                  const lastStaged = stagedChangeSets.find((s) => s.status !== 'applied' && s.status !== 'APPLIED');
+                  if (lastStaged) {
+                    lastStaged.status = 'applied';
+                  }
+                  stagedChangeSets.push({ ...cs, status: 'applied' });
+                } else {
+                  stagedChangeSets.push({ ...cs, status: execResult.success ? 'applied' : cs.status });
                 }
               }
 
-
+              if (!changeSetItemId && cs) {
+                try {
+                  const changeSetItem = this.runtime.startItem(turnId, ITEM_TYPES.CHANGE_SET, {
+                    changeSetId: cs.changeSetId,
+                    status: cs.status || (execResult.success ? 'applied' : 'staged'),
+                    risk: cs.risk || execResult.result?.firewall || { risk_level: 'AUTO_APPROVE', risk_score: 0 },
+                    files: cs.files,
+                    transactionId: execResult.result?.transactionId,
+                  });
+                  this.runtime.completeItem(changeSetItem.itemId);
+                } catch (csErr) {}
+              }
 
               if (execResult.success) {
                 for (const edit of tc.arguments.edits) {
                   try {
+                    const resolved = workspacePathResolver.resolve(workspacePath, edit.filePath, { allowDirectory: false });
+                    const canPath = resolved.success ? resolved.relativePath : edit.filePath;
                     if (edit?.filePath) mutatedFilesSet.add(edit.filePath);
+                    if (resolved.success) mutatedFilesSet.add(resolved.relativePath);
+
+                    verifiedMutations.set(canPath, {
+                      filePath: edit.filePath,
+                      canonicalPath: canPath,
+                      absolutePath: resolved.absolutePath,
+                      original: edit.original,
+                      replacement: edit.replacement,
+                    });
+
                     const fileChangeItem = this.runtime.startItem(turnId, ITEM_TYPES.FILE_CHANGE, {
                       filePath: edit.filePath,
+                      canonicalPath: canPath,
                       changeType: 'MODIFY',
                       original: edit.original,
                       replacement: edit.replacement,
                       diff: `--- a/${edit.filePath}\n+++ b/${edit.filePath}\n@@ -1,1 +1,1 @@\n-${edit.original}\n+${edit.replacement}`,
                       firewall: execResult.result?.firewall || { risk_level: 'AUTO_APPROVE', risk_score: 0 },
                       status: 'applied',
+                      persistenceVerified: true,
                     });
                     this.runtime.completeItem(fileChangeItem.itemId);
 
@@ -898,19 +936,59 @@ class AgentLoop {
             // Track file mutations for other mutation tools
             if (execResult.success) {
               if (tc.toolName === 'edit_file' || tc.toolName === 'write_file' || tc.toolName === 'safe_remove' || tc.toolName === 'modify_file') {
+                mutationAttempted = true;
                 const targetF = tc.arguments?.path || tc.arguments?.filePath || tc.arguments?.targetFile;
                 if (targetF && typeof targetF === 'string') {
                   mutatedFilesSet.add(targetF);
+                  const res = workspacePathResolver.resolve(workspacePath, targetF, { allowDirectory: false });
+                  if (res.success) {
+                    mutatedFilesSet.add(res.relativePath);
+                    verifiedMutations.set(res.relativePath, {
+                      filePath: targetF,
+                      canonicalPath: res.relativePath,
+                      absolutePath: res.absolutePath,
+                      replacement: tc.arguments?.content || tc.arguments?.replacement || '',
+                      original: tc.arguments?.original || '',
+                    });
+                  }
                 }
               }
               const resPath = execResult.result?.filePath || execResult.result?.path || execResult.result?.targetFile;
               if (resPath && typeof resPath === 'string') {
                 mutatedFilesSet.add(resPath);
+                const res = workspacePathResolver.resolve(workspacePath, resPath, { allowDirectory: false });
+                if (res.success) {
+                  mutatedFilesSet.add(res.relativePath);
+                  if (!verifiedMutations.has(res.relativePath)) {
+                    verifiedMutations.set(res.relativePath, {
+                      filePath: resPath,
+                      canonicalPath: res.relativePath,
+                      absolutePath: res.absolutePath,
+                      replacement: tc.arguments?.content || tc.arguments?.replacement || '',
+                      original: tc.arguments?.original || '',
+                    });
+                  }
+                }
               }
               if (Array.isArray(execResult.result?.files)) {
                 for (const f of execResult.result.files) {
-                  if (typeof f === 'string') mutatedFilesSet.add(f);
-                  else if (f?.filePath) mutatedFilesSet.add(f.filePath);
+                  const fp = typeof f === 'string' ? f : f?.filePath;
+                  if (fp) {
+                    mutatedFilesSet.add(fp);
+                    const res = workspacePathResolver.resolve(workspacePath, fp, { allowDirectory: false });
+                    if (res.success) {
+                      mutatedFilesSet.add(res.relativePath);
+                      if (!verifiedMutations.has(res.relativePath)) {
+                        verifiedMutations.set(res.relativePath, {
+                          filePath: fp,
+                          canonicalPath: res.relativePath,
+                          absolutePath: res.absolutePath,
+                          replacement: typeof f === 'object' ? (f.replacement || f.content || '') : '',
+                          original: typeof f === 'object' ? (f.original || '') : '',
+                        });
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1036,10 +1114,183 @@ class AgentLoop {
           continue;
         }
 
-        // 6. If model returned final conversational text (no tool calls): complete turn
+        // 6. Mutation Integrity & Persistence Verification (Issue #6)
+        if (intent === 'MUTATION' || mutationAttempted) {
+          // Check A: If any ChangeSet was staged but not applied (e.g. pending approval or rejected)
+          const unappliedChangeSet = stagedChangeSets.find((cs) => cs.status !== 'applied' && cs.status !== 'APPLIED');
+          if (unappliedChangeSet) {
+            const failReason = `Mutation persistence verification failed: ChangeSet ${unappliedChangeSet.changeSetId || ''} was staged but not applied to disk.`;
+            const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+            this.runtime.completeItem(errorItem.itemId);
+            const failedTurn = this.runtime.failTurn(turnId, failReason);
+            return {
+              success: false,
+              status: TURN_STATUS.FAILED,
+              turnId,
+              threadId,
+              turn: failedTurn,
+              error: failReason,
+              finalResponse: failReason,
+              iterations,
+              totalToolCalls,
+            };
+          }
+
+          // Check B: If intent is MUTATION and zero mutations were executed/verified
+          if (intent === 'MUTATION' && verifiedMutations.size === 0) {
+            const failReason = 'Mutation persistence verification failed: No file modification was applied and confirmed on disk.';
+            const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+            this.runtime.completeItem(errorItem.itemId);
+            const failedTurn = this.runtime.failTurn(turnId, failReason);
+            return {
+              success: false,
+              status: TURN_STATUS.FAILED,
+              turnId,
+              threadId,
+              turn: failedTurn,
+              error: failReason,
+              finalResponse: failReason,
+              iterations,
+              totalToolCalls,
+            };
+          }
+
+          // Check C: Post-write reread and confirm requested changes in canonical target files
+          for (const [canPath, mut] of verifiedMutations.entries()) {
+            const isDelete = mut.changeType === 'DELETE';
+            const res = workspacePathResolver.resolve(workspacePath, mut.filePath || canPath, {
+              allowDirectory: false,
+              mustExist: !isDelete,
+            });
+
+            if (!res.success) {
+              const failReason = `Mutation persistence verification failed: target file "${mut.filePath || canPath}" cannot be resolved at canonical path on disk.`;
+              const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+              this.runtime.completeItem(errorItem.itemId);
+              const failedTurn = this.runtime.failTurn(turnId, failReason);
+              return {
+                success: false,
+                status: TURN_STATUS.FAILED,
+                turnId,
+                threadId,
+                turn: failedTurn,
+                error: failReason,
+                finalResponse: failReason,
+                iterations,
+                totalToolCalls,
+              };
+            }
+
+            if (!fs.existsSync(res.absolutePath)) {
+              if (isDelete) {
+                // File deletion confirmed on disk
+                continue;
+              }
+              const failReason = `Mutation persistence verification failed: target file "${mut.filePath || canPath}" does not exist at canonical path on disk.`;
+              const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+              this.runtime.completeItem(errorItem.itemId);
+              const failedTurn = this.runtime.failTurn(turnId, failReason);
+              return {
+                success: false,
+                status: TURN_STATUS.FAILED,
+                turnId,
+                threadId,
+                turn: failedTurn,
+                error: failReason,
+                finalResponse: failReason,
+                iterations,
+                totalToolCalls,
+              };
+            }
+
+            let freshContent = '';
+            try {
+              freshContent = fs.readFileSync(res.absolutePath, 'utf8');
+            } catch (readErr) {
+              const failReason = `Mutation persistence verification failed: unable to read "${res.absolutePath}" from disk: ${readErr.message}`;
+              const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+              this.runtime.completeItem(errorItem.itemId);
+              const failedTurn = this.runtime.failTurn(turnId, failReason);
+              return {
+                success: false,
+                status: TURN_STATUS.FAILED,
+                turnId,
+                threadId,
+                turn: failedTurn,
+                error: failReason,
+                finalResponse: failReason,
+                iterations,
+                totalToolCalls,
+              };
+            }
+
+            const repl = typeof mut.replacement === 'string' ? mut.replacement : '';
+            const orig = typeof mut.original === 'string' ? mut.original : '';
+            const trimmedRepl = repl.trim();
+            const trimmedOrig = orig.trim();
+
+            if (trimmedRepl) {
+              const containsFull = freshContent.includes(repl);
+              const containsTrimmed = freshContent.includes(trimmedRepl);
+              if (!containsFull && !containsTrimmed) {
+                const failReason = `Mutation persistence verification failed: requested change was not found in canonical target file "${res.relativePath}" on disk.`;
+                const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+                this.runtime.completeItem(errorItem.itemId);
+                const failedTurn = this.runtime.failTurn(turnId, failReason);
+                return {
+                  success: false,
+                  status: TURN_STATUS.FAILED,
+                  turnId,
+                  threadId,
+                  turn: failedTurn,
+                  error: failReason,
+                  finalResponse: failReason,
+                  iterations,
+                  totalToolCalls,
+                };
+              }
+            } else if (trimmedOrig) {
+              if (freshContent.includes(orig) || freshContent.includes(trimmedOrig)) {
+                const failReason = `Mutation persistence verification failed: deleted code was still found in canonical target file "${res.relativePath}" on disk.`;
+                const errorItem = this.runtime.startItem(turnId, ITEM_TYPES.ERROR, { error: failReason });
+                this.runtime.completeItem(errorItem.itemId);
+                const failedTurn = this.runtime.failTurn(turnId, failReason);
+                return {
+                  success: false,
+                  status: TURN_STATUS.FAILED,
+                  turnId,
+                  threadId,
+                  turn: failedTurn,
+                  error: failReason,
+                  finalResponse: failReason,
+                  iterations,
+                  totalToolCalls,
+                };
+              }
+            }
+          }
+
+          // Emit file persisted event for renderer editor synchronization
+          if (verifiedMutations.size > 0 && this.runtime?.eventBus) {
+            for (const [canPath, mut] of verifiedMutations.entries()) {
+              try {
+                this.runtime.eventBus.emit('ai:file-persisted', {
+                  threadId,
+                  turnId,
+                  filePath: mut.filePath,
+                  canonicalPath: canPath,
+                  absolutePath: mut.absolutePath,
+                  workspacePath,
+                });
+              } catch (e) {}
+            }
+          }
+        }
+
+        // 7. If model returned final conversational text (no tool calls): complete turn
         finalAssistantResponse = modelResponse.content || 'Task completed successfully.';
 
-        // Run closed-loop post-mutation test sentinel if files were mutated
+        // Run closed-loop post-mutation test sentinel if files were mutated and confirmed
         let testVerification = null;
         if (mutatedFilesSet.size > 0 && payload.disablePostMutationTest !== true) {
           try {

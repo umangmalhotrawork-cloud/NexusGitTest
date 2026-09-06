@@ -196,6 +196,7 @@ export default function CodexBottomComposer({
             data.status === "SKIPPED" ||
             data.status === "NO_TESTS_FOUND" ||
             data.status === "RUNNER_NOT_DETECTED" ||
+            data.status === "TESTS_NOT_CONFIGURED" ||
             data.status === "ENVIRONMENT_FAILURE" ||
             data.status === "DEPENDENCY_FAILURE" ||
             data.status === "TIMEOUT"
@@ -576,7 +577,7 @@ export default function CodexBottomComposer({
                 if (e.metaKey || e.ctrlKey) {
                   e.preventDefault();
                   handleSubmit();
-                } else if (!e.shiftKey && !attachedCapsule && !prompt.includes("\n")) {
+                } else if (!e.shiftKey && !attachedCapsule && !prompt.includes("\n") && !e.nativeEvent?.isComposing) {
                   e.preventDefault();
                   handleSubmit();
                 }
@@ -1001,7 +1002,8 @@ export default function CodexBottomComposer({
                       ? "rgba(6, 182, 212, 0.1)"
                       : testVerificationStatus.status === "NO_TESTS_FOUND" ||
                         testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
                       ? "rgba(113, 113, 122, 0.15)"
                       : "rgba(239, 68, 68, 0.1)",
                   borderColor:
@@ -1013,7 +1015,8 @@ export default function CodexBottomComposer({
                       ? "rgba(6, 182, 212, 0.35)"
                       : testVerificationStatus.status === "NO_TESTS_FOUND" ||
                         testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
                       ? "rgba(113, 113, 122, 0.35)"
                       : "rgba(239, 68, 68, 0.35)",
                   color:
@@ -1025,7 +1028,8 @@ export default function CodexBottomComposer({
                       ? "#67e8f9"
                       : testVerificationStatus.status === "NO_TESTS_FOUND" ||
                         testVerificationStatus.status === "SKIPPED" ||
-                        testVerificationStatus.status === "RUNNER_NOT_DETECTED"
+                        testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                        testVerificationStatus.status === "TESTS_NOT_CONFIGURED"
                       ? "#a1a1aa"
                       : "#f87171",
                 }}
@@ -1041,7 +1045,8 @@ export default function CodexBottomComposer({
                 )}
                 {(testVerificationStatus.status === "NO_TESTS_FOUND" ||
                   testVerificationStatus.status === "SKIPPED" ||
-                  testVerificationStatus.status === "RUNNER_NOT_DETECTED") && (
+                  testVerificationStatus.status === "RUNNER_NOT_DETECTED" ||
+                  testVerificationStatus.status === "TESTS_NOT_CONFIGURED") && (
                   <Info className="w-3 h-3 text-zinc-400 shrink-0" />
                 )}
                 {testVerificationStatus.status !== "VERIFYING" &&
@@ -1049,7 +1054,8 @@ export default function CodexBottomComposer({
                   testVerificationStatus.status !== "REPAIRING" &&
                   testVerificationStatus.status !== "NO_TESTS_FOUND" &&
                   testVerificationStatus.status !== "SKIPPED" &&
-                  testVerificationStatus.status !== "RUNNER_NOT_DETECTED" && (
+                  testVerificationStatus.status !== "RUNNER_NOT_DETECTED" &&
+                  testVerificationStatus.status !== "TESTS_NOT_CONFIGURED" && (
                     <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
                   )}
                 <span>{testVerificationStatus.display || testVerificationStatus.badge || testVerificationStatus.status}</span>

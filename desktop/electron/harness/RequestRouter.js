@@ -73,13 +73,33 @@ const REPOSITORY_DIAGNOSTIC_ACTIONS = [
 
 const DIAGNOSTIC_VERBS = [
   'inspect', 'analyze', 'audit', 'review', 'find', 'search', 'locate', 'diagnose',
-  'examine', 'trace'
+  'examine', 'trace', 'show', 'list', 'check', 'display', 'explain'
 ];
 
 const MUTATION_VERBS = [
-  'fix', 'refactor', 'remove', 'delete', 'modify',
-  'apply', 'implement', 'rewrite', 'replace', 'upgrade', 'patch',
-  'scaffold', 'restructure', 'repair'
+  'fix', 'fixes', 'fixing',
+  'refactor', 'refactors', 'refactoring',
+  'remove', 'removes', 'removing',
+  'delete', 'deletes', 'deleting',
+  'modify', 'modifies', 'modifying',
+  'apply', 'applies', 'applying',
+  'implement', 'implements', 'implementing',
+  'rewrite', 'rewrites', 'rewriting',
+  'replace', 'replaces', 'replacing',
+  'upgrade', 'upgrades', 'upgrading',
+  'patch', 'patches', 'patching',
+  'scaffold', 'scaffolds', 'scaffolding',
+  'restructure', 'restructures', 'restructuring',
+  'repair', 'repairs', 'repairing',
+  'add', 'adds', 'adding',
+  'edit', 'edits', 'editing',
+  'change', 'changes', 'changing',
+  'update', 'updates', 'updating',
+  'create', 'creates', 'creating',
+  'insert', 'inserts', 'inserting',
+  'append', 'appends', 'appending',
+  'prepend', 'prepends', 'prepending',
+  'write', 'writes', 'writing'
 ];
 
 const CONVERSATIONAL_PROJECT_PATTERNS = [
@@ -209,12 +229,13 @@ class RequestRouter {
       reasons.push('explicit_negative_mutation_directive');
     }
 
-    // Check for Actionable Mutation Patterns (e.g. "add authentication", "implement feature", "change behavior", "fix the bug", "find the bug")
+    // Check for Actionable Mutation Patterns (e.g. "add a comment", "add authentication", "implement feature", "change line 20", "create a new file")
     const hasActionableMutationPattern = (
-      /\badd\s+(auth|authentication|jwt|endpoint|feature|middleware|test|tests|validation|method|function|class|route)\b/i.test(text) ||
+      /\badd\s+(a\s+)?(comment|docstring|logging|test|tests|validation|method|function|class|route|auth|authentication|jwt|endpoint|feature|middleware|file|import|header|type|logic)\b/i.test(text) ||
       /\bimplement\s+(auth|authentication|jwt|endpoint|feature|middleware|validation|logic|caching|rule|behavior)\b/i.test(text) ||
-      /\bchange\s+(this\s+behavior|the\s+behavior|the\s+logic|the\s+return|the\s+implementation)\b/i.test(text) ||
-      /\bmodify\s+(the\s+function|the\s+method|the\s+class|the\s+file|this\s+function|this\s+code|this\s+file)\b/i.test(text) ||
+      /\bchange\s+(this\s+behavior|the\s+behavior|the\s+logic|the\s+return|the\s+implementation|line\s+\d+|lines\s+\d+)\b/i.test(text) ||
+      /\bmodify\s+(the\s+function|the\s+method|the\s+class|the\s+file|this\s+function|this\s+code|this\s+file|line\s+\d+)\b/i.test(text) ||
+      /\b(create|make|write)\s+(a\s+)?(new\s+)?(file|test|script|module|component)\b/i.test(text) ||
       /\bfind\s+(the\s+bug|a\s+bug|the\s+bugs|bugs)\b/i.test(text) ||
       /\b(generate|write)\s+(unit\s+tests|tests|test\s+suite)\b/i.test(text)
     );
@@ -225,12 +246,17 @@ class RequestRouter {
     // 8. Check for Contextual "This File" / "This Function" Reference
     const hasContextualTarget = (
       text.includes('this file') ||
+      text.includes('the file') ||
+      /\b(explain|inspect|review|read|open|check)\s+file\b/i.test(text) ||
       text.includes('this function') ||
       text.includes('this method') ||
       text.includes('this class') ||
       text.includes('this code') ||
       text.includes('the current file') ||
-      text.includes('selected code')
+      text.includes('selected code') ||
+      /\bline\s+\d+\b/i.test(text) ||
+      /\blines\s+\d+\b/i.test(text) ||
+      /\b(this|the)\s+(line|variable|parameter|arg|argument|loop|statement|block|comment)\b/i.test(text)
     );
     const hasActiveFileContext = Boolean(hasContextualTarget && activeFilePath);
     if (hasActiveFileContext) {
@@ -284,9 +310,33 @@ class RequestRouter {
       };
     }
 
+    // Code / Workspace Action Targets
+    const hasDiagnosticTarget = (
+      hasRepoDiagnostic ||
+      hasContextualTarget ||
+      hasExplicitFileMention ||
+      text.includes('code') ||
+      text.includes('function') ||
+      text.includes('method') ||
+      text.includes('class') ||
+      text.includes('file') ||
+      text.includes('files') ||
+      text.includes('repository') ||
+      text.includes('repo') ||
+      text.includes('workspace') ||
+      text.includes('project') ||
+      text.includes('error') ||
+      text.includes('bug') ||
+      text.includes('implementation') ||
+      text.includes('architecture') ||
+      text.includes('structure') ||
+      text.includes('auth') ||
+      text.includes('authentication')
+    );
+
     // Priority 4: Conceptual knowledge inquiries without explicit file/code action targets
     // Example: "what is recursion?", "explain recursion in Python", "tell me about Python", "what is the architecture of NEXUS?", "can you explain this approach?"
-    if (isConceptualQuery && !hasExplicitFileMention && !hasRepoDiagnostic && !hasActiveFileContext && !hasMutationVerb && !hasActionableMutationPattern && !hasTestRequest) {
+    if (isConceptualQuery && !hasExplicitFileMention && !hasRepoDiagnostic && !hasActiveFileContext && !hasDiagnosticTarget && !hasMutationVerb && !hasActionableMutationPattern && !hasTestRequest) {
       return {
         mode: ROUTER_MODES.CONVERSATION,
         codingIntent: null,
@@ -297,21 +347,6 @@ class RequestRouter {
     }
 
     // Priority 5: Explicit Coding Task (Explicit file mentioned, repo diagnostic, test runner, active editor action, or code mutation)
-    const hasDiagnosticTarget = (
-      hasRepoDiagnostic ||
-      hasContextualTarget ||
-      hasExplicitFileMention ||
-      text.includes('code') ||
-      text.includes('function') ||
-      text.includes('method') ||
-      text.includes('class') ||
-      text.includes('file') ||
-      text.includes('repository') ||
-      text.includes('repo') ||
-      text.includes('workspace') ||
-      text.includes('error') ||
-      text.includes('bug')
-    );
 
     const isCodingTask = (
       hasExplicitFileMention ||

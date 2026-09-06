@@ -234,15 +234,102 @@ async function runTest() {
     });
 
     assert.strictEqual(turnOutcome2.success, true);
+    const verifyingEvent2 = composerReceivedStatuses.find(s => s.status === 'VERIFYING');
+    assert.ok(verifyingEvent2, 'Composer must receive VERIFYING status event prior to discovering no tests');
+    assert.strictEqual(verifyingEvent2.display, '⏳ Verifying Tests...');
+
     const noTestsEvent = composerReceivedStatuses.find(s => s.status === 'NO_TESTS_FOUND');
     assert.ok(noTestsEvent, 'Composer must receive NO_TESTS_FOUND status');
     assert.strictEqual(noTestsEvent.display, 'Tests: Not automatically verified (No associated tests found)');
 
+    console.log('  ✓ Verified VERIFYING event received:', verifyingEvent2.display);
     console.log('  ✓ Verified NO_TESTS_FOUND event received:', noTestsEvent.display);
-    console.log('[PASS] Test 2: Non-tested mutation reports honest fallback to Composer\n');
+    console.log('[PASS] Test 2: Non-tested mutation reports VERIFYING then honest fallback to Composer\n');
+
+    // TEST 3: AI mutation with tests present but test runner not configured
+    console.log('[TEST 3] AI mutation with tests present but no runner configured dispatches honest fallback to Composer');
+    composerReceivedStatuses.length = 0; // reset
+
+    // Create a new subfolder with a test file but remove pytest.ini or test runner markers
+    const noRunnerDir = path.join(tempDir, 'no_runner_subproject');
+    fs.mkdirSync(noRunnerDir, { recursive: true });
+    const dummySrc = path.join(noRunnerDir, 'service.py');
+    fs.writeFileSync(dummySrc, 'def run(): pass\n');
+    const dummyTest = path.join(noRunnerDir, 'test_service.py');
+    fs.writeFileSync(dummyTest, 'def test_run(): pass\n');
+
+    const thread3 = runtime.createThread({
+      userInput: 'Update service.py',
+      metadata: { workspacePath: noRunnerDir },
+    });
+
+    let stepCount3 = 0;
+    const mockModelHandler3 = async () => {
+      stepCount3++;
+      if (stepCount3 === 1) {
+        return {
+          role: 'assistant',
+          content: 'Mutating service.py',
+          toolCalls: [
+            {
+              type: 'tool_call',
+              callId: 'call_edit_service_01',
+              toolName: 'apply_patch',
+              arguments: {
+                edits: [
+                  {
+                    filePath: 'service.py',
+                    original: 'def run(): pass',
+                    replacement: 'def run(): return True',
+                  },
+                ],
+              },
+            },
+          ],
+        };
+      } else {
+        return {
+          role: 'assistant',
+          content: 'Updated service.py successfully.',
+          toolCalls: [],
+        };
+      }
+    };
+
+    const turnOutcome3 = await runtime.runTurn({
+      threadId: thread3.threadId,
+      userInput: 'Update service.py',
+      workspacePath: noRunnerDir,
+      modelHandler: mockModelHandler3,
+      approvalMode: 'auto',
+      options: {
+        testExecutor: {
+          runTests: async () => {
+            throw new Error('Should not run test executor when runner is not detected');
+          },
+        },
+      },
+    });
+
+    assert.strictEqual(turnOutcome3.success, true);
+    const verifyingEvent3 = composerReceivedStatuses.find(s => s.status === 'VERIFYING');
+    assert.ok(verifyingEvent3, 'Composer must receive VERIFYING status event prior to runner check');
+
+    const runnerNotDetectedEvent = composerReceivedStatuses.find(
+      s => s.status === 'RUNNER_NOT_DETECTED' || s.status === 'TESTS_NOT_CONFIGURED' || s.status === 'NO_TESTS_FOUND'
+    );
+    assert.ok(runnerNotDetectedEvent, 'Composer must receive unconfigured runner / honest fallback event');
+    assert.ok(
+      runnerNotDetectedEvent.display.includes('Tests: Not automatically verified'),
+      `Display must contain honest unverified text, got: "${runnerNotDetectedEvent.display}"`
+    );
+
+    console.log('  ✓ Verified VERIFYING event received:', verifyingEvent3.display);
+    console.log('  ✓ Verified unconfigured runner event received:', runnerNotDetectedEvent.display);
+    console.log('[PASS] Test 3: Unconfigured test runner reports honest fallback to Composer\n');
 
     console.log('================================================================');
-    console.log('  RESULTS: 2/2 POST-MUTATION SENTINEL IPC TESTS PASSED (100%)  ');
+    console.log('  RESULTS: 3/3 POST-MUTATION SENTINEL IPC TESTS PASSED (100%)  ');
     console.log('================================================================');
   } finally {
     try {

@@ -49,6 +49,7 @@ const ApplyPatchTool = {
 
     // 1. Validate edit structures & construct ChangeSet
     const changeSet = new ChangeSet({
+      changeSetId: context.changeSetId || args.changeSetId,
       threadId: context.threadId || 'default_session',
       turnId: context.turnId || null,
       intent: context.intent || 'MUTATION',
@@ -172,6 +173,16 @@ const ApplyPatchTool = {
         };
       }
 
+      if (applyOutcome.appliedCount === 0) {
+        return {
+          success: false,
+          error: 'Mutation persistence verification failed: zero files were modified on disk',
+          changeSet: changeSet.toJSON(),
+          transactionId: applyOutcome.transactionId,
+          rolledBack: true,
+          reason: 'NO_FILES_MODIFIED',
+        };
+      }
 
       return {
         success: true,
@@ -182,6 +193,8 @@ const ApplyPatchTool = {
           originalLength: m.originalLength,
           newLength: m.newLength,
         })),
+        verifiedFiles: applyOutcome.verifiedFiles || [],
+        persistenceVerified: true,
         firewall: {
           risk_level: risk.overallRiskLevel || 'AUTO_APPROVE',
           risk_score: risk.riskScore || 10,

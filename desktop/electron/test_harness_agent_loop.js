@@ -550,6 +550,7 @@ async function runAgentLoopTests() {
     // ----------------------------------------------------
     console.log('[TEST 20] Testing Simulated Workflow: "Remove the redundant operations in cart_calculator.py"...');
     let sim20Calls = 0;
+    fs.writeFileSync(cartFilePath, 'def compute_subtotal(items):\n    subtotal = 0\n    for item in items:\n        subtotal += item.price * item.quantity\n    subtotal = subtotal * 1\n    return subtotal\n', 'utf8');
     const simThread20 = runtime.createThread({ metadata: { workspacePath: testWorkspaceDir } });
 
     const simRes20 = await runtime.runTurn({

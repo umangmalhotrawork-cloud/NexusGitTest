@@ -230,8 +230,15 @@ class PostMutationSentinel {
         return outcome;
       }
 
-    // 2. Discover targeted test files
-    const targetedTests = this.discoverTargetedTests(mutatedFiles, workspacePath);
+      // Initial verification progress: announce testing phase started
+      notify({
+        status: 'VERIFYING',
+        display: '⏳ Verifying Tests...',
+        mutatedFiles,
+      });
+
+      // 2. Discover targeted test files
+      const targetedTests = this.discoverTargetedTests(mutatedFiles, workspacePath);
 
     if (targetedTests.length === 0) {
       const outcome = {

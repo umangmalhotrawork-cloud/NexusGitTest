@@ -558,7 +558,7 @@ class ContextEngine {
    * @param {number} [budgetLimit] - Token budget limit (defaults to budgets.totalBudgetTokens)
    * @returns {Object} { tokens, limit, ratio, percentage, level, isApproaching, isCritical }
    */
-  evaluateContextBudget(totalTokens, budgetLimit = null) {
+  evaluateContextBudget(totalTokens, budgetLimit = null, options = {}) {
     const limit = typeof budgetLimit === 'number' && budgetLimit > 0
       ? budgetLimit
       : (this.budgets?.totalBudgetTokens || DEFAULT_BUDGETS.totalBudgetTokens);
@@ -581,6 +581,8 @@ class ContextEngine {
       level,
       isApproaching: level === 'APPROACHING',
       isCritical: level === 'CRITICAL',
+      budgetType: 'WORKING_MEMORY',
+      budgetCategory: options.isCodingTask ? 'CODING_TASK' : 'GENERAL',
     };
   }
 
@@ -641,7 +643,9 @@ class ContextEngine {
       ? workspacePathResolver.toRelative(workspacePath, rawActiveFilePath)
       : null;
 
-    const isCodingTask = intent === 'MUTATION' || intent === 'READ_ONLY' || options.isCodingTask !== false;
+    const isCodingTask = typeof options.isCodingTask === 'boolean'
+      ? options.isCodingTask
+      : (intent === 'MUTATION' || intent === 'READ_ONLY');
     const baseBudget = isCodingTask ? CODING_TASK_BUDGETS : DEFAULT_BUDGETS;
     const budgets = {
       ...baseBudget,
@@ -657,7 +661,7 @@ class ContextEngine {
 
     // 1. Continuum Layer (Synthesized handoff from previous chat context)
     let continuumText = '';
-    const isContinuumOn = continuumActive === true;
+    const isContinuumOn = continuumActive === true || (params.continuumActive !== false && Boolean(continuumSnapshot || continuumContextText));
 
     if (isContinuumOn) {
       if (continuumContextText && typeof continuumContextText === 'string' && continuumContextText.trim()) {
@@ -1195,7 +1199,7 @@ class ContextEngine {
     }
 
     const totalEstimatedTokens = sections.systemPromptTokens + this.estimateTokens(finalMessages);
-    const budgetEval = this.evaluateContextBudget(totalEstimatedTokens, budgets.totalBudgetTokens);
+    const budgetEval = this.evaluateContextBudget(totalEstimatedTokens, budgets.totalBudgetTokens, { isCodingTask });
 
     return {
       systemPrompt,
@@ -1208,6 +1212,9 @@ class ContextEngine {
         level: budgetEval.level,
         isApproaching: budgetEval.isApproaching,
         isCritical: budgetEval.isCritical,
+        budgetType: 'WORKING_MEMORY',
+        budgetCategory: isCodingTask ? 'CODING_TASK' : 'GENERAL',
+        budgetDescription: isCodingTask ? 'Coding task compaction budget' : 'General conversation compaction budget',
         sections,
         truncatedSections,
         omittedItems,
@@ -1289,4 +1296,5 @@ module.exports = {
   ContextEngine,
   contextEngine,
   DEFAULT_BUDGETS,
+  CODING_TASK_BUDGETS,
 };

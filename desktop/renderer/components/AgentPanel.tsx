@@ -1596,9 +1596,9 @@ export default function AgentPanel({
                   ? "bg-amber-950/40 border-amber-500/40 text-amber-300"
                   : "bg-[#101018] border-[#1e1e2c] text-zinc-400"
               }`}
-              title={`Context Usage: ${displayPercentage}% of ${effectiveLimit} token budget limit`}
+              title={`Session Working Memory: ${displayPercentage}% of ${effectiveLimit} token compaction budget`}
             >
-              <span>Context {displayPercentage}%</span>
+              <span>Session {displayPercentage}%</span>
               <div className="w-8 h-1 bg-[#1c1c28] rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-300 ${
@@ -1681,7 +1681,7 @@ export default function AgentPanel({
               <div className="flex items-center justify-between font-bold text-[10px] text-amber-300">
                 <div className="flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Context getting large ({displayPercentage}%)</span>
+                  <span>Session working memory getting large ({displayPercentage}%)</span>
                 </div>
                 <button
                   onClick={() => setSuppressedLevel("APPROACHING")}
@@ -1692,7 +1692,7 @@ export default function AgentPanel({
                 </button>
               </div>
               <p className="text-zinc-300 text-[9.5px] leading-relaxed">
-                Memory usage is approaching recommended limits. Create a Context Capsule to preserve active decisions, state, and recent exchanges for a fresh continuation session.
+                Session working memory is approaching recommended compaction limit ({displayPercentage}% of {effectiveLimit} token budget). Create a Context Capsule to preserve active decisions, state, and recent exchanges for a fresh continuation session.
               </p>
               <div className="pt-0.5">
                 <button
@@ -1717,11 +1717,11 @@ export default function AgentPanel({
               <div className="flex items-center justify-between font-bold text-[10px] text-rose-300">
                 <div className="flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                  <span>This conversation is approaching its context limit ({displayPercentage}%).</span>
+                  <span>Session working memory is approaching compaction limit ({displayPercentage}%).</span>
                 </div>
               </div>
               <p className="text-zinc-300 text-[9.5px] leading-relaxed">
-                Earlier messages and tool results may be summarized or compacted. You can package your current task state into an independent Context Capsule and continue in a new chat.
+                Earlier messages and tool results may be summarized or compacted ({displayPercentage}% of {effectiveLimit} token session budget). You can package your current task state into an independent Context Capsule and continue in a new chat.
               </p>
               <div className="pt-1 flex items-center gap-2">
                 <button

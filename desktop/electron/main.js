@@ -270,10 +270,18 @@ function createWindow() {
         if (filename.endsWith('.js') && !filename.includes('test_') && !filename.startsWith('.')) {
           if (reloadDebounceTimer) clearTimeout(reloadDebounceTimer);
           reloadDebounceTimer = setTimeout(() => {
-            console.log(`[ELECTRON-DEV-RELOAD] Detected change in ${filename}. Relaunching development instance...`);
-            app.relaunch();
-            app.exit(0);
-          }, 800);
+            console.log(`[ELECTRON-DEV-RELOAD] Detected change in ${filename}. Invalidating require cache...`);
+            try {
+              const fullPath = path.resolve(electronDir, filename);
+              delete require.cache[require.resolve(fullPath)];
+              // Also invalidate callers if in harness
+              Object.keys(require.cache).forEach((modPath) => {
+                if (modPath.includes('/desktop/electron/harness/') || modPath.includes('/desktop/electron/ai/')) {
+                  delete require.cache[modPath];
+                }
+              });
+            } catch (e) {}
+          }, 500);
         }
       });
     } catch (watchErr) {

@@ -1183,9 +1183,6 @@ export default function IDEApp() {
 
   const handleHomePromptChange = (promptText: string) => {
     setHomePrompt(promptText);
-    if (promptText.trim()) {
-      setActiveTaskPrompt(promptText);
-    }
   };
 
   const handleStartTaskFromHome = (promptText: string, providerId?: string, modelId?: string, attachedCapsule?: any) => {
@@ -3910,6 +3907,68 @@ export default function IDEApp() {
     }
   };
 
+  const refreshOpenTabFromDisk = useCallback(async (filePath: string) => {
+    if (!filePath || typeof window === "undefined" || !window.electronAPI?.readFile) return;
+
+    const matchesPath = (tabPath: string) => {
+      if (!tabPath) return false;
+      if (tabPath === filePath) return true;
+      const normTab = tabPath.replace(/\\/g, "/");
+      const normTarget = filePath.replace(/\\/g, "/");
+      return (
+        normTab === normTarget ||
+        normTarget.endsWith("/" + normTab) ||
+        normTab.endsWith("/" + normTarget) ||
+        normTarget.endsWith(normTab) ||
+        normTab.endsWith(normTarget)
+      );
+    };
+
+    const hasMatchingTab = openTabsRef.current.some((t) => matchesPath(t.path));
+    if (!hasMatchingTab) return;
+
+    try {
+      const res = await window.electronAPI.readFile(filePath);
+      if (res && res.success && typeof res.content === "string") {
+        const freshContent = res.content;
+
+        setEditorGroups((prevGroups) =>
+          prevGroups.map((g) => ({
+            ...g,
+            tabs: g.tabs.map((t) =>
+              matchesPath(t.path)
+                ? { ...t, content: freshContent, savedContent: freshContent, isDirty: false }
+                : t
+            ),
+          }))
+        );
+
+        setOpenTabs((prev) =>
+          prev.map((t) =>
+            matchesPath(t.path)
+              ? { ...t, content: freshContent, savedContent: freshContent, isDirty: false }
+              : t
+          )
+        );
+
+        Object.entries(editorInstancesRef.current).forEach(([groupId, editor]: [string, any]) => {
+          if (editor && typeof editor.getModel === "function" && editor.getModel()) {
+            const curGroup = editorGroups.find((g) => g.id === groupId);
+            const activePath = curGroup?.activeTabPath || activeTabPathRef.current;
+            if (activePath && matchesPath(activePath)) {
+              const curVal = typeof editor.getValue === "function" ? editor.getValue() : "";
+              if (curVal !== freshContent && typeof editor.setValue === "function") {
+                editor.setValue(freshContent);
+              }
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error("[IDE-APP] Error refreshing open tab from disk:", err);
+    }
+  }, [editorGroups]);
+
   // Subscribe to main process filesystem watcher events
   useEffect(() => {
     if (typeof window !== "undefined" && window.electronAPI?.onFsChanged) {
@@ -3918,11 +3977,55 @@ export default function IDEApp() {
           handleRefreshWorkspaceTree(event.workspacePath);
           if (folderPath) git.refreshStatus(folderPath);
           if (activeTabPath) fetchGitHunks(activeTabPath);
+          const changedFile = event.filePath || event.path || event.file;
+          if (changedFile) {
+            refreshOpenTabFromDisk(changedFile);
+          } else if (activeTabPathRef.current) {
+            refreshOpenTabFromDisk(activeTabPathRef.current);
+          }
         }
       });
       return unsub;
     }
-  }, [folderPath, activeTabPath, fetchGitHunks]);
+  }, [folderPath, activeTabPath, fetchGitHunks, refreshOpenTabFromDisk]);
+
+  // Subscribe to harness mutation persistence and changeset events to ensure editor buffer stays fresh
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).electronAPI?.harness?.onEvent) {
+      const unsub = (window as any).electronAPI.harness.onEvent((event: any) => {
+        if (!event) return;
+        const { type, payload } = event;
+
+        // 1. Direct ai:file-persisted event emitted by AgentLoop upon confirming disk write
+        if (type === "ai:file-persisted") {
+          const filePath = payload?.filePath || event.filePath;
+          if (filePath) {
+            refreshOpenTabFromDisk(filePath);
+          }
+        }
+
+        // 2. CHANGE_SET_APPLIED event
+        if (type === "CHANGE_SET_APPLIED") {
+          const files = payload?.files || payload?.changeSet?.files || event.files;
+          if (Array.isArray(files)) {
+            for (const f of files) {
+              const p = typeof f === "string" ? f : (f?.targetFile || f?.path || f?.target);
+              if (p) refreshOpenTabFromDisk(p);
+            }
+          }
+        }
+
+        // 3. ITEM_COMPLETED for FILE_CHANGE or mutation tools
+        if (type === "ITEM_COMPLETED") {
+          const item = payload?.item || {};
+          if (item.type === "FILE_CHANGE" && item.data?.filePath) {
+            refreshOpenTabFromDisk(item.data.filePath);
+          }
+        }
+      });
+      return unsub;
+    }
+  }, [refreshOpenTabFromDisk]);
 
   const handleExplorerCreateFile = async (targetDir: string, fileName: string) => {
     if (!fileName || !fileName.trim()) return;
