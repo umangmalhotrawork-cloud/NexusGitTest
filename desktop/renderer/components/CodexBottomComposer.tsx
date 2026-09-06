@@ -657,8 +657,23 @@ export default function CodexBottomComposer({
       {/* 2. Codex Agent Composer Container */}
       <form onSubmit={handleSubmit} className="w-full">
         <div 
-          className="border border-[#22252B] focus-within:border-[#4CC2DE] rounded-lg p-3 bg-[#111318] transition-colors relative space-y-2"
+          className="border border-[#22252B] focus-within:border-[#4CC2DE]/70 rounded-lg p-3 bg-[#111318] transition-colors relative space-y-2"
         >
+          {/* Quiet Workspace Context Bar */}
+          <div className="flex items-center justify-between text-[10.5px] text-[#6B7280] font-sans pb-0.5 border-b border-[#22252B]/60">
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3EAE79] shrink-0" />
+              <span className="text-[#9AA1AC] font-medium truncate">{workspaceName || "Workspace"}</span>
+              {gitBranch && (
+                <>
+                  <span className="text-[#4B5058]">•</span>
+                  <span className="font-mono text-[#8C92A4] truncate">{gitBranch}</span>
+                </>
+              )}
+            </div>
+            <span className="text-[10px] text-[#6B7280] font-mono shrink-0">⌘Enter to send</span>
+          </div>
+
           {/* Subtle Capsule Attachment Badge */}
           {attachedCapsule && (
             <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-[#14161B] border border-[#22252B] text-[11px] text-[#9AA1AC] font-sans">
@@ -696,9 +711,9 @@ export default function CodexBottomComposer({
                 }
               }
             }}
-            placeholder="Ask Sentinel AI to investigate or change code... (⌘Enter to send)"
+            placeholder="Describe what you want Sentinel to do..."
             disabled={disabled}
-            className={`w-full bg-transparent text-xs text-[#E6E8EB] placeholder-[#6B7280] focus:outline-none resize-none font-sans transition-all ${
+            className={`composer-textarea w-full bg-transparent text-xs text-[#E6E8EB] placeholder-[#6B7280] outline-none focus:outline-none focus:ring-0 border-none resize-none font-sans transition-all leading-relaxed ${
               attachedCapsule || prompt.length > 200 || prompt.includes("\n") ? "h-48" : "h-20"
             }`}
           />

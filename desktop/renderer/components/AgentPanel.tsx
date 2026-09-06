@@ -2014,7 +2014,7 @@ export default function AgentPanel({
           <div key={msg.id} className="space-y-2">
             {msg.role === "user" ? (
               <div className="flex justify-end">
-                <div className="max-w-[85%] p-2.5 rounded-xl bg-[#121b2b] border border-cyan-500/30 text-cyan-100 font-mono text-[11px] shadow-sm">
+                <div className="max-w-[85%] px-3 py-2 rounded-xl bg-[#14161B] border border-[#22252B] text-[#E6E8EB] font-sans text-xs shadow-sm leading-relaxed">
                   {msg.content}
                 </div>
               </div>
@@ -2394,7 +2394,7 @@ export default function AgentPanel({
         )}
 
         {/* Command Input Box */}
-        <div className="relative flex items-end bg-[#12121a] border border-[#222232] focus-within:border-cyan-500/60 rounded-xl p-1.5 transition-all">
+        <div className="relative flex items-end bg-[#14161B] border border-[#22252B] focus-within:border-[#4CC2DE]/70 rounded-xl p-2 transition-all">
           <textarea
             value={taskInput}
             onChange={(e) => setTaskInput(e.target.value)}
@@ -2411,13 +2411,13 @@ export default function AgentPanel({
             }}
             placeholder="Ask Sentinel AI about this file... (Enter to send, Shift+Enter for newline)"
             rows={importedCapsule || taskInput.includes("\n") ? 6 : 2}
-            className="w-full bg-transparent resize-none outline-none text-zinc-100 placeholder:text-zinc-600 text-[11px] font-mono p-1 leading-relaxed"
+            className="composer-textarea no-inner-focus w-full bg-transparent resize-none outline-none focus:outline-none focus:ring-0 text-[#E6E8EB] placeholder:text-[#6B7280] text-xs font-sans p-1 leading-relaxed border-none"
           />
 
           <button
             onClick={() => handleRunAgent()}
             disabled={loading || !taskInput.trim()}
-            className="p-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 disabled:opacity-30 cursor-pointer transition-all shrink-0 ml-1 shadow-sm"
+            className="p-2 rounded-lg bg-[#1A1C22] hover:bg-[#22252B] border border-[#22252B] hover:border-[#4CC2DE]/40 text-[#4CC2DE] disabled:opacity-30 cursor-pointer transition-all shrink-0 ml-1.5 shadow-sm"
             title="Execute Agent Task"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

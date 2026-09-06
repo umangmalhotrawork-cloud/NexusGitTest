@@ -249,13 +249,17 @@ export default function CodexSidebar({
           </span>
         </div>
 
-        {/* New Task / Chat Button */}
+        {/* New Task Button - Engineered Workstation Style */}
         <button
           onClick={onNewTask}
-          className="w-full h-7 px-2.5 rounded-md bg-[#4CC2DE] hover:bg-[#6ED4EA] active:bg-[#2FA3C0] text-[#0A0B0D] font-medium text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          className="w-full h-7 px-2.5 rounded-md bg-[#14161B] hover:bg-[#1A1C22] active:bg-[#1F2229] border border-[#22252B] hover:border-[#4CC2DE]/40 text-[#E6E8EB] font-medium text-xs flex items-center justify-between transition-colors cursor-pointer group"
+          title="Start new task (⌘N)"
         >
-          <Plus className="w-3.5 h-3.5 text-[#0A0B0D]" />
-          <span>New Task / Chat</span>
+          <div className="flex items-center gap-1.5">
+            <Plus className="w-3.5 h-3.5 text-[#4CC2DE] group-hover:scale-110 transition-transform" />
+            <span>New Task</span>
+          </div>
+          <kbd className="text-[9px] px-1.5 py-0.5 rounded bg-[#0E1013] text-[#6B7280] group-hover:text-[#9AA1AC] font-mono border border-[#22252B]">⌘N</kbd>
         </button>
 
         {/* Search Chats Input */}
@@ -281,10 +285,10 @@ export default function CodexSidebar({
 
       {/* Main Scrollable Sidebar Area */}
       <div className="flex-1 overflow-y-auto p-1.5 space-y-3">
-        {/* Navigation Section */}
+        {/* WORK Section */}
         <div className="space-y-0.5">
           <div className="px-2 text-[10px] font-semibold uppercase tracking-wider mb-1 text-[#6B7280]">
-            Navigation
+            Work
           </div>
 
           <button
@@ -312,18 +316,6 @@ export default function CodexSidebar({
           </button>
 
           <button
-            onClick={() => onSelectItem("verification")}
-            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
-              activeItem === "verification"
-                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
-                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
-            }`}
-          >
-            <ShieldCheck className={`w-3.5 h-3.5 shrink-0 ${activeItem === "verification" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
-            <span className="truncate">Patch Safety Firewall</span>
-          </button>
-
-          <button
             onClick={() => onSelectItem("capabilities")}
             className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
               activeItem === "capabilities"
@@ -333,6 +325,25 @@ export default function CodexSidebar({
           >
             <Plug className={`w-3.5 h-3.5 shrink-0 ${activeItem === "capabilities" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
             <span className="truncate">MCP & Skills Center</span>
+          </button>
+        </div>
+
+        {/* ENGINEERING Section */}
+        <div className="space-y-0.5 pt-1">
+          <div className="px-2 text-[10px] font-semibold uppercase tracking-wider mb-1 text-[#6B7280]">
+            Engineering
+          </div>
+
+          <button
+            onClick={() => onSelectItem("verification")}
+            className={`w-full h-7 text-left px-2 rounded flex items-center gap-2 transition-colors cursor-pointer text-xs ${
+              activeItem === "verification"
+                ? "bg-[#1A1C22] text-[#E6E8EB] font-medium border-l-2 border-l-[#4CC2DE] border-y-transparent border-r-transparent"
+                : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B] border-l-2 border-transparent"
+            }`}
+          >
+            <ShieldCheck className={`w-3.5 h-3.5 shrink-0 ${activeItem === "verification" ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
+            <span className="truncate">Patch Safety Firewall</span>
           </button>
 
           <button
@@ -396,11 +407,11 @@ export default function CodexSidebar({
           </div>
         )}
 
-        {/* PROJECTS SECTION */}
-        <div className="space-y-2">
+        {/* WORKSPACES SECTION */}
+        <div className="space-y-2 pt-1">
           <div className="px-2 flex items-center justify-between text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider">
-            <span>Projects & Workspaces</span>
-            <button onClick={onOpenFolder} className="text-[#4CC2DE] hover:text-[#6ED4EA] cursor-pointer">Open</button>
+            <span>Workspaces</span>
+            <button onClick={onOpenFolder} className="text-[#4CC2DE] hover:text-[#6ED4EA] cursor-pointer text-[10px] font-medium normal-case">Open Folder</button>
           </div>
 
           <div className="space-y-1">

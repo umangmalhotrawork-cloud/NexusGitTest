@@ -6139,9 +6139,9 @@ export default function IDEApp() {
           isFocused && editorGroups.length > 1 ? "ring-1 ring-[#4CC2DE]/50" : ""
         }`}
       >
-        {/* Tab Bar */}
+        {/* Tab Bar - Seamlessly Blends into Monaco Canvas */}
         <div className="h-9 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between px-2 font-sans text-xs overflow-x-auto shrink-0 select-none">
-          <div className="flex items-center gap-1 overflow-x-auto min-w-0">
+          <div className="flex items-center gap-0.5 overflow-x-auto min-w-0">
             {group.tabs.map((tab) => {
               const isActive = group.activeTabPath === tab.path;
               return (
@@ -6162,10 +6162,10 @@ export default function IDEApp() {
                     restoreTabCursor(tab.path);
                     runAnalysis(tab);
                   }}
-                  className={`group px-3 py-1.5 rounded-t flex items-center gap-2 cursor-pointer transition-colors ${
+                  className={`group px-3 py-1.5 rounded-t flex items-center gap-2 cursor-pointer transition-colors relative ${
                     isActive
-                      ? "bg-[#0B0C0F] text-[#E6E8EB] border-t-2 border-t-[#4CC2DE] border-x border-[#22252B] font-medium"
-                      : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#1A1C22]/50 border-t-2 border-transparent border-x border-transparent"
+                      ? "bg-[#0B0C0F] text-[#E6E8EB] font-medium border-t-2 border-t-[#4CC2DE] border-x border-[#22252B]/60"
+                      : "text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B]/60 border-t-2 border-transparent"
                   }`}
                 >
                   <FileText className={`w-3.5 h-3.5 ${isActive ? "text-[#4CC2DE]" : "text-[#9AA1AC]"}`} />
@@ -6203,7 +6203,7 @@ export default function IDEApp() {
                 handleSplitRight();
               }}
               title="Split Editor Right (⌘\)"
-              className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-cyan-400 transition-colors cursor-pointer"
+              className="p-1 rounded hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#4CC2DE] transition-colors cursor-pointer"
             >
               <Columns className="w-3.5 h-3.5" />
             </button>
@@ -6213,7 +6213,7 @@ export default function IDEApp() {
                 handleSplitDown();
               }}
               title="Split Editor Down (⌘K ⌘\)"
-              className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-cyan-400 transition-colors cursor-pointer"
+              className="p-1 rounded hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#4CC2DE] transition-colors cursor-pointer"
             >
               <Rows className="w-3.5 h-3.5" />
             </button>
@@ -6225,7 +6225,7 @@ export default function IDEApp() {
                     handleMoveTabToOtherGroup(groupActiveTab?.path, group.id);
                   }}
                   title="Move Tab to Other Group"
-                  className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 transition-colors cursor-pointer"
+                  className="p-1 rounded hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#D9A441] transition-colors cursor-pointer"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5" />
                 </button>
@@ -6235,7 +6235,7 @@ export default function IDEApp() {
                     handleCloseEditorGroup(group.id);
                   }}
                   title="Close Editor Group"
-                  className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer"
+                  className="p-1 rounded hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#DC5B5B] transition-colors cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -6332,13 +6332,13 @@ return (
         className="h-10 bg-[#0E1013] border-b border-[#22252B] flex items-center justify-between px-3 text-xs font-sans shrink-0 z-20 min-w-0 w-full select-none gap-2"
       >
         {/* Left Zone: Branding + Project Switcher + Home Launcher */}
-        <div className="flex-none shrink-0 flex items-center gap-2">
-          <div className="flex items-center gap-2 pr-2 border-r border-[#22252B]">
+        <div className="flex-none shrink-0 flex items-center gap-2.5">
+          <div className="flex items-center gap-2 pr-2.5 border-r border-[#22252B]">
             <span className="w-2 h-2 rounded-full bg-[#4CC2DE] shrink-0" />
-            <span className="font-heading font-bold text-xs text-[#E6E8EB] tracking-tight whitespace-nowrap">
+            <span className="font-heading font-semibold text-xs text-[#E6E8EB] tracking-tight whitespace-nowrap">
               Sentinel AI
             </span>
-            <span className="px-2 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-zinc-300 text-[10.5px] font-mono">
+            <span className="px-2 py-0.5 rounded bg-[#14161B] border border-[#22252B] text-[#9AA1AC] text-[10.5px] font-mono">
               {folderPath ? folderPath.split('/').pop() : "Sentinel AI"}
             </span>
           </div>
@@ -6348,7 +6348,7 @@ return (
             className={`px-2.5 py-1 rounded-md border text-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
               workspaceMode === "home"
                 ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
-                : "bg-transparent hover:bg-[#1A1C22] border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
+                : "bg-transparent hover:bg-[#14161B] border-transparent text-[#9AA1AC] hover:text-[#E6E8EB]"
             }`}
             title="Task Home / Workspace"
           >
@@ -6357,11 +6357,11 @@ return (
           </button>
         </div>
 
-        {/* Center Zone: Active File / Active Task Goal */}
+        {/* Center Zone: Active File / Context Capsule */}
         <div className="flex-1 min-w-0 flex items-center justify-center gap-2 py-0.5">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111318] border border-[#22252B] text-xs max-w-xl truncate">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#14161B] border border-[#22252B] text-xs max-w-xl truncate">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4CC2DE] shrink-0" />
-            <span className="text-[#E6E8EB] font-medium truncate">
+            <span className="text-[#E6E8EB] font-mono text-[11px] font-medium truncate">
               {activeTab ? activeTab.name : "Sentinel AI Workbench"}
             </span>
             {activeTaskPrompt && (
@@ -6377,12 +6377,12 @@ return (
           {/* Command Palette (⌘K) */}
           <button
             onClick={() => setCmdPaletteOpen(true)}
-            className="px-2 py-1 rounded-md hover:bg-[#14161B] text-[#8C92A4] hover:text-[#E6E8EB] border border-transparent hover:border-[#22252B] transition-colors flex items-center gap-1.5 cursor-pointer text-xs font-sans"
+            className="px-2 py-1 rounded-md hover:bg-[#14161B] text-[#9AA1AC] hover:text-[#E6E8EB] border border-transparent hover:border-[#22252B] transition-colors flex items-center gap-1.5 cursor-pointer text-xs font-sans"
             title="Command Palette (⌘K)"
           >
             <Command className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
             <span>Command</span>
-            <kbd className="hidden lg:inline text-[10px] bg-[#14161B] border border-[#22252B] px-1 rounded text-[#8C92A4]">⌘K</kbd>
+            <kbd className="hidden lg:inline text-[10px] bg-[#14161B] border border-[#22252B] px-1 rounded text-[#9AA1AC]">⌘K</kbd>
           </button>
 
           {/* AI Agent Dock Toggle */}
@@ -6391,7 +6391,7 @@ return (
             className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
               showDockedAgentPanel
                 ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
-                : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
+                : "border-transparent hover:border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B]"
             }`}
             title="Toggle AI Agent Dock (⌘I)"
           >
@@ -6407,7 +6407,7 @@ return (
               className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
                 showThemesPicker
                   ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
-                  : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
+                  : "border-transparent hover:border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
               title="Global Themes"
             >
@@ -6432,7 +6432,7 @@ return (
               className={`px-2 py-1 rounded-md text-xs font-sans flex items-center gap-1.5 transition-colors cursor-pointer border ${
                 showSourceControlPopover
                   ? "bg-[#14161B] text-[#4CC2DE] border-[#22252B] font-medium"
-                  : "border-transparent hover:border-[#22252B] text-[#8C92A4] hover:text-[#E6E8EB] hover:bg-[#14161B]"
+                  : "border-transparent hover:border-[#22252B] text-[#9AA1AC] hover:text-[#E6E8EB] hover:bg-[#14161B]"
               }`}
               title="Source Control (Quick Access)"
             >
